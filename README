@@ -1,0 +1,31 @@
+Install:
+Copy the contents in the system folder to your Killing Floor system folder.
+
+Usage:
+Add the "Super Zombie" mutator to the list of active mutators.  The game 
+will spawn the modified specimens in place of their default counterparts.
+To add the specimens in sandbox mode, you must add them to the monster 
+class list.  The package name is "SuperZombie" and the specimens available 
+are:
+    ZombieSuperFP
+
+Debugging output is available for those who wish to check out the specimens
+in more detail.  The "debugLogLevel" variable controls the ammount of 
+logging that is reported back to the player.  Setting the variable to "0" 
+will disable all logging and increasing the value will increase the amount 
+of logging.
+
+Special thanks to:
+    Benjamin            Writing up a "how to" for creating mutators
+    Brute coders        Brute mutator source code helped me figure out 
+                        how to insert my modded specimens into the game
+    Testers             See list below
+
+Testers:
+Nikari, [DoP] Cap
+
+Change Log:
+
+Version 1.0
++ Modified the fleshpound controller so that only attacking will reset the 
+rage timer.  Breaking LOS or avoiding a frag will instead pause the timer.
