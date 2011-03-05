@@ -1,3 +1,6 @@
+Author:
+Scary Ghost
+
 Install:
 Copy the contents in the system folder to your Killing Floor system folder.
 
@@ -14,6 +17,9 @@ in more detail.  The "debugLogLevel" variable controls the ammount of
 logging that is reported back to the player.  Setting the variable to "0" 
 will disable all logging and increasing the value will increase the amount 
 of logging.
+
+The source code can be viewed at the below link:
+https://github.com/scaryghost/SuperZombieMut
 
 Special thanks to:
     Benjamin            Writing up a "how to" for creating mutators
