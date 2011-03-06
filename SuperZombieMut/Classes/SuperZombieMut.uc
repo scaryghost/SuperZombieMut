@@ -51,7 +51,7 @@ function PostBeginPlay() {
             }
         }
     }
-
+    KF.EndGameBossClass= "SuperZombie.ZombieSuperBoss";
     class'SuperFPZombieController'.default.logLevel= debugLogLevel;
 	SetTimer(0.1, false);
 }

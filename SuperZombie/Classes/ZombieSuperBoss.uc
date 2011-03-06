@@ -1,26 +1,44 @@
 class ZombieSuperBoss extends ZombieBoss;
 
-function int OnlyEnemyAround( Pawn Other )
-{
-	local Controller C;
-
-	For( C=Level.ControllerList; C!=None; C=C.NextController )
-	{
-		if( C.bIsPlayer && C.Pawn!=None && C.Pawn!=Other && ((VSize(C.Pawn.Location-Location)<1500 && FastTrace(C.Pawn.Location,Location))
-		 || (VSize(C.Pawn.Location-Other.Location)<1000 && FastTrace(C.Pawn.Location,Other.Location))) )
-			Return False;
-	}
-	Return True;
+simulated function PostBeginPlay() {
+    logToPlayer("Super Boss spawning!");
+    super.PostBeginPlay();
 }
 
-function RangedAttack(Actor A)
-{
-	local bool bOnlyE;
 
-	bOnlyE = (Pawn(A)!=None && OnlyEnemyAround(Pawn(A)));
+function int numEnemiesAround(float minDist) {
+	local Controller C;
+    local int count;
 
-	if(!bOnlyE)
-	{
+    count= 0;
+	For( C=Level.ControllerList; C!=None; C=C.NextController ) {
+		if( C.bIsPlayer && C.Pawn!=None && VSize(C.Pawn.Location-Location)<minDist && FastTrace(C.Pawn.Location,Location)) {
+			count++;
+        }
+	}
+	return count;
+}
+
+function bool logToPlayer(string msg) {
+    local Controller C;
+
+    for (C = Level.ControllerList; C != None; C = C.NextController) {
+        if (PlayerController(C) != None) {
+            PlayerController(C).ClientMessage(msg);
+        }
+    }
+
+    return true;
+}
+
+function RangedAttack(Actor A) {
+    local int numEnemies;
+
+    numEnemies= numEnemiesAround(1500);
+
+    logToPlayer(""$numEnemies);
+
+	if(numEnemies >= 3)	{
 		bShotAnim = true;
 		Acceleration = vect(0,0,0);
 		SetAnimAction('PreFireMissile');
