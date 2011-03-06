@@ -1,0 +1,4 @@
+class ZombieSuperBoss extends ZombieBoss;
+
+
+
