@@ -12,7 +12,8 @@ function int numEnemiesAround(float minDist) {
 
     count= 0;
 	For( C=Level.ControllerList; C!=None; C=C.NextController ) {
-		if( C.bIsPlayer && C.Pawn!=None && VSize(C.Pawn.Location-Location)<minDist && FastTrace(C.Pawn.Location,Location)) {
+		if( C.bIsPlayer && C.Pawn!=None && VSize(C.Pawn.Location-Location)<=minDist 
+            && FastTrace(C.Pawn.Location,Location)) {
 			count++;
         }
 	}
@@ -34,7 +35,7 @@ function bool logToPlayer(string msg) {
 function RangedAttack(Actor A) {
     local int numEnemies;
 
-    numEnemies= numEnemiesAround(1500);
+    numEnemies= numEnemiesAround(150);
 
     logToPlayer(""$numEnemies);
 
