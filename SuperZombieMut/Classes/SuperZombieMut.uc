@@ -6,7 +6,7 @@ function PostBeginPlay() {
 	local int i,j;
 	local KFGameType KF;
     local string oldFPClass, newFPClass;
-	
+
 	KF = KFGameType(Level.Game);
 
   	if (Level.NetMode != NM_Standalone)
@@ -51,8 +51,12 @@ function PostBeginPlay() {
             }
         }
     }
+
     KF.EndGameBossClass= "SuperZombie.ZombieSuperBoss";
+
     class'SuperFPZombieController'.default.logLevel= debugLogLevel;
+    class'ZombieSuperBoss'.default.logLevel= debugLogLevel;
+
 	SetTimer(0.1, false);
 }
 
