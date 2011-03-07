@@ -28,9 +28,16 @@ Special thanks to:
     Testers             See list below
 
 Testers:
-Nikari, [DoP] Cap
+Nikari, Fractal, [DoP] Cap, Tech Burn, Gore Torn, Nurse. Jamie Jameson, 
+Reaping - The Runk, Xandirs, DM*, BulletMorgue, Sakumaru, Fang.HD, AnTrix
 
 Change Log:
+
+Version 1.1
++ If surrounded by 3 or more people when he needs to heal, he will shoot a 
+point blank rocket instead of kneeling down before running away
++ The Patriarch will now automatically destroy any welded door in his path 
+if he is escaping to heal
 
 Version 1.0
 + Modified the fleshpound controller so that only attacking will reset the 
