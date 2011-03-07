@@ -1,44 +1,16 @@
 class ZombieSuperBoss extends ZombieBoss;
 
-var bool bShootRocket;
-var bool bFiringSuperMissile;
-var float rocketTimer;
+var int logLevel;
 
 simulated function PostBeginPlay() {
-    logToPlayer("Super Boss spawning!");
-    bShootRocket= false;
-    bFiringSuperMissile= false;
-//    rocketTimer= 0.0;
+    logToPlayer(1,"Super Patriarch spawning!");
     super.PostBeginPlay();
 }
 
 simulated function Tick(float DeltaTime) {
     super.Tick(DeltaTime);
-/*
-    if(!bShootRocket) {
-        rocketTimer+= DeltaTime;
-    }
-    if (rocketTimer > 3.0) {
-        bShootRocket= true;
-        rocketTimer= 0.0;
-    }
-*/
 }
 
-function DoorAttack(Actor A)
-{
-	if ( bShotAnim )
-		return;
-	else if ( A!=None )
-	{
-		Controller.Target = A;
-		bShotAnim = true;
-		Acceleration = vect(0,0,0);
-		SetAnimAction('PreFireMissile');
-		HandleWaitForAnim('PreFireMissile');
-		GoToState('FireMissile');
-	}
-}
 
 function int numEnemiesAround(float minDist) {
 	local Controller C;
@@ -53,7 +25,11 @@ function int numEnemiesAround(float minDist) {
 	return count;
 }
 
-function bool logToPlayer(string msg) {
+function logToPlayer(int level, string msg) {
+    isItMyLogLevel(level) && outputToChat(msg);
+}
+
+function bool outputToChat(string msg) {
     local Controller C;
 
     for (C = Level.ControllerList; C != None; C = C.NextController) {
@@ -64,24 +40,9 @@ function bool logToPlayer(string msg) {
 
     return true;
 }
-function RangedAttack(Actor A) {
-    local int numCloseEnemies;
-    local float minDist;
-    
-    minDist= 150.0;
-    numCloseEnemies= numEnemiesAround(minDist);
-	if(!bShotAnim && (numCloseEnemies >= 1)) {
-		bShotAnim = true;
-		Acceleration = vect(0,0,0);
-//		SetAnimAction('PreFireMissile');
 
-//		HandleWaitForAnim('PreFireMissile');
-        LogToPlayer("Firing super missile!");
-
-		GoToState('FireSuperMissile');
-	} else {
-        super.RangedAttack(A);
-    }
+function bool isItMyLogLevel(int level) {
+    return (logLevel >= level);
 }
 
 state FireSuperMissile extends FireMissile {
@@ -92,7 +53,6 @@ Ignores RangedAttack;
     }
 
 	function BeginState() {
-        bFiringSuperMissile= true;
         super.BeginState();
 	}
 
@@ -101,8 +61,7 @@ Ignores RangedAttack;
 	}
 
     function EndState() {
-        bFiringSuperMissile= false;
-        super.EndState();
+        GotoState('Escaping');
     }
 Begin:
 	while ( true ) {
@@ -110,13 +69,60 @@ Begin:
 		Sleep(0.1);
 	}
 }
-function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector Momentum, class<DamageType> damageType, optional int HitIndex)
-{  
+
+State Escaping // Got hurt and running away...
+{
+    function DoorAttack(Actor A) {
+        local vector hitLocation;
+        local vector momentum;
+
+        if ( bShotAnim )
+    		return;
+    	else if ( KFDoorMover(A)!=None ) {
+            hitLocation= vect(0.0,0.0,0.0);
+            momentum= vect(0.0,0.0,0.0);
+            KFDoorMover(A).Health= 0;
+            KFDoorMover(A).GoBang(self,hitLocation,momentum,Class'BossLAWProj'.default.MyDamageType);
+            logToPlayer(2,"Not stopping to bust a door down");
+    	}
+    }
+
+	function BeginHealing()	{
+        super.BeginHealing();
+	}
+
+	function RangedAttack(Actor A) {
+        super.RangedAttack(A);
+	}
+
+	function bool MeleeDamageTarget(int hitdamage, vector pushdir) {
+        return super.MeleeDamageTarget(hitdamage, pushdir);
+	}
+
+	function Tick( float Delta ) {
+        super.Tick(Delta);
+    }
+
+	function EndState()	{
+        super.EndState();
+	}
+
+Begin:
+	While( true ) {
+		Sleep(0.5);
+		if( !bCloaked && !bShotAnim )
+			CloakBoss();
+		if( !Controller.IsInState('SyrRetreat') && !Controller.IsInState('WaitForAnim'))
+			Controller.GoToState('SyrRetreat');
+	}
+}
+
+function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector Momentum, class<DamageType> damageType, optional int HitIndex) {  
     local float DamagerDistSq;
 	local float UsedPipeBombDamScale;
     local int numEnemies; 
 
-    logToPlayer(GetStateName()$" Took damage. Health="$Health$" Damage = "$Damage$" HealingLevels "$HealingLevels[SyringeCount]);
+    logToPlayer(3,GetStateName()$"");
 
     if ( class<DamTypeCrossbow>(damageType) == none && class<DamTypeCrossbowHeadShot>(damageType) == none ) {
     	bOnlyDamagedByCrossbow = false;
@@ -167,8 +173,18 @@ function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector M
 
     numEnemies= numEnemiesAround(150);
 
-	if( (SyringeCount==0 && Health<HealingLevels[0]) || (SyringeCount==1 && Health<HealingLevels[1]) || (SyringeCount==2 && Health<HealingLevels[2]) ) {
-        if (bFiringSuperMissile == false) {
+	if( !IsInState('FireSuperMissile') && (SyringeCount==0 && Health<HealingLevels[0]) || (SyringeCount==1 && Health<HealingLevels[1]) || (SyringeCount==2 && Health<HealingLevels[2]) ) {
+        if(numEnemies >= 3) {
+            bShotAnim = true;
+    		Acceleration = vect(0,0,0);
+    		SetAnimAction('PreFireMissile');
+
+    		HandleWaitForAnim('PreFireMissile');
+            logToPlayer(2,"I'm not dropping to my knees.");
+
+    		GoToState('FireSuperMissile');
+
+        } else {
         	bShotAnim = true;
     		Acceleration = vect(0,0,0);
     		SetAnimAction('KnockDown');
@@ -179,3 +195,7 @@ function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector M
 	}
 } 
 
+defaultproperties {
+    logLevel= 0;
+    MenuName= "Super Patriarch"
+}
