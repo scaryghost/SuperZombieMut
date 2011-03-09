@@ -2,6 +2,7 @@ class SuperZombieMut extends Mutator
     config(SuperZombie);
 
 var() config int debugLogLevel;
+
 function PostBeginPlay() {
 	local int i,j;
 	local KFGameType KF;
@@ -72,7 +73,7 @@ static function FillPlayInfo(PlayInfo PlayInfo) {
 static event string GetDescriptionText(string property) {
     switch(property) {
         case "debugLogLevel":
-            return "Adjust the debug log level for the SuperFP Mutator";
+            return "Adjust the debug log level for the Super Zombie mutator";
         default:
             return Super.GetDescriptionText(property);
     }
@@ -81,6 +82,6 @@ static event string GetDescriptionText(string property) {
 defaultproperties {
     debugLogLevel=0;
 	GroupName="KFSuperZombieMut"
-	FriendlyName="Super Zombie"
-	Description="Modifies zombie behaviour"
+	FriendlyName="Super Zombies"
+	Description="Modifies zombie behavior"
 }
