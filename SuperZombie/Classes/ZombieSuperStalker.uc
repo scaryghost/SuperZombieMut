@@ -7,6 +7,17 @@ simulated function PostBeginPlay() {
     super.PostBeginPlay();
 }
 
+simulated function Tick(float DeltaTime) {
+    super.Tick(DeltaTime);
+    // Keep the gorefast moving toward its target when attacking
+	if( Role == ROLE_Authority && bShotAnim && !bWaitForAnim ) {
+        if( LookTarget!=None )
+        {
+ 	        Acceleration = AccelRate * Normal(LookTarget.Location - Location);
+		}
+    }
+}
+
 function logToPlayer(int level, string msg) {
     isItMyLogLevel(level) && outputToChat(msg);
 }
@@ -35,7 +46,6 @@ function RangedAttack(Actor A) {
         bShotAnim = true;
 		SetAnimAction('ClawAndMove');
 		//PlaySound(sound'Claw2s', SLOT_None); KFTODO: Replace this
-		Controller.bPreparingMove = true;
 		return;
 	}
 }
@@ -74,6 +84,7 @@ simulated event SetAnimAction(name NewAction)
     else
     {
         bWaitForAnim = false;
+        LogToPlayer(1,"Don't need to wait for animations!");
     }
 
 	if( Level.NetMode!=NM_Client )
@@ -83,6 +94,7 @@ simulated event SetAnimAction(name NewAction)
 		ResetAnimActTime = Level.TimeSeconds+0.3;
 	}
 }
+
 
 // Handle playing the anim action on the upper body only if we're attacking and moving
 simulated function int AttackAndMoveDoAnimAction( name AnimName )
