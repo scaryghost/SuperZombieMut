@@ -1,14 +1,29 @@
 class ZombieSuperStalker extends ZombieStalker;
 
 var int logLevel;
+var float meleeCoolDownTimer;
+var float defaultCoolDown;
+var bool bMeleeCoolDown;
 
 simulated function PostBeginPlay() {
     logToPlayer(1,"Spawning Super Stalker!");
+    defaultCoolDown= 2.5;
+    meleeCoolDownTimer= defaultCoolDown;
+    bMeleeCoolDown= false;
     super.PostBeginPlay();
 }
 
 simulated function Tick(float DeltaTime) {
     super.Tick(DeltaTime);
+    if(bMeleeCoolDown) {
+        meleeCoolDownTimer-= DeltaTime;
+    }
+    if(meleeCoolDownTimer <= 0) {
+        meleeCoolDownTimer= defaultCoolDown;
+        bMeleeCoolDown= false;
+    }
+
+    logToPlayer(2,"Melee Cooldown: "$meleeCoolDownTimer);
     // Keep the stalker moving toward its target when attacking
 	if( Role == ROLE_Authority && bShotAnim && !bWaitForAnim ) {
         if( LookTarget!=None ) {
@@ -40,11 +55,13 @@ function bool isItMyLogLevel(int level) {
 function RangedAttack(Actor A) {
 	if ( bShotAnim || Physics == PHYS_Swimming)
 		return;
-	else if ( CanAttack(A) )
-	{
-        bShotAnim = true;
-		SetAnimAction('ClawAndMove');
-		//PlaySound(sound'Claw2s', SLOT_None); KFTODO: Replace this
+	else if ( CanAttack(A) ) {
+        if(!bMeleeCoolDown) {
+            bShotAnim = true;
+    		SetAnimAction('ClawAndMove');
+    		//PlaySound(sound'Claw2s', SLOT_None); KFTODO: Replace this
+        }
+        bMeleeCoolDown= true;
 		return;
 	}
 }
@@ -80,7 +97,6 @@ simulated function int AttackAndMoveDoAnimAction( name AnimName ) {
     if( AnimName=='StalkerSpinAttack' || AnimName=='StalkerAttack1' || AnimName=='JumpAttack') {
 		AnimBlendParams(1, 1.0, 0.0,, FireRootBone);
 		PlayAnim(AnimName,, 0.1, 1);
-        logToPlayer(1,"I'm going to claw you!");
 
 		return 1;
 	}
@@ -89,5 +105,5 @@ simulated function int AttackAndMoveDoAnimAction( name AnimName ) {
 }
 
 defaultproperties {
-    logLevel= 1;
+    logLevel= 2;
 }
