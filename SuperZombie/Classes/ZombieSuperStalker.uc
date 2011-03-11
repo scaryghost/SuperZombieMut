@@ -9,10 +9,9 @@ simulated function PostBeginPlay() {
 
 simulated function Tick(float DeltaTime) {
     super.Tick(DeltaTime);
-    // Keep the gorefast moving toward its target when attacking
+    // Keep the stalker moving toward its target when attacking
 	if( Role == ROLE_Authority && bShotAnim && !bWaitForAnim ) {
-        if( LookTarget!=None )
-        {
+        if( LookTarget!=None ) {
  	        Acceleration = AccelRate * Normal(LookTarget.Location - Location);
 		}
     }
@@ -51,44 +50,15 @@ function RangedAttack(Actor A) {
 }
 
 // Overridden to handle playing upper body only attacks when moving
-simulated event SetAnimAction(name NewAction)
-{
-	local int meleeAnimIndex;
-	local bool bWantsToAttackAndMove;
-
+simulated event SetAnimAction(name NewAction) {
 	if( NewAction=='' )
 		Return;
 
-	bWantsToAttackAndMove = NewAction == 'ClawAndMove';
+    ExpectingChannel = AttackAndMoveDoAnimAction(NewAction);
 
-	if( NewAction == 'Claw' )
-	{
-		meleeAnimIndex = Rand(3);
-		NewAction = meleeAnims[meleeAnimIndex];
-		CurrentDamtype = ZombieDamType[meleeAnimIndex];
-	}
+    bWaitForAnim= false;
 
-	if( bWantsToAttackAndMove )
-	{
-	   ExpectingChannel = AttackAndMoveDoAnimAction(NewAction);
-	}
-	else
-	{
-	   ExpectingChannel = DoAnimAction(NewAction);
-	}
-
-    if( !bWantsToAttackAndMove && AnimNeedsWait(NewAction) )
-    {
-        bWaitForAnim = true;
-    }
-    else
-    {
-        bWaitForAnim = false;
-        LogToPlayer(1,"Don't need to wait for animations!");
-    }
-
-	if( Level.NetMode!=NM_Client )
-	{
+	if( Level.NetMode!=NM_Client ) {
 		AnimAction = NewAction;
 		bResetAnimAct = True;
 		ResetAnimActTime = Level.TimeSeconds+0.3;
@@ -97,20 +67,17 @@ simulated event SetAnimAction(name NewAction)
 
 
 // Handle playing the anim action on the upper body only if we're attacking and moving
-simulated function int AttackAndMoveDoAnimAction( name AnimName )
-{
+simulated function int AttackAndMoveDoAnimAction( name AnimName ) {
 	local int meleeAnimIndex;
 
-    if( AnimName == 'ClawAndMove' )
-	{
+    if( AnimName == 'ClawAndMove' )	{
 		meleeAnimIndex = Rand(3);
 		AnimName = meleeAnims[meleeAnimIndex];
 		CurrentDamtype = ZombieDamType[meleeAnimIndex];
 
 	}
 
-    if( AnimName=='StalkerSpinAttack' || AnimName=='StalkerAttack1' || AnimName=='JumpAttack')
-	{
+    if( AnimName=='StalkerSpinAttack' || AnimName=='StalkerAttack1' || AnimName=='JumpAttack') {
 		AnimBlendParams(1, 1.0, 0.0,, FireRootBone);
 		PlayAnim(AnimName,, 0.1, 1);
         logToPlayer(1,"I'm going to claw you!");
