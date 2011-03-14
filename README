@@ -33,6 +33,13 @@ Reaping - The Runk, Xandirs, DM*, BulletMorgue, Sakumaru, Fang.HD, AnTrix
 
 Change Log:
 
+Version 1.2
++ Gorefast will always do the charging melee attack.  The minimum range 
+that triggers his charge has been doubled to 1400 units.
++ Stalker has the charging melee ability of the gorefast.  Unlike the 
+gorefast, the stalker will always stay moving.  A cooldown has been added 
+so she will not use her quick strikes in rapid succession.
+
 Version 1.1
 + If surrounded by 3 or more people when he needs to heal, he will shoot a 
 point blank rocket instead of kneeling down before running away
