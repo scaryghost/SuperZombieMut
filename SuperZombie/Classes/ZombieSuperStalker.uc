@@ -7,7 +7,7 @@ var bool bMeleeCoolDown;
 
 simulated function PostBeginPlay() {
     logToPlayer(1,"Spawning Super Stalker!");
-    defaultCoolDown= 2.5;
+    defaultCoolDown= 2.333;
     meleeCoolDownTimer= defaultCoolDown;
     bMeleeCoolDown= false;
     super.PostBeginPlay();
@@ -55,12 +55,10 @@ function bool isItMyLogLevel(int level) {
 function RangedAttack(Actor A) {
 	if ( bShotAnim || Physics == PHYS_Swimming)
 		return;
-	else if ( CanAttack(A) ) {
-        if(!bMeleeCoolDown) {
-            bShotAnim = true;
-    		SetAnimAction('ClawAndMove');
-    		//PlaySound(sound'Claw2s', SLOT_None); KFTODO: Replace this
-        }
+	else if ( !bMeleeCoolDown && CanAttack(A) ) {
+        bShotAnim = true;
+    	SetAnimAction('ClawAndMove');
+    	//PlaySound(sound'Claw2s', SLOT_None); KFTODO: Replace this
         bMeleeCoolDown= true;
 		return;
 	}
@@ -86,12 +84,15 @@ simulated event SetAnimAction(name NewAction) {
 // Handle playing the anim action on the upper body only if we're attacking and moving
 simulated function int AttackAndMoveDoAnimAction( name AnimName ) {
 	local int meleeAnimIndex;
+    local float duration;
 
     if( AnimName == 'ClawAndMove' )	{
 		meleeAnimIndex = Rand(3);
 		AnimName = meleeAnims[meleeAnimIndex];
 		CurrentDamtype = ZombieDamType[meleeAnimIndex];
 
+        duration= GetAnimDuration(AnimName, 1.0);
+        logToPlayer(1,"Melee animation duration: "$duration);
 	}
 
     if( AnimName=='StalkerSpinAttack' || AnimName=='StalkerAttack1' || AnimName=='JumpAttack') {
@@ -105,5 +106,5 @@ simulated function int AttackAndMoveDoAnimAction( name AnimName ) {
 }
 
 defaultproperties {
-    logLevel= 2;
+    logLevel= 0;
 }
