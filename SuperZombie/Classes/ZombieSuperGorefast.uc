@@ -1,9 +1,11 @@
 class ZombieSuperGorefast extends ZombieGoreFast;
 
 var int logLevel;
+var float minRageDist;
 
 simulated function PostBeginPlay() {
     logToPlayer(1,"Spawning Super Gorefast!");
+    minRageDist= 1400.0;
     super.PostBeginPlay();
 }
 
@@ -25,6 +27,12 @@ function bool outputToChat(string msg) {
 
 function bool isItMyLogLevel(int level) {
     return (logLevel >= level);
+}
+
+function RangedAttack(Actor A) {
+	Super(KFMonster).RangedAttack(A);
+	if( !bShotAnim && !bDecapitated && VSize(A.Location-Location)<=minRageDist )
+		GoToState('RunningState');
 }
 
 state RunningState {
@@ -67,7 +75,7 @@ state RunningState {
 Begin:
     GoTo('CheckCharge');
 CheckCharge:
-    if( Controller!=None && Controller.Target!=None && VSize(Controller.Target.Location-Location)<700 ) {
+    if( Controller!=None && Controller.Target!=None && VSize(Controller.Target.Location-Location)<minRageDist ) {
         Sleep(0.5+ FRand() * 0.5);
         //log("Still charging");
         GoTo('CheckCharge');
@@ -79,5 +87,5 @@ CheckCharge:
 }
 
 defaultproperties {
-    logLevel= 1;
+    logLevel= 0;
 }
