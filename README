@@ -11,6 +11,9 @@ To add the specimens in sandbox mode, you must add them to the monster
 class list.  The package name is "SuperZombie" and the specimens available 
 are:
     ZombieSuperFP
+    ZombieSuperBoss
+    ZombieSuperGorefast
+    ZombieSuperStalker
 
 Debugging output is available for those who wish to check out the specimens
 in more detail.  The "debugLogLevel" variable controls the ammount of 
