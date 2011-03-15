@@ -44,7 +44,6 @@ function PostBeginPlay() {
             replacementValue= replacementArray[k];
             //Use ~= for case insensitive compare
             if (KF.StandardMonsterClasses[i].MClassName ~= replacementValue.oldClass) {
-                Log("replace: "$replacementValue.oldClass);
                 KF.StandardMonsterClasses[i].MClassName= replacementValue.newClass;
             }
         }
