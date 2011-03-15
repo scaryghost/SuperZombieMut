@@ -7,7 +7,7 @@ var bool bMeleeCoolDown;
 
 simulated function PostBeginPlay() {
     logToPlayer(1,"Spawning Super Stalker!");
-    defaultCoolDown= 2.333;
+    defaultCoolDown= GetAnimDuration('StalkerAttack1', 1.0);
     meleeCoolDownTimer= defaultCoolDown;
     bMeleeCoolDown= false;
     super.PostBeginPlay();
@@ -23,7 +23,7 @@ simulated function Tick(float DeltaTime) {
         bMeleeCoolDown= false;
     }
 
-    logToPlayer(2,"Melee Cooldown: "$meleeCoolDownTimer);
+    logToPlayer(3,"Melee Cooldown: "$meleeCoolDownTimer);
     // Keep the stalker moving toward its target when attacking
 	if( Role == ROLE_Authority && bShotAnim && !bWaitForAnim ) {
         if( LookTarget!=None ) {
@@ -92,7 +92,7 @@ simulated function int AttackAndMoveDoAnimAction( name AnimName ) {
 		CurrentDamtype = ZombieDamType[meleeAnimIndex];
 
         duration= GetAnimDuration(AnimName, 1.0);
-        logToPlayer(1,"Melee animation duration: "$duration);
+        logToPlayer(2,"Melee animation duration: "$duration);
 	}
 
     if( AnimName=='StalkerSpinAttack' || AnimName=='StalkerAttack1' || AnimName=='JumpAttack') {
