@@ -7,14 +7,14 @@ struct oldNewZombiePair {
 };
 
 var() config int debugLogLevel;
-var array<oldNewZombiePair> replacementArray[4];
+var array<oldNewZombiePair> replacementArray[5];
 
 function replaceSpecialSquad(out array<KFGameType.SpecialSquad> squadArray) {
     local int i,j,k;
     local oldNewZombiePair replacementValue;
     for(j=0; j<squadArray.Length; j++) {
         for(i=0;i<squadArray[j].ZedClass.Length; i++) {
-            for(k=0; k<4; k++) {
+            for(k=0; k<5; k++) {
                 replacementValue= replacementArray[k];
                 if(squadArray[j].ZedClass[i] ~= replacementValue.oldClass) {
                     squadArray[j].ZedClass[i]=  replacementValue.newClass;
@@ -40,7 +40,7 @@ function PostBeginPlay() {
 
     //Replace all instances of KFChar.ZombieFleshPound with the super fp class 
     for( i=0; i<KF.StandardMonsterClasses.Length; i++) {
-        for(k=0; k<4; k++) {
+        for(k=0; k<5; k++) {
             replacementValue= replacementArray[k];
             //Use ~= for case insensitive compare
             if (KF.StandardMonsterClasses[i].MClassName ~= replacementValue.oldClass) {
@@ -56,12 +56,12 @@ function PostBeginPlay() {
 
     KF.EndGameBossClass= "SuperZombie.ZombieSuperBoss";
 
-    class'SuperFPZombieController'.default.logLevel= debugLogLevel;
+    class'ZombieSuperFP'.default.logLevel= debugLogLevel;
     class'ZombieSuperBoss'.default.logLevel= debugLogLevel;
     class'ZombieSuperGorefast'.default.logLevel= debugLogLevel;
     class'ZombieSuperStalker'.default.logLevel= debugLogLevel;
     class'ZombieSuperSiren'.default.logLevel= debugLogLevel;
-
+    class'ZombieSuperScrake'.default.logLevel= debugLogLevel;
 
 	SetTimer(0.1, false);
 }
@@ -72,7 +72,7 @@ function Timer() {
 
 static function FillPlayInfo(PlayInfo PlayInfo) {
     Super.FillPlayInfo(PlayInfo);
-    PlayInfo.AddSetting("LogLevel Modifier", "debugLogLevel","Debug log level", 0, 1, "Text", "0.1;0:3");
+    PlayInfo.AddSetting("LogLevel Modifier", "debugLogLevel","Debug log level", 0, 1, "Text", "0.1;0:3",,,true);
 }
 
 static event string GetDescriptionText(string property) {
@@ -88,9 +88,10 @@ defaultproperties {
     debugLogLevel=0;
 	GroupName="KFSuperZombieMut"
 	FriendlyName="Super Zombie"
-	Description="Modifies zombie behaviour"
+	Description="Modifies zombie behavior"
     replacementArray(0)=(oldClass="KFChar.ZombieFleshPound",newClass="SuperZombie.ZombieSuperFP")
     replacementArray(1)=(oldClass="KFChar.ZombieGorefast",newClass="SuperZombie.ZombieSuperGorefast")
     replacementArray(2)=(oldClass="KFChar.ZombieStalker",newClass="SuperZombie.ZombieSuperStalker")
     replacementArray(3)=(oldClass="KFChar.ZombieSiren",newClass="SuperZombie.ZombieSuperSiren")
+    replacementArray(4)=(oldClass="KFChar.ZombieScrake",newClass="SuperZombie.ZombieSuperScrake")
 }
