@@ -14,6 +14,8 @@ are:
     ZombieSuperBoss
     ZombieSuperGorefast
     ZombieSuperStalker
+    ZombieSuperSiren
+    ZombieSuperScrake
 
 Debugging output is available for those who wish to check out the specimens
 in more detail.  The "debugLogLevel" variable controls the ammount of 
@@ -35,6 +37,12 @@ Nikari, Fractal, [DoP] Cap, Tech Burn, Gore Torn, Nurse. Jamie Jameson,
 Reaping - The Runk, Xandirs, DM*, BulletMorgue, Sakumaru, Fang.HD, AnTrix
 
 Change Log:
+
+Version 1.3
++ Siren scream will hit through doors.  The damage dealt is only 50% of 
+the normal damage
++ Scrake can only be stunned (actual stun, not flinch) once.  In addition, 
+he will immediately break out of stun if he is hit with weak attack
 
 Version 1.2
 + Gorefast will always do the charging melee attack.  The minimum range 
