@@ -1,32 +1,6 @@
 class SuperScrakeZombieController extends SawZombieController;
 
-var int logLevel;
 var float start, end;
-
-function PostBeginPlay() {
-    super.PostBeginPlay();
-    logToPlayer(1,"I like scrubs");
-}
-
-function logToPlayer(int level, string msg) {
-    isItMyLogLevel(level) && outputToChat(msg);
-}
-
-function bool outputToChat(string msg) {
-    local Controller C;
-
-    for (C = Level.ControllerList; C != None; C = C.NextController) {
-        if (PlayerController(C) != None) {
-            PlayerController(C).ClientMessage(msg);
-        }
-    }
-
-    return true;
-}
-
-function bool isItMyLogLevel(int level) {
-    return (logLevel >= level);
-}
 
 state WaitForAnim {
 Ignores SeePlayer,HearNoise,Timer,EnemyNotVisible,NotifyBump,Startle;
@@ -36,7 +10,6 @@ Ignores SeePlayer,HearNoise,Timer,EnemyNotVisible,NotifyBump,Startle;
     }
 
 	event AnimEnd(int Channel) {
-        LogToPlayer(2,"My Stun animation ended!");
         super.AnimEnd(Channel);
 	}
 
@@ -51,7 +24,7 @@ Ignores SeePlayer,HearNoise,Timer,EnemyNotVisible,NotifyBump,Startle;
         local float deltaTime;
         end= Level.TimeSeconds;
         deltaTime= end - start;
-        LogToPlayer(2,"Stun Time: "$(deltaTime));
+        ZombieSuperScrake(pawn).bIsFlippedOver= false;
         super.EndState();
 	}
 
@@ -60,8 +33,4 @@ Begin:
     	Sleep(0.15);
 	}
 	WhatToDoNext(99);
-}
-
-defaultproperties {
-    logLevel= 2;
 }
