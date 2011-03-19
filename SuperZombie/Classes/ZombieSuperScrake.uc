@@ -4,7 +4,7 @@ var int maxTimesFlipOver;
 var int logLevel;
 var bool bIsFlippedOver;
 
-function PostBeginPlay() {
+simulated function PostBeginPlay() {
     super.PostBeginPlay();
     logToPlayer(1,"I like scrubs");
 }
