@@ -1,6 +1,6 @@
 class SuperFPZombieController extends FleshpoundZombieController;
 
-var bool bFindNewEnemy, bSmashDoor, bStartled;
+var bool bFindNewEnemy, bSmashDoor, bStartled, bAttackedTarget, bMissTarget;
 var float prevRageTimer;
 var float prevRageThreshold;
 
@@ -9,10 +9,10 @@ function PostBeginPlay() {
     bFindNewEnemy= false;
     bSmashDoor= false;
     bStartled= false;
+    bAttackedTarget= false;
+    bMissTarget= true;
     prevRageTimer= 0;
     prevRageThreshold= default.RageFrustrationThreshhold + (Frand() * 5); 
-
-    ZombieSuperFP(pawn).logToPlayer(1,"Level of aggression, 12!");
 }
 
 function bool FindNewEnemy() {
@@ -53,13 +53,16 @@ state ZombieCharge {
 
 	function BeginState() {
         super.BeginState();
-        if (!bSmashDoor && (bFindNewEnemy || bStartled)) {
+        if (!bSmashDoor && ((bAttackedTarget && bMissTarget) 
+            || bFindNewEnemy || bStartled)) {
             RageFrustrationTimer= prevRageTimer;
             RageFrustrationThreshhold= prevRageThreshold;
         }
         bFindNewEnemy= false;
         bSmashDoor= false;
         bStartled= false;
+        bAttackedTarget= false;
+        bMissTarget= true;
         
         ZombieSuperFP(pawn).logToPlayer(2,"Entering ZombieCharge state");
 	}
