@@ -10,25 +10,25 @@ function PostBeginPlay() {
     bSmashDoor= false;
     bStartled= false;
     bAttackedTarget= false;
-    bMissTarget= true;
+    bMissTarget= false;
     prevRageTimer= 0;
     prevRageThreshold= default.RageFrustrationThreshhold + (Frand() * 5); 
 }
 
 function bool FindNewEnemy() {
-    ZombieSuperFP(pawn).logToPlayer(2,"Searching for enemy");
+    ZombieSuperFP(pawn).logToPlayer(3,"Searching for enemy");
     bFindNewEnemy= true;
     return super.FindNewEnemy();
 }
 
 function BreakUpDoor(KFDoorMover Other, bool bTryDistanceAttack) {
-    ZombieSuperFP(pawn).logToPlayer(2,"FP SMASH DOOR!");
+    ZombieSuperFP(pawn).logToPlayer(3,"FP SMASH DOOR!");
     bSmashDoor= true;
     super.BreakUpDoor(Other,bTryDistanceAttack);
 }
 
 function Startle(Actor Feared) {
-    ZombieSuperFP(pawn).logToPlayer(2,"Ahh!! Grenade!");
+    ZombieSuperFP(pawn).logToPlayer(3,"Ahh!! Grenade!");
     bStartled= True;
     super.Startle(Feared);
 }
@@ -36,7 +36,7 @@ function Startle(Actor Feared) {
 state ZombieCharge {
 	function Tick( float Delta ) {
         super.Tick(Delta);
-        ZombieSuperFP(pawn).logToPlayer(3,"Time left: "$(RageFrustrationThreshhold-RageFrustrationTimer));
+        ZombieSuperFP(pawn).logToPlayer(4,"Time left: "$(RageFrustrationThreshhold-RageFrustrationTimer));
 	}
 
 	function bool StrafeFromDamage(float Damage, class<DamageType> DamageType, bool bFindDest) {
@@ -62,16 +62,16 @@ state ZombieCharge {
         bSmashDoor= false;
         bStartled= false;
         bAttackedTarget= false;
-        bMissTarget= true;
+        bMissTarget= false;
         
-        ZombieSuperFP(pawn).logToPlayer(2,"Entering ZombieCharge state");
+        ZombieSuperFP(pawn).logToPlayer(3,"Entering ZombieCharge state");
 	}
 
     function EndState() {
         prevRageTimer= RageFrustrationTimer;
         prevRageThreshold= RageFrustrationThreshhold;
 
-        ZombieSuperFP(pawn).logToPlayer(2,"Leaving ZombieCharge state");
+        ZombieSuperFP(pawn).logToPlayer(3,"Leaving ZombieCharge state");
     }
 
 WaitForAnim:
