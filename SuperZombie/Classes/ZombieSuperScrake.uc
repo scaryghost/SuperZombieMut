@@ -39,11 +39,17 @@ function bool FlipOver() {
 }
 
 function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector Momentum, class<DamageType> damageType, optional int HitIndex) {
+    local bool bIsHeadShot;
     local int oldHealth;
     local int totalDamage;
 
     oldHealth= Health;
-    super.TakeDamage(Damage, InstigatedBy, Hitlocation, Momentum, damageType, HitIndex);
+	bIsHeadShot = IsHeadShot(Hitlocation, normal(Momentum), 1.0);
+	if ( Level.Game.GameDifficulty >= 5.0 && bIsHeadshot && (class<DamTypeCrossbow>(damageType) != none || class<DamTypeCrossbowHeadShot>(damageType) != none) ) {
+		Damage *= 0.5; // Was 0.5 in Balance Round 1, then 0.6 in Round 2, back to 0.5 in Round 3
+	}
+
+	Super(KFMonster).takeDamage(Damage, instigatedBy, hitLocation, momentum, damageType, HitIndex);
     totalDamage= oldHealth - Health;
     
     LogToPlayer(2,""$totalDamage);
@@ -51,23 +57,26 @@ function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector M
         //Break stun if the scrake is hit with a weak attack
         bShotAnim= false;
         bIsFlippedOver= false;
-        SawZombieController(Controller).GoToState('ZombieHunt');
         SetAnimAction(WalkAnims[0]);
+        SawZombieController(Controller).GoToState('ZombieHunt');
 
         LogToPlayer(2,"Weak attack!");
-        LogToPlayer(2,"Sawing Loop? "$!IsInState('SawingLoop'));
-        LogToPlayer(2,"Running State? "$!IsInState('RunningState'));
-        LogToPlayer(2,"Hp: "$Health);
-        if ( Level.Game.GameDifficulty >= 5.0 && !IsInState('SawingLoop') && !IsInState('RunningState') && float(Health) / HealthMax < 0.75 ) {
-            LogToPlayer(2,"Grrr! I'm maad!");
-    		RangedAttack(InstigatedBy);
-        }
     }
+    LogToPlayer(2,"Sawing Loop? "$!IsInState('SawingLoop'));
+    LogToPlayer(2,"Running State? "$!IsInState('RunningState'));
+    LogToPlayer(2,"Hp: "$Health);
+
+    if ( Level.Game.GameDifficulty >= 5.0 && !IsInState('SawingLoop') && float(Health) / HealthMax < 0.75 ) {
+        LogToPlayer(2,"Grrr! I'm maad!");
+        GotoState('');
+        RangedAttack(InstigatedBy);
+    }
+
 } 
 
 defaultproperties {
     logLevel= 0;
     maxTimesFlipOver= 1
-    bIsFlippedOver= true
+    bIsFlippedOver= false
     MenuName= "Super Scrake"
 }
