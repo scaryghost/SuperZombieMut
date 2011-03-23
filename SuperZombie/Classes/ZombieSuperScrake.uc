@@ -30,10 +30,12 @@ function bool outputToChat(string msg) {
 }
 
 function bool FlipOver() {
+    local bool bCalledFlipOver;
     maxTimesFlipOver--;
     logToPlayer(2,"Stuns Remaining: "$maxTimesFlipOver);
-    bIsFlippedOver= (maxTimesFlipOver >= 0) && super.FlipOver();
-    return bIsFlippedOver;
+    bCalledFlipOver= ((maxTimesFlipOver >= 0) && super.FlipOver());
+    bIsFlippedOver= bIsFlippedOver || bCalledFlipOver;
+    return bCalledFlipOver;
 }
 
 function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector Momentum, class<DamageType> damageType, optional int HitIndex) {
@@ -43,13 +45,23 @@ function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector M
     oldHealth= Health;
     super.TakeDamage(Damage, InstigatedBy, Hitlocation, Momentum, damageType, HitIndex);
     totalDamage= oldHealth - Health;
-
+    
+    LogToPlayer(2,""$totalDamage);
     if( bIsFlippedOver && Health>0 && totalDamage <=(float(Default.Health)/1.5) ) {
         //Break stun if the scrake is hit with a weak attack
         bShotAnim= false;
-        SetAnimAction(WalkAnims[0]);
-        SuperScrakeZombieController(Controller).GoToState('ZombieHunt');
         bIsFlippedOver= false;
+        SawZombieController(Controller).GoToState('ZombieHunt');
+        SetAnimAction(WalkAnims[0]);
+
+        LogToPlayer(2,"Weak attack!");
+        LogToPlayer(2,"Sawing Loop? "$!IsInState('SawingLoop'));
+        LogToPlayer(2,"Running State? "$!IsInState('RunningState'));
+        LogToPlayer(2,"Hp: "$Health);
+        if ( Level.Game.GameDifficulty >= 5.0 && !IsInState('SawingLoop') && !IsInState('RunningState') && float(Health) / HealthMax < 0.75 ) {
+            LogToPlayer(2,"Grrr! I'm maad!");
+    		RangedAttack(InstigatedBy);
+        }
     }
 } 
 
@@ -58,5 +70,4 @@ defaultproperties {
     maxTimesFlipOver= 1
     bIsFlippedOver= true
     MenuName= "Super Scrake"
-    ControllerClass=Class'SuperZombie.SuperScrakeZombieController'
 }
