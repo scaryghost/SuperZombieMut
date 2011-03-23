@@ -1,12 +1,12 @@
 class ZombieSuperFP extends ZombieFleshPound;
 
 var int logLevel;
-var float rageDamage, rageDamageThreshold;
+var float rageDamage, rageDamageLimit;
 var bool bRageAgain;
 
 simulated function PostBeginPlay() {
     super.PostBeginPlay();
-    rageDamageThreshold= 25.0;
+    rageDamageLimit= 25.0;
     rageDamage= 0.0;
     brageAgain= false;
     logToPlayer(1,"Level of agression, 12!");
@@ -51,6 +51,78 @@ simulated event SetAnimAction(name NewAction) {
     super.SetAnimAction(newAction);
     SuperFPZombieController(Controller).bAttackedTarget= 
 	    (NewAction == 'Claw') || (NewAction == 'DoorBash');
+}
+
+state BeginRaging {
+    Ignores StartCharging;
+
+    function bool CanGetOutOfWay() {
+        return false;
+    }
+
+    simulated function bool HitCanInterruptAction() {
+        return false;
+    }
+
+	function Tick( float Delta ) {
+        Acceleration = vect(0,0,0);
+
+        global.Tick(Delta);
+	}
+
+	function bool MeleeDamageTarget(int hitdamage, vector pushdir) {
+        //Had to add this here because local host gets hit twice
+		local bool RetVal,bWasEnemy;
+        local float oldEnemyHealth;
+        local bool bAttackingHuman;
+
+        bAttackingHuman= (KFHumanPawn(Controller.Target) != none);
+
+        if (bAttackingHuman) {
+            oldEnemyHealth= KFHumanPawn(Controller.Target).Health;
+            LogToPlayer(2,"Old hp: "$oldEnemyHealth);
+        }
+
+		bWasEnemy = (Controller.Target==Controller.Enemy);
+		RetVal = Super(KFMonster).MeleeDamageTarget(hitdamage, pushdir*3);
+
+        if (bAttackingHuman) {
+            rageDamage+= oldEnemyHealth - KFHumanPawn(Controller.Target).Health;
+            logToPlayer(2,"Total dmg dealt: "$rageDamage);
+            logToPlayer(2,"New hp:"$KFHumanPawn(Controller.Target).Health);
+        }
+
+       
+		if(RetVal && bWasEnemy) {
+            if(bAttackingHuman && rageDamage < rageDamageLimit) {
+                GotoState('RageCharging');
+            } else {
+                rageDamage= 0.0;
+                LogToPlayer(2,"I am calm for good now");
+                bChargingPlayer = False;
+                bFrustrated = false;
+
+                FleshPoundZombieController(Controller).RageFrustrationTimer = 0;
+
+        		if( Health>0 ) {
+        			GroundSpeed = GetOriginalGroundSpeed();
+        		}
+
+        		if( Level.NetMode!=NM_DedicatedServer )
+        			ClientChargingAnims();
+
+        		NetUpdateTime = Level.TimeSeconds - 1;
+                SetAnimAction(MovementAnims[0]);
+                Controller.GoToState('ZombieHunt');
+                GoToState('');
+            }
+        }
+
+		return RetVal;
+	}
+Begin:
+    Sleep(GetAnimDuration('PoundRage'));
+    GotoState('RageCharging');
 }
 
 state RageCharging {
@@ -107,17 +179,18 @@ Ignores StartCharging;
 
         if (bAttackingHuman) {
             rageDamage+= oldEnemyHealth - KFHumanPawn(Controller.Target).Health;
-            logToPlayer(2,"Damage dealt: "$rageDamage);
+            logToPlayer(2,"Total dmg dealt: "$rageDamage);
             logToPlayer(2,"New hp:"$KFHumanPawn(Controller.Target).Health);
         }
 
        
 		if(RetVal && bWasEnemy) {
-            if(bAttackingHuman && rageDamage < rageDamageThreshold) {
+            if(bAttackingHuman && rageDamage < rageDamageLimit) {
                 //This chunk of code is copied from StartCharging()
                 //Calling the function here would not work as the fp 
                 //would not do the rage animation, but would keep
                 //hitting the player
+                LogToPlayer(2,"Ah am still mad!");
                 SetAnimAction('PoundRage');
                 Acceleration = vect(0,0,0);
                 bShotAnim = true;
