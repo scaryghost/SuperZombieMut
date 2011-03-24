@@ -7,14 +7,14 @@ struct oldNewZombiePair {
 };
 
 var() config int debugLogLevel;
-var array<oldNewZombiePair> replacementArray[5];
+var array<oldNewZombiePair> replacementArray[6];
 
 function replaceSpecialSquad(out array<KFGameType.SpecialSquad> squadArray) {
     local int i,j,k;
     local oldNewZombiePair replacementValue;
     for(j=0; j<squadArray.Length; j++) {
         for(i=0;i<squadArray[j].ZedClass.Length; i++) {
-            for(k=0; k<5; k++) {
+            for(k=0; k<6; k++) {
                 replacementValue= replacementArray[k];
                 if(squadArray[j].ZedClass[i] ~= replacementValue.oldClass) {
                     squadArray[j].ZedClass[i]=  replacementValue.newClass;
@@ -62,6 +62,7 @@ function PostBeginPlay() {
     class'ZombieSuperStalker'.default.logLevel= debugLogLevel;
     class'ZombieSuperSiren'.default.logLevel= debugLogLevel;
     class'ZombieSuperScrake'.default.logLevel= debugLogLevel;
+    class'ZombieSuperHusk'.default.logLevel= debugLogLevel;
 
 	SetTimer(0.1, false);
 }
@@ -94,4 +95,5 @@ defaultproperties {
     replacementArray(2)=(oldClass="KFChar.ZombieStalker",newClass="SuperZombie.ZombieSuperStalker")
     replacementArray(3)=(oldClass="KFChar.ZombieSiren",newClass="SuperZombie.ZombieSuperSiren")
     replacementArray(4)=(oldClass="KFChar.ZombieScrake",newClass="SuperZombie.ZombieSuperScrake")
+    replacementArray(5)=(oldClass="KFChar.ZombieHusk",newClass="SuperZombie.ZombieSuperHusk")
 }
