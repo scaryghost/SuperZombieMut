@@ -1,14 +1,16 @@
 class ZombieSuperFP extends ZombieFleshPound;
 
 var int logLevel;
-var float rageDamage, rageDamageLimit;
-var bool bRageAgain;
+var float rageDamage, rageDamageLimit, rageShield, rageShieldLimit;
 
 simulated function PostBeginPlay() {
     super.PostBeginPlay();
-    rageDamageLimit= 25.0;
+    rageDamageLimit= Max(35.0*1.75*DifficultyDamageModifer(),1.0);
+    rageShieldLimit= Max(45.0*DifficultyDamageModifer(),1.0);
+    LogToPlayer(2,"dmg limit: "$rageDamageLimit);
+    LogToPlayer(2,"shield limit: "$rageShieldLimit);
     rageDamage= 0.0;
-    brageAgain= false;
+    rageShield= 0.0;
     logToPlayer(1,"Level of agression, 12!");
 }
 
@@ -71,16 +73,17 @@ state BeginRaging {
 	}
 
 	function bool MeleeDamageTarget(int hitdamage, vector pushdir) {
-        //Had to add this here because local host gets hit twice
-		local bool RetVal,bWasEnemy;
-        local float oldEnemyHealth;
+   		local bool RetVal,bWasEnemy;
+        local float oldEnemyHealth, oldEnemyShield;
         local bool bAttackingHuman;
 
         bAttackingHuman= (KFHumanPawn(Controller.Target) != none);
 
         if (bAttackingHuman) {
             oldEnemyHealth= KFHumanPawn(Controller.Target).Health;
+            oldEnemyShield= KFHumanPawn(Controller.Target).ShieldStrength;
             LogToPlayer(2,"Old hp: "$oldEnemyHealth);
+            LogToPlayer(2,"Old shield: "$oldEnemyShield);
         }
 
 		bWasEnemy = (Controller.Target==Controller.Enemy);
@@ -88,16 +91,19 @@ state BeginRaging {
 
         if (bAttackingHuman) {
             rageDamage+= oldEnemyHealth - KFHumanPawn(Controller.Target).Health;
+            rageShield+= oldEnemyShield - KFHumanPawn(Controller.Target).ShieldStrength;
             logToPlayer(2,"Total dmg dealt: "$rageDamage);
             logToPlayer(2,"New hp:"$KFHumanPawn(Controller.Target).Health);
+            logToPlayer(2,"New Shield:"$KFHumanPawn(Controller.Target).ShieldStrength);
         }
-
        
 		if(RetVal && bWasEnemy) {
-            if(bAttackingHuman && rageDamage < rageDamageLimit) {
+            if(bAttackingHuman && (oldEnemyShield <= 0.0 && rageDamage < rageDamageLimit || 
+                (rageShield < rageShieldLimit && rageDamage < rageDamageLimit * 0.175))) {
                 GotoState('RageCharging');
             } else {
                 rageDamage= 0.0;
+                rageShield= 0.0;
                 LogToPlayer(2,"I am calm for good now");
                 bChargingPlayer = False;
                 bFrustrated = false;
@@ -164,14 +170,16 @@ Ignores StartCharging;
 	// If fleshie hits his target on a charge, then he should settle down for abit.
 	function bool MeleeDamageTarget(int hitdamage, vector pushdir) {
 		local bool RetVal,bWasEnemy;
-        local float oldEnemyHealth;
+        local float oldEnemyHealth, oldEnemyShield;
         local bool bAttackingHuman;
 
         bAttackingHuman= (KFHumanPawn(Controller.Target) != none);
 
         if (bAttackingHuman) {
             oldEnemyHealth= KFHumanPawn(Controller.Target).Health;
+            oldEnemyShield= KFHumanPawn(Controller.Target).ShieldStrength;
             LogToPlayer(2,"Old hp: "$oldEnemyHealth);
+            LogToPlayer(2,"Old shield: "$oldEnemyShield);
         }
 
 		bWasEnemy = (Controller.Target==Controller.Enemy);
@@ -179,13 +187,16 @@ Ignores StartCharging;
 
         if (bAttackingHuman) {
             rageDamage+= oldEnemyHealth - KFHumanPawn(Controller.Target).Health;
+            rageShield+= oldEnemyShield - KFHumanPawn(Controller.Target).ShieldStrength;
             logToPlayer(2,"Total dmg dealt: "$rageDamage);
             logToPlayer(2,"New hp:"$KFHumanPawn(Controller.Target).Health);
+            logToPlayer(2,"New Shield:"$KFHumanPawn(Controller.Target).ShieldStrength);
         }
 
        
 		if(RetVal && bWasEnemy) {
-            if(bAttackingHuman && rageDamage < rageDamageLimit) {
+            if(bAttackingHuman && (oldEnemyShield <= 0.0 && rageDamage < rageDamageLimit || 
+                (rageShield < rageShieldLimit && rageDamage < rageDamageLimit * 0.175))) {
                 //This chunk of code is copied from StartCharging()
                 //Calling the function here would not work as the fp 
                 //would not do the rage animation, but would keep
@@ -202,6 +213,7 @@ Ignores StartCharging;
                 GotoState('BeginRaging');
             } else {
                 rageDamage= 0.0;
+                rageShield= 0.0;
                 GoToState('');
             }
         }
@@ -215,3 +227,16 @@ defaultproperties {
     MenuName="Super FleshPound"
     ControllerClass=Class'SuperZombie.SuperFPZombieController'
 }
+
+//
+//Medic:
+//5/15
+//6/20
+
+//Berserker:
+//11/35
+//15/55
+
+//Everyone else:
+//20/62
+//26/80 - 21/65 - 14/45 - 4/12.75
