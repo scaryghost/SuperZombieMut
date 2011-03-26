@@ -7,14 +7,14 @@ struct oldNewZombiePair {
 };
 
 var() config int debugLogLevel;
-var array<oldNewZombiePair> replacementArray[6];
+var array<oldNewZombiePair> replacementArray[7];
 
 function replaceSpecialSquad(out array<KFGameType.SpecialSquad> squadArray) {
     local int i,j,k;
     local oldNewZombiePair replacementValue;
     for(j=0; j<squadArray.Length; j++) {
         for(i=0;i<squadArray[j].ZedClass.Length; i++) {
-            for(k=0; k<6; k++) {
+            for(k=0; k<7; k++) {
                 replacementValue= replacementArray[k];
                 if(squadArray[j].ZedClass[i] ~= replacementValue.oldClass) {
                     squadArray[j].ZedClass[i]=  replacementValue.newClass;
@@ -40,7 +40,7 @@ function PostBeginPlay() {
 
     //Replace all instances of KFChar.ZombieFleshPound with the super fp class 
     for( i=0; i<KF.StandardMonsterClasses.Length; i++) {
-        for(k=0; k<5; k++) {
+        for(k=0; k<7; k++) {
             replacementValue= replacementArray[k];
             //Use ~= for case insensitive compare
             if (KF.StandardMonsterClasses[i].MClassName ~= replacementValue.oldClass) {
@@ -96,4 +96,5 @@ defaultproperties {
     replacementArray(3)=(oldClass="KFChar.ZombieSiren",newClass="SuperZombie.ZombieSuperSiren")
     replacementArray(4)=(oldClass="KFChar.ZombieScrake",newClass="SuperZombie.ZombieSuperScrake")
     replacementArray(5)=(oldClass="KFChar.ZombieHusk",newClass="SuperZombie.ZombieSuperHusk")
+    replacementArray(6)=(oldClass="KFChar.ZombieCrawler",newClass="KFChar.ZombieShade")
 }
