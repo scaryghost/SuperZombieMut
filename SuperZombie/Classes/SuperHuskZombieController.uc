@@ -1,5 +1,13 @@
 class SuperHuskZombieController extends HuskZombieController;
 
+
+var float aimAtFeetZ;
+
+function bool DefendCloseRange(float Dist)
+{
+	return ( (Enemy.Weapon != None) && (Dist < 1000) );
+}
+
 /*
 AdjustAim()
 Returns a rotation which is the direction the bot should aim - after introducing the appropriate aiming error
@@ -12,14 +20,8 @@ function rotator AdjustAim(FireProperties FiredAmmunition, vector projStart, int
 	local actor HitActor;
 	local vector FireSpot, FireDir, TargetVel, HitLocation, HitNormal;
 	local int realYaw;
-	local bool bDefendMelee, bClean, bLeadTargetNow;
+	local bool bDefendCloseRange, bClean, bLeadTargetNow;
 	local bool bWantsToAimAtFeet;
-
-    //This variable is set to the Z value for the husk to shoot at the target's feet
-    //It is set this way because if the target is too close to the husk and jumps,
-    //the husk doesn't not aim down.
-    local float aimAtFeetZ;
-    aimAtFeetZ= -72.15;
 
 	if ( FiredAmmunition.ProjectileClass != None )
 		projspeed = FiredAmmunition.ProjectileClass.default.speed;
@@ -50,28 +52,30 @@ function rotator AdjustAim(FireProperties FiredAmmunition, vector projStart, int
 	}
 
 	bLeadTargetNow = FiredAmmunition.bLeadTarget && bLeadTarget;
-	bDefendMelee = ( (Target == Enemy) && DefendMelee(TargetDist) );
-	aimerror = AdjustAimError(aimerror,TargetDist,bDefendMelee,FiredAmmunition.bInstantHit, bLeadTargetNow);
+	bDefendCloseRange = ( (Target == Enemy) && DefendCloseRange(TargetDist) );
+	aimerror = AdjustAimError(aimerror,TargetDist,bDefendCloseRange,FiredAmmunition.bInstantHit, bLeadTargetNow);
 
 	// lead target with non instant hit projectiles
 	if ( bLeadTargetNow )
 	{
 		TargetVel = Target.Velocity;
 		// hack guess at projecting falling velocity of target
-		if ( Target.Physics == PHYS_Falling )
+		if ( Target.Physics == PHYS_Falling)
 		{
-			if ( Target.PhysicsVolume.Gravity.Z <= Target.PhysicsVolume.Default.Gravity.Z )
+			if ( Target.PhysicsVolume.Gravity.Z <= Target.PhysicsVolume.Default.Gravity.Z ) {
+                ZombieSuperHusk(pawn).logToPlayer(2,"Hack1");
 				TargetVel.Z = FMin(TargetVel.Z + FMax(-400, Target.PhysicsVolume.Gravity.Z * FMin(1,TargetDist/projSpeed)),0);
-			else
+			} else {
+                ZombieSuperHusk(pawn).logToPlayer(2,"Hack2");
 				TargetVel.Z = FMin(0, TargetVel.Z);
-            ZombieSuperHusk(pawn).logToPlayer(2,"Target is falling!");
+            }
 		}
 		// more or less lead target (with some random variation)
 		FireSpot += FMin(1, 0.7 + 0.6 * FRand()) * TargetVel * TargetDist/projSpeed;
-        if (bDefendMelee) {
+        FireSpot.Z = FMin(Target.Location.Z, FireSpot.Z);
+        if (aimAtFeetZ != 0.0 && Target.Physics == PHYS_Falling && bDefendCloseRange) {
+            ZombieSuperHusk(pawn).logToPlayer(3,"Distance: "$TargetDist);
             FireSpot.Z= aimAtFeetZ;
-        } else {
-    		FireSpot.Z = FMin(Target.Location.Z, FireSpot.Z);
         }
 
 		if ( (Target.Physics != PHYS_Falling) && (FRand() < 0.55) && (VSize(FireSpot - ProjStart) > 1000) )
@@ -125,9 +129,8 @@ function rotator AdjustAim(FireProperties FiredAmmunition, vector projStart, int
     bWantsToAimAtFeet= false;
 	if ( FiredAmmunition.bTrySplash && (Pawn(Target) != None) && (((Target.Physics == PHYS_Falling)
         && (Pawn.Location.Z + 80 >= Target.Location.Z)) || ((Pawn.Location.Z + 19 >= Target.Location.Z)
-        && (bDefendMelee || bWantsToAimAtFeet))) )
+        && (bDefendCloseRange || bWantsToAimAtFeet))) )
 	{
-        ZombieSuperHusk(pawn).logToPlayer(2,"Shooting at yo feet");
         ZombieSuperHusk(pawn).logToPlayer(3,"(" $ FireSpot.X $ "," $ FireSpot.Y $ "," $ FireSpot.Z $ ")");
         HitActor = Trace(HitLocation, HitNormal, FireSpot - vect(0,0,1) * (Target.CollisionHeight + 10), FireSpot, false);
 
@@ -142,6 +145,9 @@ function rotator AdjustAim(FireProperties FiredAmmunition, vector projStart, int
 		}
 		else
 			bClean = ( (Target.Physics == PHYS_Falling) && FastTrace(FireSpot, ProjStart) );
+        if (bClean && TargetDist > 625.0) {
+            aimAtFeetZ= FireSpot.Z;
+        }
         ZombieSuperHusk(pawn).logToPlayer(2,"Clean? "$bClean);
 	}
 
