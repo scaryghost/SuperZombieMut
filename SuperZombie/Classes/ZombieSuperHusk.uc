@@ -76,4 +76,5 @@ function RangedAttack(Actor A)
 defaultproperties {
     logLevel= 0;
     maxConsecutiveShots= 2;
+    ControllerClass=Class'SuperZombie.SuperHuskZombieController'
 }
