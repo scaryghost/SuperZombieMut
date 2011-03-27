@@ -3,6 +3,11 @@ class SuperHuskZombieController extends HuskZombieController;
 
 var float aimAtFeetZ;
 
+function PostBeginPlay() {
+    super.PostBeginPlay();
+    aimAtFeetZ= 0.0;
+}
+
 function bool DefendCloseRange(float Dist)
 {
 	return ( (Enemy.Weapon != None) && (Dist < 1000) );
