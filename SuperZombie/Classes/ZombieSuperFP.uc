@@ -7,8 +7,8 @@ simulated function PostBeginPlay() {
     super.PostBeginPlay();
     rageDamageLimit= Max(35.0*1.75*DifficultyDamageModifer(),1.0);
     rageShieldLimit= Max(45.0*DifficultyDamageModifer(),1.0);
-    LogToPlayer(2,"dmg limit: "$rageDamageLimit);
-    LogToPlayer(2,"shield limit: "$rageShieldLimit);
+    LogToPlayer(3,"dmg limit: "$rageDamageLimit);
+    LogToPlayer(3,"shield limit: "$rageShieldLimit);
     rageDamage= 0.0;
     rageShield= 0.0;
     logToPlayer(1,"Level of agression, 12!");
@@ -45,7 +45,6 @@ function bool MeleeDamageTarget(int hitdamage, vector pushdir) {
     SuperFPZombieController(Controller).bMissTarget= 
         SuperFPZombieController(Controller).bMissTarget || !didIHit;
     logToPlayer(2,"Did I hit?  "$didIHit);
-    logToPlayer(2,"Am I beginning to get mad? "$IsInState('BeginRaging'));
     return didIHit;
 }
 
@@ -82,8 +81,6 @@ state BeginRaging {
         if (bAttackingHuman) {
             oldEnemyHealth= KFHumanPawn(Controller.Target).Health;
             oldEnemyShield= KFHumanPawn(Controller.Target).ShieldStrength;
-            LogToPlayer(2,"Old hp: "$oldEnemyHealth);
-            LogToPlayer(2,"Old shield: "$oldEnemyShield);
         }
 
 		bWasEnemy = (Controller.Target==Controller.Enemy);
@@ -92,9 +89,8 @@ state BeginRaging {
         if (bAttackingHuman) {
             rageDamage+= oldEnemyHealth - KFHumanPawn(Controller.Target).Health;
             rageShield+= oldEnemyShield - KFHumanPawn(Controller.Target).ShieldStrength;
-            logToPlayer(2,"Total dmg dealt: "$rageDamage);
-            logToPlayer(2,"New hp:"$KFHumanPawn(Controller.Target).Health);
-            logToPlayer(2,"New Shield:"$KFHumanPawn(Controller.Target).ShieldStrength);
+            logToPlayer(3,"Total dmg dealt: "$rageDamage);
+            logToPlayer(3,"Total shield lost: "$rageShield);
         }
        
 		if(RetVal && bWasEnemy) {
@@ -178,8 +174,6 @@ Ignores StartCharging;
         if (bAttackingHuman) {
             oldEnemyHealth= KFHumanPawn(Controller.Target).Health;
             oldEnemyShield= KFHumanPawn(Controller.Target).ShieldStrength;
-            LogToPlayer(2,"Old hp: "$oldEnemyHealth);
-            LogToPlayer(2,"Old shield: "$oldEnemyShield);
         }
 
 		bWasEnemy = (Controller.Target==Controller.Enemy);
@@ -188,9 +182,8 @@ Ignores StartCharging;
         if (bAttackingHuman) {
             rageDamage+= oldEnemyHealth - KFHumanPawn(Controller.Target).Health;
             rageShield+= oldEnemyShield - KFHumanPawn(Controller.Target).ShieldStrength;
-            logToPlayer(2,"Total dmg dealt: "$rageDamage);
-            logToPlayer(2,"New hp:"$KFHumanPawn(Controller.Target).Health);
-            logToPlayer(2,"New Shield:"$KFHumanPawn(Controller.Target).ShieldStrength);
+            logToPlayer(3,"Total dmg dealt: "$rageDamage);
+            logToPlayer(3,"Total shield lost: "$rageShield);
         }
 
        
