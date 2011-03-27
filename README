@@ -16,6 +16,7 @@ are:
     ZombieSuperStalker
     ZombieSuperSiren
     ZombieSuperScrake
+    ZombieSuperHusk
 
 Debugging output is available for those who wish to check out the specimens
 in more detail.  The "debugLogLevel" variable controls the ammount of 
@@ -37,27 +38,11 @@ Nikari, Fractal, [DoP] Cap, Tech Burn, Gore Torn, Nurse. Jamie Jameson,
 Reaping - The Runk, Xandirs, DM*, BulletMorgue, Sakumaru, Fang.HD, AnTrix
 
 Change Log:
+To view a detailed change log, please view the releaes notes for the specific 
+version:
+https://github.com/scaryghost/SuperZombieMut/wiki/Super-Zombie-1.4
 
-Version 1.3
-+ When the Siren is attacking a door, her scream will hit through all 
-objects such as walls and the door.  The damage dealt is only 50% of 
-the normal damage.
-+ Scrake can only be stunned (actual stun, not flinch) once.  In addition, 
-he will immediately break out of stun if he is hit with weak attack.
+A complete list of specimen changes maybe viewed on the mutator's wiki:
+https://github.com/scaryghost/SuperZombieMut/wiki
 
-Version 1.2
-+ Gorefast will always do the charging melee attack.  The minimum range 
-that triggers his charge has been doubled to 1400 units.
-+ Stalker has the charging melee ability of the gorefast.  Unlike the 
-gorefast, the stalker will always stay moving.  A cooldown has been added 
-so she will not use her quick strikes in rapid succession.
-
-Version 1.1
-+ If surrounded by 3 or more people when he needs to heal, he will shoot a 
-point blank rocket instead of kneeling down before running away
-+ The Patriarch will now automatically destroy any welded door in his path 
-if he is escaping to heal
-
-Version 1.0
-+ Modified the fleshpound controller so that only attacking will reset the 
-rage timer.  Breaking LOS or avoiding a frag will instead pause the timer.
+ 
