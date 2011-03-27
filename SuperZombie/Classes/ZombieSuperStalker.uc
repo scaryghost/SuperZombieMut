@@ -6,7 +6,7 @@ var float defaultCoolDown;
 var bool bMeleeCoolDown;
 
 simulated function PostBeginPlay() {
-    logToPlayer(1,"Spawning Super Stalker!");
+    logToPlayer(1,"Come, give us two kisses!");
     defaultCoolDown= GetAnimDuration('StalkerAttack1', 1.0);
     meleeCoolDownTimer= defaultCoolDown;
     bMeleeCoolDown= false;
@@ -107,4 +107,5 @@ simulated function int AttackAndMoveDoAnimAction( name AnimName ) {
 
 defaultproperties {
     logLevel= 0;
+    MenuName= "Super Stalker"
 }

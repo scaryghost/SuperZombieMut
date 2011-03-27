@@ -4,7 +4,7 @@ var int logLevel;
 var float minRageDist;
 
 simulated function PostBeginPlay() {
-    logToPlayer(1,"Spawning Super Gorefast!");
+    logToPlayer(1,"Insert joke on a gorefast line here!");
     minRageDist= 1400.0;
     super.PostBeginPlay();
 }
@@ -88,4 +88,5 @@ CheckCharge:
 
 defaultproperties {
     logLevel= 0;
+    MenuName= "Super Gorefast"
 }

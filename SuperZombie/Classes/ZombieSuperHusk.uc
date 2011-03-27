@@ -77,4 +77,5 @@ defaultproperties {
     logLevel= 0;
     maxConsecutiveShots= 2;
     ControllerClass=Class'SuperZombie.SuperHuskZombieController'
+    MenuName= "Super Husk"
 }

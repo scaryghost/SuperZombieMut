@@ -4,7 +4,7 @@ class ZombieSuperSiren extends ZombieSiren;
 var int logLevel;
 
 simulated function PostBeginPlay() {
-    logToPlayer(1,"Super Siren spawning!");
+    logToPlayer(1,"They hate it when I sing!");
     super.PostBeginPlay();
 }
 

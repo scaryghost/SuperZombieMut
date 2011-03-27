@@ -3,7 +3,7 @@ class ZombieSuperBoss extends ZombieBoss;
 var int logLevel;
 
 simulated function PostBeginPlay() {
-    logToPlayer(1,"Super Patriarch spawning!");
+    logToPlayer(1,"What have you done to my experiments?! Rawr!");
     super.PostBeginPlay();
 }
 
