@@ -13,7 +13,7 @@ simulated function PostBeginPlay() {
 
 simulated function Tick(float DeltaTime) {
     super.Tick(DeltaTime);
-    if(bAmIBarfing) {
+    if(!bDecapitated && bAmIBarfing) {
         bileCoolDownTimer+= DeltaTime;
         if(bileCoolDownTimer >= bileCoolDownMax) {
             SpawnTwoShots();
@@ -89,6 +89,7 @@ simulated function AnimEnd(int Channel)
 	GetAnimParams( ExpectingChannel, Sequence, Frame, Rate );
 
 	logToPlayer(2,Level.TimeSeconds$" "$self$" "$GetStateName()$" AnimEnd for Exp Chan "$ExpectingChannel$" = "$Sequence$" Channel: "$Channel);
+    logToPlayer(2,""$bAmIBarfing);
 
     super.AnimEnd(Channel);
     
