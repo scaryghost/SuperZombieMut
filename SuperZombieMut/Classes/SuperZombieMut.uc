@@ -7,6 +7,9 @@ struct oldNewZombiePair {
 };
 
 var() config int debugLogLevel;
+var() config float bloatPukeRate;
+var() config float bloatPukeRange;
+var() config float bloatBileMaxRange;
 var array<oldNewZombiePair> replacementArray[7];
 
 function replaceSpecialSquad(out array<KFGameType.SpecialSquad> squadArray) {
@@ -63,6 +66,10 @@ function PostBeginPlay() {
     class'ZombieSuperSiren'.default.logLevel= debugLogLevel;
     class'ZombieSuperScrake'.default.logLevel= debugLogLevel;
     class'ZombieSuperHusk'.default.logLevel= debugLogLevel;
+    class'ZombieSuperBloat'.default.logLevel= debugLogLevel;
+    class'ZombieSuperBloat'.default.pukeRate= bloatPukeRate;
+    class'ZombieSuperBloat'.default.pukeRange= bloatPukeRange;
+    class'ZombieSuperBloat'.default.bileMaxRange= bloatBileMaxRange;
 
 	SetTimer(0.1, false);
 }
@@ -73,13 +80,22 @@ function Timer() {
 
 static function FillPlayInfo(PlayInfo PlayInfo) {
     Super.FillPlayInfo(PlayInfo);
-    PlayInfo.AddSetting("LogLevel Modifier", "debugLogLevel","Debug log level", 0, 1, "Text", "0.1;0:3",,,true);
+    PlayInfo.AddSetting("LogLevel Modifier", "debugLogLevel","Debug log level", 0, 1, "Text", "0.1;0:4",,,true);
+    PlayInfo.AddSetting("Puke Rate Modifier", "bloatPukeRate","Puke animation rate", 0, 1, "Text",,,,true);
+    PlayInfo.AddSetting("Puke Range Modifier", "bloatPukeRange","Puke range distance", 0, 1, "Text",,,,true);
+    PlayInfo.AddSetting("Bile Max Range Modifier", "bloatBileMaxRange","Bile max distance", 0, 1, "Text",,,,true);
 }
 
 static event string GetDescriptionText(string property) {
     switch(property) {
         case "debugLogLevel":
             return "Adjust the debug log level for the Super Zombie Mutator";
+        case "bloatPukeRate":
+            return "Adjust how fast the puking animation plays for the bloat";
+        case "bloatPukeRange":
+            return "Adjust when the bloat starts puking";
+        case "bloatBileMaxRange":
+            return "Adjust how far the puke travels";
         default:
             return Super.GetDescriptionText(property);
     }
@@ -87,6 +103,9 @@ static event string GetDescriptionText(string property) {
 
 defaultproperties {
     debugLogLevel=0;
+    bloatPukeRate= 0.0;
+    bloatPukeRange= 250.0;
+    bloatBileMaxRange- 500.0;
 	GroupName="KFSuperZombieMut"
 	FriendlyName="Super Zombie"
 	Description="Modifies zombie behavior"
