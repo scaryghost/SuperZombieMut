@@ -35,11 +35,11 @@ simulated function SpawnTwoShots() {
 		// Deal Actual Damage.
 		if( Controller!=None && KFDoorMover(Controller.Target)!=None ) {
 			Controller.Target.TakeDamage(ScreamDamage*0.6,Self,Location,vect(0,0,0),ScreamDamageType);
-            HurtRadiusThroughDoor(ScreamDamage*0.5 ,ScreamRadius, ScreamDamageType, ScreamForce, Location);
+            HurtRadiusThroughDoor(ScreamDamage*0.6 ,ScreamRadius, ScreamDamageType, ScreamForce, Location);
             logToPlayer(1,"Scream at door!");
         }
 		else {
-            HurtRadius(ScreamDamage ,ScreamRadius, ScreamDamageType, ScreamForce, Location);
+            HurtRadiusThroughDoor(ScreamDamage ,ScreamRadius, ScreamDamageType, ScreamForce, Location);
         }
 	}
 }
@@ -87,4 +87,6 @@ simulated function HurtRadiusThroughDoor( float DamageAmount, float DamageRadius
 defaultproperties {
     MenuName="Super Siren"
     logLevel= 0;
+    ScreamRadius=700
+    ScreamForce=-200000
 }
