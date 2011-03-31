@@ -54,79 +54,6 @@ simulated event SetAnimAction(name NewAction) {
 	    (NewAction == 'Claw') || (NewAction == 'DoorBash');
 }
 
-state BeginRaging {
-    Ignores StartCharging;
-
-    function bool CanGetOutOfWay() {
-        return false;
-    }
-
-    simulated function bool HitCanInterruptAction() {
-        return false;
-    }
-
-	function Tick( float Delta ) {
-        Acceleration = vect(0,0,0);
-
-        global.Tick(Delta);
-	}
-
-	function bool MeleeDamageTarget(int hitdamage, vector pushdir) {
-   		local bool RetVal,bWasEnemy;
-        local float oldEnemyHealth, oldEnemyShield;
-        local bool bAttackingHuman;
-
-        bAttackingHuman= (KFHumanPawn(Controller.Target) != none);
-
-        if (bAttackingHuman) {
-            oldEnemyHealth= KFHumanPawn(Controller.Target).Health;
-            oldEnemyShield= KFHumanPawn(Controller.Target).ShieldStrength;
-        }
-
-		bWasEnemy = (Controller.Target==Controller.Enemy);
-		RetVal = Super(KFMonster).MeleeDamageTarget(hitdamage, pushdir*3);
-
-        if (bAttackingHuman) {
-            rageDamage+= oldEnemyHealth - KFHumanPawn(Controller.Target).Health;
-            rageShield+= oldEnemyShield - KFHumanPawn(Controller.Target).ShieldStrength;
-            logToPlayer(3,"Total dmg dealt: "$rageDamage);
-            logToPlayer(3,"Total shield lost: "$rageShield);
-        }
-       
-		if(RetVal && bWasEnemy) {
-            if(bAttackingHuman && (oldEnemyShield <= 0.0 && rageDamage < rageDamageLimit || 
-                (rageShield < rageShieldLimit && rageDamage < rageDamageLimit * 0.175))) {
-                GotoState('RageCharging');
-            } else {
-                rageDamage= 0.0;
-                rageShield= 0.0;
-                LogToPlayer(2,"I am calm for good now");
-                bChargingPlayer = False;
-                bFrustrated = false;
-
-                FleshPoundZombieController(Controller).RageFrustrationTimer = 0;
-
-        		if( Health>0 ) {
-        			GroundSpeed = GetOriginalGroundSpeed();
-        		}
-
-        		if( Level.NetMode!=NM_DedicatedServer )
-        			ClientChargingAnims();
-
-        		NetUpdateTime = Level.TimeSeconds - 1;
-                SetAnimAction(MovementAnims[0]);
-                Controller.GoToState('ZombieHunt');
-                GoToState('');
-            }
-        }
-
-		return RetVal;
-	}
-Begin:
-    Sleep(GetAnimDuration('PoundRage'));
-    GotoState('RageCharging');
-}
-
 state RageCharging {
 //Not sure why we are Ignoring StartCharging()
 //but best leave the code as is
@@ -190,6 +117,55 @@ Ignores StartCharging;
 		if(RetVal && bWasEnemy) {
             if(bAttackingHuman && (oldEnemyShield <= 0.0 && rageDamage < rageDamageLimit || 
                 (rageShield < rageShieldLimit && rageDamage < rageDamageLimit * 0.175))) {
+                GotoState('RageAgain');
+            } else {
+                rageDamage= 0.0;
+                rageShield= 0.0;
+                GoToState('');
+            }
+        }
+
+		return RetVal;
+	}
+}
+
+
+//Had to add this temporary state because on local hosts, enraged fp attacks call
+//MeleeDamageTarget twice.
+state RageAgain {
+	function BeginState() {
+        LogToPlayer(2,"Entering Temp state");
+	}
+
+	function EndState()	{
+        LogToPlayer(2,"Leaving temp state");
+	}
+
+    function bool MeleeDamageTarget(int hitdamage, vector pushdir) {
+   		local bool RetVal,bWasEnemy;
+        local float oldEnemyHealth, oldEnemyShield;
+        local bool bAttackingHuman;
+
+        bAttackingHuman= (KFHumanPawn(Controller.Target) != none);
+
+        if (bAttackingHuman) {
+            oldEnemyHealth= KFHumanPawn(Controller.Target).Health;
+            oldEnemyShield= KFHumanPawn(Controller.Target).ShieldStrength;
+        }
+
+		bWasEnemy = (Controller.Target==Controller.Enemy);
+		RetVal = Super(KFMonster).MeleeDamageTarget(hitdamage, pushdir*3);
+
+        if (bAttackingHuman) {
+            rageDamage+= oldEnemyHealth - KFHumanPawn(Controller.Target).Health;
+            rageShield+= oldEnemyShield - KFHumanPawn(Controller.Target).ShieldStrength;
+            logToPlayer(3,"Total dmg dealt: "$rageDamage);
+            logToPlayer(3,"Total shield lost: "$rageShield);
+        }
+       
+		if(RetVal && bWasEnemy) {
+            if(bAttackingHuman && (oldEnemyShield <= 0.0 && rageDamage < rageDamageLimit || 
+                (rageShield < rageShieldLimit && rageDamage < rageDamageLimit * 0.175))) {
                 //This chunk of code is copied from StartCharging()
                 //Calling the function here would not work as the fp 
                 //would not do the rage animation, but would keep
@@ -204,15 +180,14 @@ Ignores StartCharging;
                 KFMonsterController(Controller).bUseFreezeHack = True;
                 FleshpoundZombieController(Controller).SetPoundRageTimout(GetAnimDuration('PoundRage'));
                 GotoState('BeginRaging');
+
             } else {
                 rageDamage= 0.0;
                 rageShield= 0.0;
                 GoToState('');
             }
         }
-
-		return RetVal;
-	}
+    }
 }
 
 defaultproperties {
