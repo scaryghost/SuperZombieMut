@@ -187,6 +187,8 @@ state RageAgain {
                 GoToState('');
             }
         }
+
+        return RetVal;
     }
 }
 
