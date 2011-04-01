@@ -166,21 +166,7 @@ state RageAgain {
 		if(RetVal && bWasEnemy) {
             if(bAttackingHuman && (oldEnemyShield <= 0.0 && rageDamage < rageDamageLimit || 
                 (rageShield < rageShieldLimit && rageDamage < rageDamageLimit * 0.175))) {
-                //This chunk of code is copied from StartCharging()
-                //Calling the function here would not work as the fp 
-                //would not do the rage animation, but would keep
-                //hitting the player
-                LogToPlayer(2,"Ah am still mad!");
-                SetAnimAction('PoundRage');
-                Acceleration = vect(0,0,0);
-                bShotAnim = true;
-                Velocity.X = 0;
-                Velocity.Y = 0;
-                Controller.GoToState('WaitForAnim');
-                KFMonsterController(Controller).bUseFreezeHack = True;
-                FleshpoundZombieController(Controller).SetPoundRageTimout(GetAnimDuration('PoundRage'));
-                GotoState('BeginRaging');
-
+                StartCharging();
             } else {
                 rageDamage= 0.0;
                 rageShield= 0.0;
@@ -189,6 +175,11 @@ state RageAgain {
         }
 
         return RetVal;
+    }
+
+Begin:
+    if( Level.NetMode ==NM_DedicatedServer ) {
+        StartCharging();
     }
 }
 
