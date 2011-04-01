@@ -30,9 +30,9 @@ function bool isItMyLogLevel(int level) {
 }
 
 function RangedAttack(Actor A) {
-	Super(KFMonster).RangedAttack(A);
-	if( !bShotAnim && !bDecapitated && VSize(A.Location-Location)<=minRageDist )
-		GoToState('RunningState');
+    Super(KFMonster).RangedAttack(A);
+    if( !bShotAnim && !bDecapitated && VSize(A.Location-Location)<=minRageDist )
+        GoToState('RunningState');
 }
 
 state RunningState {
@@ -41,30 +41,30 @@ state RunningState {
         return super.CanSpeedAdjust();
     }
 
-	function BeginState() {
+    function BeginState() {
         super.BeginState();
-	}
+    }
 
-	function EndState()	{
+    function EndState() {
         super.EndState();
-	}
+    }
 
-	function RemoveHead() {
+    function RemoveHead() {
         super.RemoveHead();
-	}
+    }
 
     function RangedAttack(Actor A) {
 
-    	if ( bShotAnim || Physics == PHYS_Swimming)
-    		return;
-    	else if ( CanAttack(A) ) {
-    		bShotAnim = true;
+        if ( bShotAnim || Physics == PHYS_Swimming)
+            return;
+        else if ( CanAttack(A) ) {
+            bShotAnim = true;
 
-    		// Randomly do a moving attack so the player can't kite the zed
-        		SetAnimAction('ClawAndMove');
-        		RunAttackTimeout = GetAnimDuration('GoreAttack1', 1.0);
-    		return;
-    	}
+            // Randomly do a moving attack so the player can't kite the zed
+                SetAnimAction('ClawAndMove');
+                RunAttackTimeout = GetAnimDuration('GoreAttack1', 1.0);
+            return;
+        }
     }
 
     simulated function Tick(float DeltaTime) {

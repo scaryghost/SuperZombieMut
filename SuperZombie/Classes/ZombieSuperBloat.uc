@@ -43,35 +43,35 @@ function bool isItMyLogLevel(int level) {
 }
 
 function RangedAttack(Actor A) {
-	local int LastFireTime;
+    local int LastFireTime;
 
-	if ( bShotAnim )
-		return;
+    if ( bShotAnim )
+        return;
 
-	if ( Physics == PHYS_Swimming ) {
-		SetAnimAction('Claw');
-		bShotAnim = true;
-		LastFireTime = Level.TimeSeconds;
-	}
-	else if ( VSize(A.Location - Location) < MeleeRange + CollisionRadius + A.CollisionRadius ) {
-		bShotAnim = true;
-		LastFireTime = Level.TimeSeconds;
-		SetAnimAction('Claw');
-		//PlaySound(sound'Claw2s', SLOT_Interact); KFTODO: Replace this
-		Controller.bPreparingMove = true;
-		Acceleration = vect(0,0,0);
-	}
-	else if ( (KFDoorMover(A) != none || VSize(A.Location-Location) <= 250) && !bDecapitated ) {
+    if ( Physics == PHYS_Swimming ) {
+        SetAnimAction('Claw');
+        bShotAnim = true;
+        LastFireTime = Level.TimeSeconds;
+    }
+    else if ( VSize(A.Location - Location) < MeleeRange + CollisionRadius + A.CollisionRadius ) {
+        bShotAnim = true;
+        LastFireTime = Level.TimeSeconds;
+        SetAnimAction('Claw');
+        //PlaySound(sound'Claw2s', SLOT_Interact); KFTODO: Replace this
+        Controller.bPreparingMove = true;
+        Acceleration = vect(0,0,0);
+    }
+    else if ( (KFDoorMover(A) != none || VSize(A.Location-Location) <= 250) && !bDecapitated ) {
         bShotAnim = true;
         SetAnimAction('ZombieBarfMoving');
         RunAttackTimeout = GetAnimDuration('ZombieBarf', 1.0);
         bMovingPukeAttack=true;
 
-		// Randomly send out a message about Bloat Vomit burning(3% chance)
-		if ( FRand() < 0.03 && KFHumanPawn(A) != none && PlayerController(KFHumanPawn(A).Controller) != none ) {
-			PlayerController(KFHumanPawn(A).Controller).Speech('AUTO', 7, "");
-		}
-	}
+        // Randomly send out a message about Bloat Vomit burning(3% chance)
+        if ( FRand() < 0.03 && KFHumanPawn(A) != none && PlayerController(KFHumanPawn(A).Controller) != none ) {
+            PlayerController(KFHumanPawn(A).Controller).Speech('AUTO', 7, "");
+        }
+    }
 }
 
 //ZombieBarf animation triggers this
@@ -80,15 +80,14 @@ function SpawnTwoShots() {
     bAmIBarfing= true;
 }
 
-simulated function AnimEnd(int Channel)
-{
-	local name  Sequence;
-	local float Frame, Rate;
+simulated function AnimEnd(int Channel) {
+    local name  Sequence;
+    local float Frame, Rate;
 
 
-	GetAnimParams( ExpectingChannel, Sequence, Frame, Rate );
+    GetAnimParams( ExpectingChannel, Sequence, Frame, Rate );
 
-	logToPlayer(2,Level.TimeSeconds$" "$self$" "$GetStateName()$" AnimEnd for Exp Chan "$ExpectingChannel$" = "$Sequence$" Channel: "$Channel);
+    logToPlayer(2,Level.TimeSeconds$" "$self$" "$GetStateName()$" AnimEnd for Exp Chan "$ExpectingChannel$" = "$Sequence$" Channel: "$Channel);
     logToPlayer(2,""$bAmIBarfing);
 
     super.AnimEnd(Channel);

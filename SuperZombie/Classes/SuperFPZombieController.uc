@@ -34,24 +34,24 @@ function Startle(Actor Feared) {
 }
 
 state ZombieCharge {
-	function Tick( float Delta ) {
+    function Tick( float Delta ) {
         super.Tick(Delta);
         ZombieSuperFP(pawn).logToPlayer(4,"Time left: "$(RageFrustrationThreshhold-RageFrustrationTimer));
-	}
+    }
 
-	function bool StrafeFromDamage(float Damage, class<DamageType> DamageType, bool bFindDest) {
-	    return super.StrafeFromDamage(Damage, DamageType, bFindDest);
-	}
+    function bool StrafeFromDamage(float Damage, class<DamageType> DamageType, bool bFindDest) {
+        return super.StrafeFromDamage(Damage, DamageType, bFindDest);
+    }
 
-	function bool TryStrafe(vector sideDir)	{
+    function bool TryStrafe(vector sideDir) {
         return super.TryStrafe(sideDir);
-	}
+    }
 
-	function Timer() {
+    function Timer() {
         super.Timer();
-	}
+    }
 
-	function BeginState() {
+    function BeginState() {
         super.BeginState();
         if (!bSmashDoor && ((bAttackedTarget && bMissTarget) 
             || bFindNewEnemy || bStartled)) {
@@ -65,7 +65,7 @@ state ZombieCharge {
         bMissTarget= false;
         
         ZombieSuperFP(pawn).logToPlayer(3,"Entering ZombieCharge state");
-	}
+    }
 
     function EndState() {
         prevRageTimer= RageFrustrationTimer;
@@ -76,14 +76,14 @@ state ZombieCharge {
 
 WaitForAnim:
 
-	if ( Monster(Pawn).bShotAnim ) {
-		Goto('Moving');
-	}
-	if ( !FindBestPathToward(Enemy, false,true) )
-		GotoState('ZombieRestFormation');
+    if ( Monster(Pawn).bShotAnim ) {
+        Goto('Moving');
+    }
+    if ( !FindBestPathToward(Enemy, false,true) )
+        GotoState('ZombieRestFormation');
 Moving:
-	MoveToward(Enemy);
-	WhatToDoNext(17);
-	if ( bSoaking )
-		SoakStop("STUCK IN CHARGING!");
+    MoveToward(Enemy);
+    WhatToDoNext(17);
+    if ( bSoaking )
+        SoakStop("STUCK IN CHARGING!");
 }

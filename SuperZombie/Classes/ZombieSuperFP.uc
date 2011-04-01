@@ -51,7 +51,7 @@ function bool MeleeDamageTarget(int hitdamage, vector pushdir) {
 simulated event SetAnimAction(name NewAction) {
     super.SetAnimAction(newAction);
     SuperFPZombieController(Controller).bAttackedTarget= 
-	    (NewAction == 'Claw') || (NewAction == 'DoorBash');
+        (NewAction == 'Claw') || (NewAction == 'DoorBash');
 }
 
 state RageCharging {
@@ -72,27 +72,27 @@ Ignores StartCharging;
         return super.CanSpeedAdjust();
     }
 
-	function BeginState() {
+    function BeginState() {
         super.BeginState();
         LogToPlayer(2,"I'm MAD!");
-	}
+    }
 
-	function EndState()	{
+    function EndState() {
         super.EndState();
         LogToPlayer(2,"I'm Calm!");
-	}
+    }
 
-	function Tick( float Delta ) {
+    function Tick( float Delta ) {
         super.Tick(Delta);
-	}
+    }
 
-	function Bump( Actor Other ) {
+    function Bump( Actor Other ) {
         super.Bump(Other);
-	}
+    }
 
-	// If fleshie hits his target on a charge, then he should settle down for abit.
-	function bool MeleeDamageTarget(int hitdamage, vector pushdir) {
-		local bool RetVal,bWasEnemy;
+    // If fleshie hits his target on a charge, then he should settle down for abit.
+    function bool MeleeDamageTarget(int hitdamage, vector pushdir) {
+        local bool RetVal,bWasEnemy;
         local float oldEnemyHealth, oldEnemyShield;
         local bool bAttackingHuman;
 
@@ -103,8 +103,8 @@ Ignores StartCharging;
             oldEnemyShield= KFHumanPawn(Controller.Target).ShieldStrength;
         }
 
-		bWasEnemy = (Controller.Target==Controller.Enemy);
-		RetVal = Super(KFMonster).MeleeDamageTarget(hitdamage*1.75, pushdir*3);
+        bWasEnemy = (Controller.Target==Controller.Enemy);
+        RetVal = Super(KFMonster).MeleeDamageTarget(hitdamage*1.75, pushdir*3);
 
         if (bAttackingHuman) {
             rageDamage+= oldEnemyHealth - KFHumanPawn(Controller.Target).Health;
@@ -114,7 +114,7 @@ Ignores StartCharging;
         }
 
        
-		if(RetVal && bWasEnemy) {
+        if(RetVal && bWasEnemy) {
             if(bAttackingHuman && (oldEnemyShield <= 0.0 && rageDamage < rageDamageLimit || 
                 (rageShield < rageShieldLimit && rageDamage < rageDamageLimit * 0.175))) {
                 GotoState('RageAgain');
@@ -125,24 +125,24 @@ Ignores StartCharging;
             }
         }
 
-		return RetVal;
-	}
+        return RetVal;
+    }
 }
 
 
 //Had to add this temporary state because on local hosts, enraged fp attacks call
 //MeleeDamageTarget twice.
 state RageAgain {
-	function BeginState() {
+    function BeginState() {
         LogToPlayer(2,"Entering Temp state");
-	}
+    }
 
-	function EndState()	{
+    function EndState() {
         LogToPlayer(2,"Leaving temp state");
-	}
+    }
 
     function bool MeleeDamageTarget(int hitdamage, vector pushdir) {
-   		local bool RetVal,bWasEnemy;
+        local bool RetVal,bWasEnemy;
         local float oldEnemyHealth, oldEnemyShield;
         local bool bAttackingHuman;
 
@@ -153,8 +153,8 @@ state RageAgain {
             oldEnemyShield= KFHumanPawn(Controller.Target).ShieldStrength;
         }
 
-		bWasEnemy = (Controller.Target==Controller.Enemy);
-		RetVal = Super(KFMonster).MeleeDamageTarget(hitdamage, pushdir*3);
+        bWasEnemy = (Controller.Target==Controller.Enemy);
+        RetVal = Super(KFMonster).MeleeDamageTarget(hitdamage, pushdir*3);
 
         if (bAttackingHuman) {
             rageDamage+= oldEnemyHealth - KFHumanPawn(Controller.Target).Health;
@@ -163,7 +163,7 @@ state RageAgain {
             logToPlayer(3,"Total shield lost: "$rageShield);
         }
        
-		if(RetVal && bWasEnemy) {
+        if(RetVal && bWasEnemy) {
             if(bAttackingHuman && (oldEnemyShield <= 0.0 && rageDamage < rageDamageLimit || 
                 (rageShield < rageShieldLimit && rageDamage < rageDamageLimit * 0.175))) {
                 StartCharging();
