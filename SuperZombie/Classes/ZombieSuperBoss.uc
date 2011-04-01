@@ -119,7 +119,7 @@ Begin:
 function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector Momentum, class<DamageType> damageType, optional int HitIndex) {  
     local float DamagerDistSq;
     local float UsedPipeBombDamScale;
-    local int numEnemies; 
+    local int numEnemies, oldHealth; 
     local vector Start;
     local Rotator R;
 
@@ -149,17 +149,21 @@ function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector M
        Damage *= UsedPipeBombDamScale;
     }
 
+    OldHealth= Health;
     Super(KFMonster).TakeDamage(Damage,instigatedBy,hitlocation,Momentum,damageType);
 
-    if( Level.TimeSeconds - LastDamageTime > 10 ) {
+    if( LastDamageTime != 0.0 && Level.TimeSeconds - LastDamageTime > 10 ) {
         ChargeDamage = 0;
     }
     else {
-        LastDamageTime = Level.TimeSeconds;
-        ChargeDamage += Damage;
+        ChargeDamage += (OldHealth-Health);
     }
 
-    if( ShouldChargeFromDamage() && ChargeDamage > 200 ) {
+    LastDamageTime = Level.TimeSeconds;
+    LogToPlayer(2,"Charge Damage: "$ChargeDamage);
+    LogToPlayer(2,"Last Damage Time: "$LastDamageTime);
+    LogToPlayer(2,"Level.TimeSeconds: "$Level.TimeSeconds);
+    if( ShouldChargeFromDamage() && ChargeDamage > 1000 ) {
         // If someone close up is shooting us, just charge them
         if( InstigatedBy != none ) {
             DamagerDistSq = VSizeSquared(Location - InstigatedBy.Location);
