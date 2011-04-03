@@ -92,7 +92,7 @@ defaultproperties {
     debugLogLevel=0;
 	GroupName="KFSuperZombieMut"
 	FriendlyName="Super Zombie"
-	Description="Modifies zombie behavior"
+	Description="Alters the behavior of the specimens.  This mutator's version is 1.5."
     replacementArray(0)=(oldClass="KFChar.ZombieFleshPound",newClass="SuperZombie.ZombieSuperFP")
     replacementArray(1)=(oldClass="KFChar.ZombieGorefast",newClass="SuperZombie.ZombieSuperGorefast")
     replacementArray(2)=(oldClass="KFChar.ZombieStalker",newClass="SuperZombie.ZombieSuperStalker")
