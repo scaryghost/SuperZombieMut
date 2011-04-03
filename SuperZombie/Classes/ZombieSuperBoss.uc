@@ -1,10 +1,12 @@
 class ZombieSuperBoss extends ZombieBoss;
 
 var int logLevel;
+var int ChargeDamageThreshold;
 
 simulated function PostBeginPlay() {
     logToPlayer(1,"What have you done to my experiments?! Rawr!");
     super.PostBeginPlay();
+    ChargeDamageThreshold= 1000;
 }
 
 simulated function Tick(float DeltaTime) {
@@ -74,7 +76,6 @@ State Escaping { // Got hurt and running away...
     }
 
     function Tick( float Delta ) {
-
         // Keep the flesh pound moving toward its target when attacking
         if( Role == ROLE_Authority && bShotAnim) {
             if( bChargingPlayer ) {
@@ -83,7 +84,7 @@ State Escaping { // Got hurt and running away...
                     PostNetReceive();
             }
             GroundSpeed = OriginalGroundSpeed * 1.25;
-            if( LookTarget!=None ) {
+            if( ChargeDamage > ChargeDamageThreshold && LookTarget!=None ) {
                 Acceleration = AccelRate * Normal(LookTarget.Location - Location);
             }
         }
@@ -156,15 +157,14 @@ function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector M
     if( LastDamageTime != 0.0 && Level.TimeSeconds - LastDamageTime > 10 ) {
         ChargeDamage = 0;
     }
-    else {
-        ChargeDamage += (OldHealth-Health);
-    }
+     
+    ChargeDamage += (OldHealth-Health);
 
     LastDamageTime = Level.TimeSeconds;
     LogToPlayer(2,"Charge Damage: "$ChargeDamage);
     LogToPlayer(2,"Last Damage Time: "$LastDamageTime);
     LogToPlayer(2,"Level.TimeSeconds: "$Level.TimeSeconds);
-    if( ShouldChargeFromDamage() && ChargeDamage > 1000 ) {
+    if( ShouldChargeFromDamage() && ChargeDamage > ChargeDamageThreshold ) {
         // If someone close up is shooting us, just charge them
         if( InstigatedBy != none ) {
             DamagerDistSq = VSizeSquared(Location - InstigatedBy.Location);
