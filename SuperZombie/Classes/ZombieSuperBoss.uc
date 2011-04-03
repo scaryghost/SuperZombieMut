@@ -45,31 +45,6 @@ function bool isItMyLogLevel(int level) {
     return (logLevel >= level);
 }
 
-state FireSuperMissile extends FireMissile {
-Ignores RangedAttack;
-
-    function bool ShouldChargeFromDamage() {
-        return super.ShouldChargeFromDamage();
-    }
-
-    function BeginState() {
-        super.BeginState();
-    }
-
-    function AnimEnd( int Channel ) {
-        super.AnimEnd(Channel);
-    }
-
-    function EndState() {
-        GotoState('Escaping');
-    }
-Begin:
-    while ( true ) {
-        Acceleration = vect(0,0,0);
-        Sleep(0.1);
-    }
-}
-
 State Escaping { // Got hurt and running away...
     function DoorAttack(Actor A) {
         local vector hitLocation;
@@ -99,7 +74,33 @@ State Escaping { // Got hurt and running away...
     }
 
     function Tick( float Delta ) {
-        super.Tick(Delta);
+
+        // Keep the flesh pound moving toward its target when attacking
+        if( Role == ROLE_Authority && bShotAnim) {
+            if( bChargingPlayer ) {
+                bChargingPlayer = false;
+                if( Level.NetMode!=NM_DedicatedServer )
+                    PostNetReceive();
+            }
+            GroundSpeed = OriginalGroundSpeed * 1.25;
+            if( LookTarget!=None ) {
+                Acceleration = AccelRate * Normal(LookTarget.Location - Location);
+            }
+        }
+        else {
+            if( !bChargingPlayer ) {
+                bChargingPlayer = true;
+                if( Level.NetMode!=NM_DedicatedServer )
+                    PostNetReceive();
+            }
+
+            GroundSpeed = OriginalGroundSpeed * 2.5;
+        }
+        Global.Tick(Delta);
+    }
+
+    function BeginState() {
+        super.BeginState();
     }
 
     function EndState() {
