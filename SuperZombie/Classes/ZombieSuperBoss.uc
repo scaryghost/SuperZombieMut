@@ -20,7 +20,8 @@ function int numEnemiesAround(float minDist) {
 
     count= 0;
     For( C=Level.ControllerList; C!=None; C=C.NextController ) {
-        if( C.bIsPlayer && C.Pawn!=None && VSize(C.Pawn.Location-Location)<=minDist && FastTrace(C.Pawn.Location,Location)) {
+        if( C.bIsPlayer && C.Pawn!=None && VSize(C.Pawn.Location-Location)<=minDist && 
+            FastTrace(C.Pawn.Location,Location) && C.Pawn.Weapon != None && C.Pawn.Weapon.bMeleeWeapon) {
             count++;
         }
     }
@@ -161,9 +162,9 @@ function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector M
     ChargeDamage += (OldHealth-Health);
 
     LastDamageTime = Level.TimeSeconds;
-    LogToPlayer(2,"Charge Damage: "$ChargeDamage);
-    LogToPlayer(2,"Last Damage Time: "$LastDamageTime);
-    LogToPlayer(2,"Level.TimeSeconds: "$Level.TimeSeconds);
+    LogToPlayer(3,"Charge Damage: "$ChargeDamage);
+    LogToPlayer(3,"Last Damage Time: "$LastDamageTime);
+    LogToPlayer(3,"Level.TimeSeconds: "$Level.TimeSeconds);
     if( ShouldChargeFromDamage() && ChargeDamage > ChargeDamageThreshold ) {
         // If someone close up is shooting us, just charge them
         if( InstigatedBy != none ) {
@@ -182,8 +183,6 @@ function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector M
     if( Health<=0 || SyringeCount==3 || IsInState('Escaping') || IsInState('KnockDown') /*|| bShotAnim*/ )
         Return;
 
-    numEnemies= numEnemiesAround(150);
-
     if( (SyringeCount==0 && Health<HealingLevels[0]) || (SyringeCount==1 && Health<HealingLevels[1]) || (SyringeCount==2 && Health<HealingLevels[2]) ) {
 
             bShotAnim = true;
@@ -191,6 +190,8 @@ function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector M
             SetAnimAction('KnockDown');
             HandleWaitForAnim('KnockDown');
             KFMonsterController(Controller).bUseFreezeHack = True;
+            numEnemies= numEnemiesAround(150);
+
             if(numEnemies >= 3) {
                 Start = GetBoneCoords('tip').Origin;
                 R.Pitch= -16384;
