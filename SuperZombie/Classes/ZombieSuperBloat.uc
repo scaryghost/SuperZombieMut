@@ -98,5 +98,6 @@ simulated function AnimEnd(int Channel) {
 
 defaultproperties {
     logLevel= 0;
-    bileCoolDownMax= 0.50;
+    bileCoolDownMax= 0.75;
+    MenuName= "Super Bloat"
 }
