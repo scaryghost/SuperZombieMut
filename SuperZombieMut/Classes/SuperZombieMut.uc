@@ -1,5 +1,5 @@
 class SuperZombieMut extends Mutator
-    config(SuperZombie);
+    config(SuperZombieMut);
 
 struct oldNewZombiePair {
     var string oldClass;
@@ -66,7 +66,6 @@ function PostBeginPlay() {
     class'ZombieSuperScrake'.default.logLevel= debugLogLevel;
     class'ZombieSuperHusk'.default.logLevel= debugLogLevel;
     class'ZombieSuperBloat'.default.logLevel= debugLogLevel;
-    class'ZombieSuperBloat'.default.bileCoolDownMax= bileCoolDown;
 
 	SetTimer(0.1, false);
 }
@@ -78,15 +77,12 @@ function Timer() {
 static function FillPlayInfo(PlayInfo PlayInfo) {
     Super.FillPlayInfo(PlayInfo);
     PlayInfo.AddSetting("LogLevel Modifier", "debugLogLevel","Debug log level", 0, 1, "Text", "0.1;0:4",,,true);
-    PlayInfo.AddSetting("Bile cooldown modifier", "bileCoolDown","Cooldown limit for bile", 0, 1, "Text", ,,,true);
 }
 
 static event string GetDescriptionText(string property) {
     switch(property) {
         case "debugLogLevel":
             return "Adjust the debug log level for the Super Zombie Mutator";
-        case "bileCoolDown":
-            return "Adjust cooldown timer for the bile pellet spawns";
         default:
             return Super.GetDescriptionText(property);
     }
@@ -94,7 +90,6 @@ static event string GetDescriptionText(string property) {
 
 defaultproperties {
     debugLogLevel=0;
-    bileCoolDown= 0.5;
 	GroupName="KFSuperZombieMut"
 	FriendlyName="Super Zombie"
 	Description="Modifies zombie behavior"
