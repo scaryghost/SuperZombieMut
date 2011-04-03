@@ -17,6 +17,7 @@ are:
     ZombieSuperSiren
     ZombieSuperScrake
     ZombieSuperHusk
+    ZombieSuperBloat
 
 Debugging output is available for those who wish to check out the specimens
 in more detail.  The "debugLogLevel" variable controls the ammount of 
@@ -35,12 +36,13 @@ Special thanks to:
 
 Testers:
 Nikari, Fractal, [DoP] Cap, Tech Burn, Gore Torn, Nurse. Jamie Jameson, 
-Reaping - The Runk, Xandirs, DM*, BulletMorgue, Sakumaru, Fang.HD, AnTrix
+Reaping - The Runk, Xandirs, DM*, BulletMorgue, Sakumaru, Fang.HD, AnTrix, 
+Riceman
 
 Change Log:
 To view a detailed change log, please view the releaes notes for the specific 
 version:
-https://github.com/scaryghost/SuperZombieMut/wiki/Super-Zombie-1.4
+https://github.com/scaryghost/SuperZombieMut/wiki/Super-Zombie-1.5
 
 A complete list of specimen changes maybe viewed on the mutator's wiki:
 https://github.com/scaryghost/SuperZombieMut/wiki
