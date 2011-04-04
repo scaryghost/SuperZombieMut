@@ -2,6 +2,8 @@ class ZombieSuperBoss extends ZombieBoss;
 
 var int logLevel;
 var int ChargeDamageThreshold;
+var int minEnemiesClose;
+var float pipebombDamageMult;
 
 simulated function PostBeginPlay() {
     logToPlayer(1,"What have you done to my experiments?! Rawr!");
@@ -10,7 +12,26 @@ simulated function PostBeginPlay() {
 }
 
 simulated function Tick(float DeltaTime) {
+    local Projectile CheckProjectile;
+    local Projectile LastProjectile;
+    local int count;
+
     super.Tick(DeltaTime);
+
+    if(isInState('ZombieSuperBoss')) {
+        count= 0;
+        foreach VisibleCollidingActors( class 'Projectile', CheckProjectile, 1500.0, Location ) {
+            if( PipeBombProjectile(CheckProjectile) != none ) {
+                count++;
+            }
+            LastProjectile= CheckProjectile;
+        }
+        if(count >= 2) {
+            Controller.Target= LastProjectile;
+            GotoState('AttackPipes');  
+        }
+        LogToPlayer(2,"Num of pipebombs: "$count);
+    }
 }
 
 
@@ -46,6 +67,20 @@ function bool outputToChat(string msg) {
 
 function bool isItMyLogLevel(int level) {
     return (logLevel >= level);
+}
+
+state AttackPipes {
+Ignores RangedAttack;
+
+    function BeginState() {
+        bShotAnim = true;
+        Acceleration = vect(0,0,0);
+        SetAnimAction('PreFireMissile');
+
+        HandleWaitForAnim('PreFireMissile');
+
+        GoToState('FireMissile');
+    }
 }
 
 State Escaping { // Got hurt and running away...
@@ -143,7 +178,7 @@ function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector M
     if ( class<DamTypePipeBomb>(damageType) != none ) {
        UsedPipeBombDamScale = FMax(0,(1.0 - PipeBombDamageScale));
 
-       PipeBombDamageScale += 0.075;
+       PipeBombDamageScale += pipebombDamageMult;
 
        if( PipeBombDamageScale > 1.0 ) {
            PipeBombDamageScale = 1.0;
@@ -192,7 +227,7 @@ function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector M
             KFMonsterController(Controller).bUseFreezeHack = True;
             numEnemies= numEnemiesAround(150);
 
-            if(numEnemies >= 3) {
+            if(numEnemies >= minEnemiesClose) {
                 Start = GetBoneCoords('tip').Origin;
                 R.Pitch= -16384;
                 Spawn(Class'BossLAWProj',,,Start,R);
@@ -204,4 +239,6 @@ function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector M
 defaultproperties {
     logLevel= 0;
     MenuName= "Super Patriarch"
+    minEnemiesClose= 3
+    pipebombDamageMult= 0.075;
 }
