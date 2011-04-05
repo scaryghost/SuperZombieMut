@@ -4,11 +4,16 @@ var int logLevel;
 var int ChargeDamageThreshold;
 var int minEnemiesClose;
 var float pipebombDamageMult;
+var bool bJustSpawned;
+var float spawnTimer, attackPipeCoolDown;
+var float minPipeDistance;
 
 simulated function PostBeginPlay() {
-    logToPlayer(1,"What have you done to my experiments?! Rawr!");
     super.PostBeginPlay();
+    logToPlayer(1,"What have you done to my experiments?! Rawr!");
     ChargeDamageThreshold= 1000;
+    bJustSpawned= true;
+    spawnTimer= 0.0;
 }
 
 simulated function Tick(float DeltaTime) {
@@ -18,9 +23,9 @@ simulated function Tick(float DeltaTime) {
 
     super.Tick(DeltaTime);
 
-    if(isInState('ZombieSuperBoss')) {
+    if(!bJustSpawned && attackPipeCoolDown <= 0.0 && isInState('ZombieSuperBoss')) {
         count= 0;
-        foreach VisibleCollidingActors( class 'Projectile', CheckProjectile, 1500.0, Location ) {
+        foreach VisibleCollidingActors( class 'Projectile', CheckProjectile, minPipeDistance, Location ) {
             if( PipeBombProjectile(CheckProjectile) != none ) {
                 count++;
             }
@@ -28,10 +33,15 @@ simulated function Tick(float DeltaTime) {
         }
         if(count >= 2) {
             Controller.Target= LastProjectile;
-            GotoState('AttackPipes');  
+            Controller.Focus= LastProjectile;
+            GotoState('AttackPipes');
+            attackPipeCoolDown= minPipeDistance/(class'BossLAWProj'.default.MaxSpeed)+GetAnimDuration('PreFireMissile');
         }
         LogToPlayer(2,"Num of pipebombs: "$count);
     }
+    spawnTimer+= DeltaTime;
+    attackPipeCoolDown= FMax(0,attackPipeCoolDown-DeltaTime);
+    bJustSpawned= (spawnTimer <= GetAnimDuration('Entrance')+3.0);
 }
 
 
@@ -241,4 +251,5 @@ defaultproperties {
     MenuName= "Super Patriarch"
     minEnemiesClose= 3
     pipebombDamageMult= 0.075;
+    minPipeDistance= 1500.0;
 }
