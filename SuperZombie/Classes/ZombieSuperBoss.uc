@@ -19,29 +19,43 @@ simulated function PostBeginPlay() {
 simulated function Tick(float DeltaTime) {
     local Projectile CheckProjectile;
     local Projectile LastProjectile;
+    local Pawn CheckHP;
     local int count;
+    local bool chargeThrough;
 
     super.Tick(DeltaTime);
 
     if(!bJustSpawned && attackPipeCoolDown <= 0.0 && isInState('ZombieSuperBoss')) {
         count= 0;
+        chargeThrough= false;
         foreach VisibleCollidingActors( class 'Projectile', CheckProjectile, minPipeDistance, Location ) {
             if( PipeBombProjectile(CheckProjectile) != none ) {
                 count++;
             }
             LastProjectile= CheckProjectile;
         }
-        if(count >= 2) {
+        foreach VisibleCollidingActors( class 'Pawn', CheckHP, minPipeDistance*2, Location ) {
+            if( count >= 2 && KFHumanPawn(CheckHP) != none ) {
+                chargeThrough= true;
+            }
+        }
+
+        if(chargeThrough) {
+            SetAnimAction('transition');
+            LastForceChargeTime = Level.TimeSeconds;
+            GoToState('Charging');
+            LogToPlayer(2,"Charge!");
+        } else if(count >= 2) {
             Controller.Target= LastProjectile;
             Controller.Focus= LastProjectile;
             GotoState('AttackPipes');
             attackPipeCoolDown= minPipeDistance/(class'BossLAWProj'.default.MaxSpeed)+GetAnimDuration('PreFireMissile');
         }
-        LogToPlayer(2,"Num of pipebombs: "$count);
+        LogToPlayer(3,"Num of pipebombs: "$count);
     }
     spawnTimer+= DeltaTime;
     attackPipeCoolDown= FMax(0,attackPipeCoolDown-DeltaTime);
-    bJustSpawned= (spawnTimer <= GetAnimDuration('Entrance')+3.0);
+    bJustSpawned= (spawnTimer <= GetAnimDuration('Entrance'));
 }
 
 
