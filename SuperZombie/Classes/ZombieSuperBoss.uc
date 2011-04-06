@@ -8,6 +8,7 @@ var bool bJustSpawned;
 var float spawnTimer, attackPipeCoolDown;
 var float minPipeDistance;
 
+//TODO: Make patriarch able to adjust to players trying to position themselves over a teammate's pipe bombs
 simulated function PostBeginPlay() {
     super.PostBeginPlay();
     logToPlayer(1,"What have you done to my experiments?! Rawr!");
@@ -17,41 +18,44 @@ simulated function PostBeginPlay() {
 }
 
 simulated function Tick(float DeltaTime) {
-    local Projectile CheckProjectile;
-    local Projectile LastProjectile;
-    local Pawn CheckHP;
-    local int count;
+    local PipeBombProjectile CheckProjectile;
+    local PipeBombProjectile LastProjectile;
+    local KFHumanPawn CheckHP;
+    local int pipeCount,playerCount,closePlayers;
     local bool chargeThrough;
 
     super.Tick(DeltaTime);
 
     if(!bJustSpawned && attackPipeCoolDown <= 0.0 && isInState('ZombieSuperBoss')) {
-        count= 0;
+        pipeCount= 0;
+        playerCount= 0;
+        closePlayers= 0;
         chargeThrough= false;
-        foreach VisibleCollidingActors( class 'Projectile', CheckProjectile, minPipeDistance, Location ) {
-            if( PipeBombProjectile(CheckProjectile) != none ) {
-                count++;
-            }
+        foreach VisibleCollidingActors( class 'PipeBombProjectile', CheckProjectile, minPipeDistance, Location ) {
+            pipeCount++;
             LastProjectile= CheckProjectile;
         }
-        foreach VisibleCollidingActors( class 'Pawn', CheckHP, minPipeDistance*2, Location ) {
-            if( count >= 2 && KFHumanPawn(CheckHP) != none ) {
-                chargeThrough= true;
+        if(pipeCount >= 2) {
+            foreach VisibleCollidingActors( class 'KFHumanPawn', CheckHP, minPipeDistance*2, Location ) {
+                playerCount++;
+                if(VSize(CheckHP.Location - LastProjectile.Location) < (class'BossLAWProj'.default.DamageRadius)) {
+                    closePlayers++;
+                }
             }
         }
 
-        if(chargeThrough) {
+        if(PlayerCount != 0 && closePlayers == 0) {
             SetAnimAction('transition');
             LastForceChargeTime = Level.TimeSeconds;
-            GoToState('Charging');
+            GoToState('ChargePipes');
             LogToPlayer(2,"Charge!");
-        } else if(count >= 2) {
+        } else if(pipeCount >= 2) {
             Controller.Target= LastProjectile;
             Controller.Focus= LastProjectile;
             GotoState('AttackPipes');
             attackPipeCoolDown= minPipeDistance/(class'BossLAWProj'.default.MaxSpeed)+GetAnimDuration('PreFireMissile');
         }
-        LogToPlayer(3,"Num of pipebombs: "$count);
+        LogToPlayer(3,"Num of pipebombs: "$pipeCount);
     }
     spawnTimer+= DeltaTime;
     attackPipeCoolDown= FMax(0,attackPipeCoolDown-DeltaTime);
@@ -104,6 +108,74 @@ Ignores RangedAttack;
         HandleWaitForAnim('PreFireMissile');
 
         GoToState('FireMissile');
+    }
+}
+state ChargePipes extends Charging {
+    // Don't override speed in this state
+    function bool CanSpeedAdjust() {
+        return super.CanSpeedAdjust();
+    }
+
+    function bool ShouldChargeFromDamage() {
+        return super.ShouldChargeFromDamage();
+    }
+
+    function BeginState() {
+        super.BeginState();
+    }
+
+    function EndState() {
+        super.EndState();
+        logToPlayer(2,"Done Charging!");
+    }
+
+    function Tick( float Delta ) {
+
+        // Keep the flesh pound moving toward its target when attacking
+        if( Role == ROLE_Authority && bShotAnim) {
+            if( bChargingPlayer ) {
+                bChargingPlayer = false;
+                if( Level.NetMode!=NM_DedicatedServer )
+                    PostNetReceive();
+            }
+            GroundSpeed = OriginalGroundSpeed * 1.25;
+            if( LookTarget!=None ) {
+                Acceleration = AccelRate * Normal(LookTarget.Location - Location);
+            }
+        }
+        else {
+            if( !bChargingPlayer ) {
+                bChargingPlayer = true;
+                if( Level.NetMode!=NM_DedicatedServer )
+                    PostNetReceive();
+            }
+
+            GroundSpeed = OriginalGroundSpeed * 2.5;
+        }
+
+
+        Global.Tick(Delta);
+    }
+
+    function bool MeleeDamageTarget(int hitdamage, vector pushdir) {
+        return super.MeleeDamageTarget(hitdamage, pushdir);
+    }
+
+    function RangedAttack(Actor A) {
+        if( VSize(A.Location-Location)>700 && Level.TimeSeconds - LastForceChargeTime > 3.0 )
+            GoToState('');
+        if ( bShotAnim )
+            return;
+        else if ( IsCloseEnuf(A) )
+        {
+            if( bCloaked )
+                UnCloakBoss();
+            bShotAnim = true;
+            Acceleration = vect(0,0,0);
+            Acceleration = (A.Location-Location);
+            SetAnimAction('MeleeClaw');
+            //PlaySound(sound'Claw2s', SLOT_None); Claw2s
+        }
     }
 }
 
