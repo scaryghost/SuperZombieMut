@@ -8,7 +8,7 @@ var bool bJustSpawned;
 var float spawnTimer, attackPipeCoolDown;
 var float minPipeDistance;
 
-//TODO: Make patriarch able to adjust to players trying to position themselves over a teammate's pipe bombs
+//TODO: Handle players tricking the pat into stopping on top of the pipe pile
 simulated function PostBeginPlay() {
     super.PostBeginPlay();
     logToPlayer(1,"What have you done to my experiments?! Rawr!");
@@ -23,10 +23,14 @@ simulated function Tick(float DeltaTime) {
     local KFHumanPawn CheckHP;
     local int pipeCount,playerCount,closePlayers;
     local bool chargeThrough;
+    local bool bBaseState, bChargingPipes;
+
+    bBaseState= isInState('ZombieSuperBoss');
+    bChargingPipes= isInState('ChargePipes');
 
     super.Tick(DeltaTime);
 
-    if(!bJustSpawned && attackPipeCoolDown <= 0.0 && isInState('ZombieSuperBoss')) {
+    if(!bJustSpawned && attackPipeCoolDown <= 0.0 && (bBaseState || bChargingPipes)) {
         pipeCount= 0;
         playerCount= 0;
         closePlayers= 0;
@@ -44,12 +48,12 @@ simulated function Tick(float DeltaTime) {
             }
         }
 
-        if(PlayerCount != 0 && closePlayers == 0) {
+        if(!bChargingPipes && PlayerCount != 0 && closePlayers == 0) {
             SetAnimAction('transition');
             LastForceChargeTime = Level.TimeSeconds;
             GoToState('ChargePipes');
             LogToPlayer(2,"Charge!");
-        } else if(pipeCount >= 2) {
+        } else if((bBaseState && pipeCount >= 2) || (bChargingPipes && PlayerCount != 0 && closePlayers != 0)) {
             Controller.Target= LastProjectile;
             Controller.Focus= LastProjectile;
             GotoState('AttackPipes');
