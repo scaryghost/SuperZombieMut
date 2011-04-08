@@ -9,6 +9,7 @@ var float spawnTimer, attackPipeCoolDown;
 var float minPipeDistance;
 
 //TODO: Handle players tricking the pat into stopping on top of the pipe pile
+//Check who dropped the pipes and if they are near them
 simulated function PostBeginPlay() {
     super.PostBeginPlay();
     logToPlayer(1,"What have you done to my experiments?! Rawr!");
@@ -21,20 +22,16 @@ simulated function Tick(float DeltaTime) {
     local PipeBombProjectile CheckProjectile;
     local PipeBombProjectile LastProjectile;
     local KFHumanPawn CheckHP;
-    local int pipeCount,playerCount,closePlayers;
-    local bool chargeThrough;
-    local bool bBaseState, bChargingPipes;
+    local int pipeCount,playerCount;
+    local bool bBaseState;
 
     bBaseState= isInState('ZombieSuperBoss');
-    bChargingPipes= isInState('ChargePipes');
 
     super.Tick(DeltaTime);
 
-    if(!bJustSpawned && attackPipeCoolDown <= 0.0 && (bBaseState || bChargingPipes)) {
+    if(!bJustSpawned && attackPipeCoolDown <= 0.0 && bBaseState) {
         pipeCount= 0;
         playerCount= 0;
-        closePlayers= 0;
-        chargeThrough= false;
         foreach VisibleCollidingActors( class 'PipeBombProjectile', CheckProjectile, minPipeDistance, Location ) {
             pipeCount++;
             LastProjectile= CheckProjectile;
@@ -42,18 +39,15 @@ simulated function Tick(float DeltaTime) {
         if(pipeCount >= 2) {
             foreach VisibleCollidingActors( class 'KFHumanPawn', CheckHP, minPipeDistance*2, Location ) {
                 playerCount++;
-                if(VSize(CheckHP.Location - LastProjectile.Location) < (class'BossLAWProj'.default.DamageRadius)) {
-                    closePlayers++;
-                }
             }
         }
 
-        if(!bChargingPipes && PlayerCount != 0 && closePlayers == 0) {
+        if(pipeCount <= 2 && PlayerCount != 0) {
             SetAnimAction('transition');
             LastForceChargeTime = Level.TimeSeconds;
             GoToState('ChargePipes');
             LogToPlayer(2,"Charge!");
-        } else if((bBaseState && pipeCount >= 2) || (bChargingPipes && PlayerCount != 0 && closePlayers != 0)) {
+        } else if(pipeCount >= 2) {
             Controller.Target= LastProjectile;
             Controller.Focus= LastProjectile;
             GotoState('AttackPipes');
