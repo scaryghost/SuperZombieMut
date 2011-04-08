@@ -5,11 +5,14 @@ var float aimAtFeetZ;
 
 function PostBeginPlay() {
     super.PostBeginPlay();
-    aimAtFeetZ= 0.0;
 }
 
 function bool DefendCloseRange(float Dist) {
     return ( (Enemy.Weapon != None) && (Dist < 1000) );
+}
+
+static function setAimAtFeetZ(float z) {
+    default.aimAtFeetZ= z;
 }
 
 /*
@@ -71,9 +74,10 @@ function rotator AdjustAim(FireProperties FiredAmmunition, vector projStart, int
         // more or less lead target (with some random variation)
         FireSpot += FMin(1, 0.7 + 0.6 * FRand()) * TargetVel * TargetDist/projSpeed;
         FireSpot.Z = FMin(Target.Location.Z, FireSpot.Z);
-        if (aimAtFeetZ != 0.0 && Target.Physics == PHYS_Falling && bDefendCloseRange) {
+        if (default.aimAtFeetZ != 0.0 && Target.Physics == PHYS_Falling && bDefendCloseRange) {
             ZombieSuperHusk(pawn).logToPlayer(3,"Distance: "$TargetDist);
-            FireSpot.Z= aimAtFeetZ;
+            ZombieSuperHusk(pawn).logToPlayer(2,"I know where to hit you sucker!");
+            FireSpot.Z= default.aimAtFeetZ;
         }
 
         if ( (Target.Physics != PHYS_Falling) && (FRand() < 0.55) && (VSize(FireSpot - ProjStart) > 1000) ) {
@@ -133,7 +137,7 @@ function rotator AdjustAim(FireProperties FiredAmmunition, vector projStart, int
         else
             bClean = ( (Target.Physics == PHYS_Falling) && FastTrace(FireSpot, ProjStart) );
         if (bClean && TargetDist > 625.0) {
-            aimAtFeetZ= FireSpot.Z;
+            setAimAtFeetZ(FireSpot.Z);
         }
         ZombieSuperHusk(pawn).logToPlayer(2,"Clean? "$bClean);
     }
@@ -219,3 +223,6 @@ function rotator AdjustAim(FireProperties FiredAmmunition, vector projStart, int
     return FireRotation;
 }
 
+defaultproperties {
+    aimAtFeetZ= 0.0;
+}
