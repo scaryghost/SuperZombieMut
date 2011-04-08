@@ -36,7 +36,7 @@ simulated function SpawnTwoShots() {
         if( Controller!=None && KFDoorMover(Controller.Target)!=None ) {
             Controller.Target.TakeDamage(ScreamDamage*0.6,Self,Location,vect(0,0,0),ScreamDamageType);
             HurtRadiusThroughDoor(ScreamDamage*0.6 ,ScreamRadius, ScreamDamageType, ScreamForce, Location);
-            logToPlayer(1,"Scream at door!");
+            logToPlayer(2,"Scream at door!");
         }
         else {
             HurtRadiusThroughDoor(ScreamDamage ,ScreamRadius, ScreamDamageType, ScreamForce, Location);
@@ -48,7 +48,7 @@ simulated function HurtRadiusThroughDoor( float DamageAmount, float DamageRadius
     local actor Victims;
     local float damageScale, dist;
     local vector dir;
-    local float UsedDamageAmount;
+    local float UsedDamageAmount, usedMomentum;
 
     if( bHurtEntry )
         return;
@@ -62,8 +62,11 @@ simulated function HurtRadiusThroughDoor( float DamageAmount, float DamageRadius
             dir = dir/dist;
             damageScale = 1 - FMax(0,(dist - Victims.CollisionRadius)/DamageRadius);
 
-            if (!Victims.IsA('KFHumanPawn')) // If it aint human, don't pull the vortex crap on it.
-                Momentum = 0;
+            if (!Victims.IsA('KFHumanPawn')) {// If it aint human, don't pull the vortex crap on it.
+                UsedMomentum = 0;
+            } else {
+                UsedMomentum= Momentum;
+            }
 
             if (Victims.IsA('KFGlassMover')) {   // Hack for shattering in interesting ways.
                 UsedDamageAmount = 100000; // Siren always shatters glass
@@ -79,6 +82,7 @@ simulated function HurtRadiusThroughDoor( float DamageAmount, float DamageRadius
             if (Instigator != None && Vehicle(Victims) != None && Vehicle(Victims).Health > 0)
                 Vehicle(Victims).DriverRadiusDamage(UsedDamageAmount, DamageRadius, Instigator.Controller, 
                 DamageType, Momentum, HitLocation);
+            logToPlayer(2,"Momentum: "$UsedMomentum);
         }
     }
     bHurtEntry = false;
