@@ -7,7 +7,6 @@ struct oldNewZombiePair {
 };
 
 var() config int debugLogLevel;
-var() config float bileCoolDown;
 var array<oldNewZombiePair> replacementArray[8];
 
 function replaceSpecialSquad(out array<KFGameType.SpecialSquad> squadArray) {
@@ -92,7 +91,7 @@ defaultproperties {
     debugLogLevel=0;
 	GroupName="KFSuperZombieMut"
 	FriendlyName="Super Zombie"
-	Description="Alters the behavior of the specimens.  This mutator's version is 1.5."
+	Description="Alters the behavior of the specimens.  This mutator's version is 1.6."
     replacementArray(0)=(oldClass="KFChar.ZombieFleshPound",newClass="SuperZombie.ZombieSuperFP")
     replacementArray(1)=(oldClass="KFChar.ZombieGorefast",newClass="SuperZombie.ZombieSuperGorefast")
     replacementArray(2)=(oldClass="KFChar.ZombieStalker",newClass="SuperZombie.ZombieSuperStalker")
