@@ -77,11 +77,11 @@ simulated function HurtRadiusThroughDoor( float DamageAmount, float DamageRadius
 
             Victims.TakeDamage(damageScale * UsedDamageAmount,Instigator, 
                 Victims.Location - 0.5 * (Victims.CollisionHeight + Victims.CollisionRadius) * dir,
-                (damageScale * Momentum * dir),DamageType);
+                (damageScale * UsedMomentum * dir),DamageType);
 
             if (Instigator != None && Vehicle(Victims) != None && Vehicle(Victims).Health > 0)
                 Vehicle(Victims).DriverRadiusDamage(UsedDamageAmount, DamageRadius, Instigator.Controller, 
-                DamageType, Momentum, HitLocation);
+                DamageType, UsedMomentum, HitLocation);
             logToPlayer(2,"Momentum: "$UsedMomentum);
         }
     }
