@@ -81,7 +81,7 @@ function int numEnemiesAround(float minDist) {
 }
 
 function logToPlayer(int level, string msg) {
-    isItMyLogLevel(level) && outputToChat(msg);
+    (logLevel >= level) && outputToChat(msg);
 }
 
 function bool outputToChat(string msg) {
@@ -94,10 +94,6 @@ function bool outputToChat(string msg) {
     }
 
     return true;
-}
-
-function bool isItMyLogLevel(int level) {
-    return (logLevel >= level);
 }
 
 state AttackPipes {
@@ -333,6 +329,7 @@ function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector M
             numEnemies= numEnemiesAround(150);
 
             if(numEnemies >= minEnemiesClose) {
+                outputToChat("Learn how to do something other than lumberjack gang-bang you noobs.");
                 Start = GetBoneCoords('tip').Origin;
                 R.Pitch= -16384;
                 Spawn(Class'BossLAWProj',,,Start,R);
@@ -354,7 +351,6 @@ function bool updateHsDamHitList(pawn Instigator) {
             deltaTime= Level.TimeSeconds - hsDamHitList[i].firstTimeHit;
             if(deltaTime >= 1.0) {
                 if(hsDamHitList[i].deltaTimes.length >= 3) {
-                    LogToPlayer(2,"You fucking cheater!");
                     return true;
                 }
                 hsDamHitList[i].deltaTimes.length= 1;
@@ -377,11 +373,15 @@ function bool updateHsDamHitList(pawn Instigator) {
 }
 
 state KillCheater extends ChargePipes {
-Ignores TakeDamage;    
+Ignores TakeDamage;   
+    function BeginState() {
+        super.BeginState();
+        outputToChat("You're pathetic, needing to glitch in a PvE game.");
+    } 
+
     function bool MeleeDamageTarget(int hitdamage, vector pushdir) {
 		pushdir = Normal(Controller.Target.Location-Location)*1000000; // Fly bitch!
 	    if(Super.MeleeDamageTarget(100000, pushdir)) {
-            LogToPlayer(2,"ProTip: Don't cheat");
             GotoState('');
             return true;
         }
@@ -402,6 +402,10 @@ Ignores TakeDamage;
         }
     }
 
+    function EndState() {
+       super.EndState(); 
+       outputToChat("ProTip: Get some skill you noob.");
+    }
 }
 
 defaultproperties {
