@@ -98,17 +98,17 @@ function Timer() {
 }
 
 static function FillPlayInfo(PlayInfo PlayInfo) {
-    local string replaceSpecGroup;
+    local string mutConfigGroup;
     local int i;
 
     Super.FillPlayInfo(PlayInfo);
    
-    replaceSpecGroup= "Replace Specimen Config"; 
+    mutConfigGroup= "Super Zombie Config"; 
     //debugLogLevel info is stored in index 0
-    PlayInfo.AddSetting("LogLevel Modifier", default.propDescripArray[0].property, 
+    PlayInfo.AddSetting(mutConfigGroup, default.propDescripArray[0].property, 
             default.propDescripArray[0].shortDescription, 0, 1, "Text", "0.1;0:4",,,true);
     for(i= 1; i<default.propDescripArray.Length;i++) {
-        PlayInfo.AddSetting(replaceSpecGroup, default.propDescripArray[i].property, 
+        PlayInfo.AddSetting(mutConfigGroup, default.propDescripArray[i].property, 
         default.propDescripArray[i].shortDescription, 0, 0, "Check");
     }
 }
