@@ -1,5 +1,11 @@
 class ZombieSuperBoss extends ZombieBoss;
 
+struct damHitTracker {
+    var Pawn instigator;
+    var array<float> deltaTimes;
+    var float firstTimeHit;
+};
+
 var int logLevel;
 var int ChargeDamageThreshold;
 var int minEnemiesClose;
@@ -7,9 +13,8 @@ var float pipebombDamageMult;
 var bool bJustSpawned;
 var float spawnTimer, attackPipeCoolDown;
 var float minPipeDistance;
+var array<damHitTracker> hsDamHitList;
 
-//TODO: Handle players tricking the pat into stopping on top of the pipe pile
-//Check who dropped the pipes and if they are near them
 simulated function PostBeginPlay() {
     super.PostBeginPlay();
     logToPlayer(1,"What have you done to my experiments?! Rawr!");
@@ -255,6 +260,12 @@ function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector M
     local vector Start;
     local Rotator R;
 
+    if(class<DamTypeDBShotgun>(damageType) != none && updateHsDamHitList(InstigatedBy)) {
+        Controller.Target= InstigatedBy;
+        Controller.Focus= InstigatedBy;
+        GotoState('KillCheater');
+        return;
+    }
     if(ZombieSuperBoss(InstigatedBy) != none || InstigatedBy == none) {
         LogToPlayer(2,"I hurt myself!");
         return;
@@ -329,6 +340,69 @@ function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector M
             GoToState('KnockDown');
     }
 } 
+
+function bool updateHsDamHitList(pawn Instigator) {
+    local int i;
+    local bool bFound;
+    local float deltaTime;
+    local int len;
+
+    bFound= false;
+    for(i=0; i< hsDamHitList.length; i++) {
+        len= hsDamHitList[i].deltaTimes.length;
+        if(hsDamHitList[i].instigator == Instigator) {
+            deltaTime= Level.TimeSeconds - hsDamHitList[i].firstTimeHit;
+            if(deltaTime >= 1.0) {
+                if(hsDamHitList[i].deltaTimes.length >= 3) {
+                    LogToPlayer(2,"You fucking cheater!");
+                    return true;
+                }
+                hsDamHitList[i].deltaTimes.length= 1;
+                hsDamHitList[i].deltaTimes[0]= Level.TimeSeconds;
+                hsDamHitList[i].firstTimeHit= Level.TimeSeconds;
+            } else if(Level.TimeSeconds-hsDamHitList[i].deltaTimes[len-1] >= 0.25) {
+                hsDamHitList[i].deltaTimes[len]= Level.TimeSeconds;
+            }
+            bFound= true;
+            break;
+        }
+    }
+    if(!bFound) {
+        hsDamHitList.length= hsDamHitList.length+1;
+        hsDamHitList[hsDamHitList.length-1].instigator= Instigator;
+        hsDamHitList[hsDamHitList.length-1].deltaTimes[0]= Level.TimeSeconds;
+        hsDamHitList[hsDamHitList.length-1].firstTimeHit= Level.TimeSeconds;
+    }
+    return false;
+}
+
+state KillCheater extends ChargePipes {
+Ignores TakeDamage;    
+    function bool MeleeDamageTarget(int hitdamage, vector pushdir) {
+		pushdir = Normal(Controller.Target.Location-Location)*1000000; // Fly bitch!
+	    if(Super.MeleeDamageTarget(100000, pushdir)) {
+            LogToPlayer(2,"ProTip: Don't cheat");
+            GotoState('');
+            return true;
+        }
+        return false;
+    }
+
+    function RangedAttack(Actor A) {
+        if ( bShotAnim )
+            return;
+        else if ( IsCloseEnuf(A) )
+        {
+            if( bCloaked )
+                UnCloakBoss();
+            bShotAnim = true;
+            Acceleration = vect(0,0,0);
+            Acceleration = (A.Location-Location);
+            SetAnimAction('MeleeClaw');
+        }
+    }
+
+}
 
 defaultproperties {
     logLevel= 0;
