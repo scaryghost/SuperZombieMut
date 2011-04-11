@@ -7,9 +7,13 @@ Copy the contents in the system folder to your Killing Floor system folder.
 Usage:
 Add the "Super Zombie" mutator to the list of active mutators.  The game 
 will spawn the modified specimens in place of their default counterparts.
+A configuration menu is available which allows users to select what 
+specimens they wish to replace.
+
 To add the specimens in sandbox mode, you must add them to the monster 
 class list.  The package name is "SuperZombie" and the specimens available 
 are:
+
     ZombieSuperFP
     ZombieSuperBoss
     ZombieSuperGorefast
@@ -18,6 +22,9 @@ are:
     ZombieSuperScrake
     ZombieSuperHusk
     ZombieSuperBloat
+
+Shades are part of the default content and their package name is 
+"KFChar.ZombieShade".
 
 Debugging output is available for those who wish to check out the specimens
 in more detail.  The "debugLogLevel" variable controls the ammount of 
@@ -40,9 +47,9 @@ Reaping - The Runk, Xandirs, DM*, BulletMorgue, Sakumaru, Fang.HD, AnTrix,
 Riceman
 
 Change Log:
-To view a detailed change log, please view the releaes notes for the specific 
-version:
-https://github.com/scaryghost/SuperZombieMut/wiki/Super-Zombie-1.5
+To view a detailed change log, please view the releaes notes for the 
+specific version:
+https://github.com/scaryghost/SuperZombieMut/wiki/Super-Zombie-1.6
 
 A complete list of specimen changes maybe viewed on the mutator's wiki:
 https://github.com/scaryghost/SuperZombieMut/wiki
