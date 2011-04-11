@@ -410,5 +410,5 @@ defaultproperties {
     MenuName= "Super Patriarch"
     minEnemiesClose= 3
     pipebombDamageMult= 0.075;
-    minPipeDistance= 1500.0;
+    minPipeDistance= 1250.0;
 }
