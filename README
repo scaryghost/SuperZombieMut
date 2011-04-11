@@ -8,7 +8,9 @@ Usage:
 Add the "Super Zombie" mutator to the list of active mutators.  The game 
 will spawn the modified specimens in place of their default counterparts.
 A configuration menu is available which allows users to select what 
-specimens they wish to replace.
+specimens they wish to replace.  For dedicated servers, you should double 
+check the wedadmin configuration page to make sure your desired specimens 
+are active if it you are running the mutator for the first time.
 
 To add the specimens in sandbox mode, you must add them to the monster 
 class list.  The package name is "SuperZombie" and the specimens available 
