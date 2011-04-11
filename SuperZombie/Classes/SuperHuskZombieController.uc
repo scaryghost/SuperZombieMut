@@ -64,10 +64,8 @@ function rotator AdjustAim(FireProperties FiredAmmunition, vector projStart, int
         // hack guess at projecting falling velocity of target
         if ( Target.Physics == PHYS_Falling) {
             if ( Target.PhysicsVolume.Gravity.Z <= Target.PhysicsVolume.Default.Gravity.Z ) {
-                ZombieSuperHusk(pawn).logToPlayer(2,"Hack1");
                 TargetVel.Z = FMin(TargetVel.Z + FMax(-400, Target.PhysicsVolume.Gravity.Z * FMin(1,TargetDist/projSpeed)),0);
             } else {
-                ZombieSuperHusk(pawn).logToPlayer(2,"Hack2");
                 TargetVel.Z = FMin(0, TargetVel.Z);
             }
         }
@@ -75,8 +73,7 @@ function rotator AdjustAim(FireProperties FiredAmmunition, vector projStart, int
         FireSpot += FMin(1, 0.7 + 0.6 * FRand()) * TargetVel * TargetDist/projSpeed;
         FireSpot.Z = FMin(Target.Location.Z, FireSpot.Z);
         if (default.aimAtFeetZ != 0.0 && Target.Physics == PHYS_Falling && bDefendCloseRange) {
-            ZombieSuperHusk(pawn).logToPlayer(3,"Distance: "$TargetDist);
-            ZombieSuperHusk(pawn).logToPlayer(2,"I know where to hit you sucker!");
+            ZombieSuperHusk(pawn).logToPlayer(2,"Distance: "$TargetDist);
             FireSpot.Z= default.aimAtFeetZ;
         }
 
@@ -119,7 +116,6 @@ function rotator AdjustAim(FireProperties FiredAmmunition, vector projStart, int
         }
     }
 
-    bWantsToAimAtFeet= false;
     if ( FiredAmmunition.bTrySplash && (Pawn(Target) != None) && (((Target.Physics == PHYS_Falling)
         && (Pawn.Location.Z + 80 >= Target.Location.Z)) || ((Pawn.Location.Z + 19 >= Target.Location.Z)
         && (bDefendCloseRange || bWantsToAimAtFeet))) ) {
@@ -129,7 +125,6 @@ function rotator AdjustAim(FireProperties FiredAmmunition, vector projStart, int
         bClean = (HitActor == None);
         //So if we're too close, and not jumping, bClean is false
         //same distance but jumping, bClean is true
-        ZombieSuperHusk(pawn).logToPlayer(2,"Clean Before? "$bClean);
         if ( !bClean ) {
             FireSpot = HitLocation + vect(0,0,3);
             bClean = FastTrace(FireSpot, ProjStart);
@@ -139,7 +134,6 @@ function rotator AdjustAim(FireProperties FiredAmmunition, vector projStart, int
         if (bClean && TargetDist > 625.0) {
             setAimAtFeetZ(FireSpot.Z);
         }
-        ZombieSuperHusk(pawn).logToPlayer(2,"Clean? "$bClean);
     }
 
     if ( !bClean ) {
@@ -180,11 +174,9 @@ function rotator AdjustAim(FireProperties FiredAmmunition, vector projStart, int
 
     // adjust for toss distance
     if ( FiredAmmunition.bTossed ) {
-        ZombieSuperHusk(pawn).logToPlayer(2,"Toss!");
         FireDir = AdjustToss(projspeed,ProjStart,FireSpot,true);
     }
     else {
-        ZombieSuperHusk(pawn).logToPlayer(2,"No Toss!");
         FireDir = FireSpot - ProjStart;
     }
 
