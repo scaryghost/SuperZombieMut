@@ -51,14 +51,14 @@ simulated function Tick(float DeltaTime) {
             SetAnimAction('transition');
             LastForceChargeTime = Level.TimeSeconds;
             GoToState('ChargePipes');
-            LogToPlayer(2,"Charge!");
+            logToPlayer(2,"Charge!");
         } else if(pipeCount >= 2) {
             Controller.Target= LastProjectile;
             Controller.Focus= LastProjectile;
             GotoState('AttackPipes');
             attackPipeCoolDown= minPipeDistance/(class'BossLAWProj'.default.MaxSpeed)+GetAnimDuration('PreFireMissile');
         }
-        LogToPlayer(3,"Num of pipebombs: "$pipeCount);
+        logToPlayer(3,"Num of pipebombs: "$pipeCount);
     }
     spawnTimer+= DeltaTime;
     attackPipeCoolDown= FMax(0,attackPipeCoolDown-DeltaTime);
@@ -125,7 +125,6 @@ state ChargePipes extends Charging {
 
     function EndState() {
         super.EndState();
-        logToPlayer(2,"Done Charging!");
     }
 
     function Tick( float Delta ) {
@@ -263,11 +262,9 @@ function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector M
         return;
     }
     if(ZombieSuperBoss(InstigatedBy) != none || InstigatedBy == none) {
-        LogToPlayer(2,"I hurt myself!");
         return;
     }
 
-    logToPlayer(3,"InstigatedBy: "$InstigatedBy);
 
     if ( class<DamTypeCrossbow>(damageType) == none && class<DamTypeCrossbowHeadShot>(damageType) == none ) {
         bOnlyDamagedByCrossbow = false;
@@ -298,9 +295,9 @@ function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector M
     ChargeDamage += (OldHealth-Health);
 
     LastDamageTime = Level.TimeSeconds;
-    LogToPlayer(3,"Charge Damage: "$ChargeDamage);
-    LogToPlayer(3,"Last Damage Time: "$LastDamageTime);
-    LogToPlayer(3,"Level.TimeSeconds: "$Level.TimeSeconds);
+    logToPlayer(3,"Charge Damage: "$ChargeDamage);
+    logToPlayer(3,"Last Damage Time: "$LastDamageTime);
+    logToPlayer(3,"Level.TimeSeconds: "$Level.TimeSeconds);
     if( ShouldChargeFromDamage() && ChargeDamage > ChargeDamageThreshold ) {
         // If someone close up is shooting us, just charge them
         if( InstigatedBy != none ) {

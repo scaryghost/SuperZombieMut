@@ -9,7 +9,7 @@ simulated function PostBeginPlay() {
 }
 
 function logToPlayer(int level, string msg) {
-    isItMyLogLevel(level) && outputToChat(msg);
+    (logLevel >= level) && outputToChat(msg);
 }
 
 function bool outputToChat(string msg) {
@@ -24,10 +24,6 @@ function bool outputToChat(string msg) {
     return true;
 }
 
-function bool isItMyLogLevel(int level) {
-    return (logLevel >= level);
-}
-
 simulated function SpawnTwoShots() {
     DoShakeEffect();
 
@@ -36,7 +32,6 @@ simulated function SpawnTwoShots() {
         if( Controller!=None && KFDoorMover(Controller.Target)!=None ) {
             Controller.Target.TakeDamage(ScreamDamage*0.6,Self,Location,vect(0,0,0),ScreamDamageType);
             HurtRadiusThroughDoor(ScreamDamage*0.6 ,ScreamRadius, ScreamDamageType, ScreamForce, Location);
-            logToPlayer(2,"Scream at door!");
         }
         else {
             HurtRadiusThroughDoor(ScreamDamage ,ScreamRadius, ScreamDamageType, ScreamForce, Location);
@@ -82,7 +77,6 @@ simulated function HurtRadiusThroughDoor( float DamageAmount, float DamageRadius
             if (Instigator != None && Vehicle(Victims) != None && Vehicle(Victims).Health > 0)
                 Vehicle(Victims).DriverRadiusDamage(UsedDamageAmount, DamageRadius, Instigator.Controller, 
                 DamageType, UsedMomentum, HitLocation);
-            logToPlayer(2,"Momentum: "$UsedMomentum);
         }
     }
     bHurtEntry = false;

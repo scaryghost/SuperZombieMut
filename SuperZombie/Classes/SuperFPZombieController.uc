@@ -63,15 +63,11 @@ state ZombieCharge {
         bStartled= false;
         bAttackedTarget= false;
         bMissTarget= false;
-        
-        ZombieSuperFP(pawn).logToPlayer(3,"Entering ZombieCharge state");
     }
 
     function EndState() {
         prevRageTimer= RageFrustrationTimer;
         prevRageThreshold= RageFrustrationThreshhold;
-
-        ZombieSuperFP(pawn).logToPlayer(3,"Leaving ZombieCharge state");
     }
 
 WaitForAnim:

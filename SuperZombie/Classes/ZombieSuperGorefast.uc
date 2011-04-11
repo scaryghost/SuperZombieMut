@@ -10,7 +10,7 @@ simulated function PostBeginPlay() {
 }
 
 function logToPlayer(int level, string msg) {
-    isItMyLogLevel(level) && outputToChat(msg);
+    (logLevel >= level) && outputToChat(msg);
 }
 
 function bool outputToChat(string msg) {
@@ -23,10 +23,6 @@ function bool outputToChat(string msg) {
     }
 
     return true;
-}
-
-function bool isItMyLogLevel(int level) {
-    return (logLevel >= level);
 }
 
 function RangedAttack(Actor A) {

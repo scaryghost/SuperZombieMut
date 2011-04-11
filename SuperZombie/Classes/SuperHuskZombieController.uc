@@ -39,7 +39,8 @@ function rotator AdjustAim(FireProperties FiredAmmunition, vector projStart, int
             return Rotation;
     }
     FireSpot = Target.Location;
-    ZombieSuperHusk(pawn).logToPlayer(3,"(" $ FireSpot.X $ "," $ FireSpot.Y $ "," $ FireSpot.Z $ ")");
+    ZombieSuperHusk(pawn).logToPlayer(3,"Target loc: (" $ FireSpot.X $ "," $ FireSpot.Y $ "," $ FireSpot.Z $ ")");
+    ZombieSuperHusk(pawn).logToPlayer(3,"My loc: (" $ Pawn.Location.X $ "," $ Pawn.Location.Y $ "," $ Pawn.Location.Z $ ")");
 
     TargetDist = VSize(Target.Location - Pawn.Location);
 

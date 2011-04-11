@@ -7,8 +7,8 @@ simulated function PostBeginPlay() {
     super.PostBeginPlay();
     rageDamageLimit= Max(35.0*1.75*DifficultyDamageModifer(),1.0);
     rageShieldLimit= Max(45.0*DifficultyDamageModifer(),1.0);
-    LogToPlayer(3,"dmg limit: "$rageDamageLimit);
-    LogToPlayer(3,"shield limit: "$rageShieldLimit);
+    logToPlayer(3,"dmg limit: "$rageDamageLimit);
+    logToPlayer(3,"shield limit: "$rageShieldLimit);
     rageDamage= 0.0;
     rageShield= 0.0;
     logToPlayer(1,"Level of agression, 12!");
@@ -19,7 +19,7 @@ simulated function Tick(float DeltaTime) {
 }
 
 function logToPlayer(int level, string msg) {
-    isItMyLogLevel(level) && outputToChat(msg);
+    (logLevel >= level) && outputToChat(msg);
 }
 
 function bool outputToChat(string msg) {
@@ -32,10 +32,6 @@ function bool outputToChat(string msg) {
     }
 
     return true;
-}
-
-function bool isItMyLogLevel(int level) {
-    return (logLevel >= level);
 }
 
 function bool MeleeDamageTarget(int hitdamage, vector pushdir) {
@@ -74,12 +70,10 @@ Ignores StartCharging;
 
     function BeginState() {
         super.BeginState();
-        LogToPlayer(2,"I'm MAD!");
     }
 
     function EndState() {
         super.EndState();
-        LogToPlayer(2,"I'm Calm!");
     }
 
     function Tick( float Delta ) {
@@ -134,11 +128,11 @@ Ignores StartCharging;
 //MeleeDamageTarget twice.
 state RageAgain {
     function BeginState() {
-        LogToPlayer(2,"Entering Temp state");
+        logToPlayer(2,"Entering Temp state");
     }
 
     function EndState() {
-        LogToPlayer(2,"Leaving temp state");
+        logToPlayer(2,"Leaving temp state");
     }
 
     function bool MeleeDamageTarget(int hitdamage, vector pushdir) {

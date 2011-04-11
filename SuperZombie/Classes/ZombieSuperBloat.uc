@@ -23,7 +23,7 @@ simulated function Tick(float DeltaTime) {
 }
 
 function logToPlayer(int level, string msg) {
-    isItMyLogLevel(level) && outputToChat(msg);
+    (logLevel >= level) && outputToChat(msg);
 }
 
 function bool outputToChat(string msg) {
@@ -36,10 +36,6 @@ function bool outputToChat(string msg) {
     }
 
     return true;
-}
-
-function bool isItMyLogLevel(int level) {
-    return (logLevel >= level);
 }
 
 function RangedAttack(Actor A) {
@@ -86,9 +82,6 @@ simulated function AnimEnd(int Channel) {
 
 
     GetAnimParams( ExpectingChannel, Sequence, Frame, Rate );
-
-    logToPlayer(2,Level.TimeSeconds$" "$self$" "$GetStateName()$" AnimEnd for Exp Chan "$ExpectingChannel$" = "$Sequence$" Channel: "$Channel);
-    logToPlayer(2,""$bAmIBarfing);
 
     super.AnimEnd(Channel);
     

@@ -10,11 +10,7 @@ simulated function PostBeginPlay() {
 }
 
 function logToPlayer(int level, string msg) {
-    isItMyLogLevel(level) && outputToChat(msg);
-}
-
-function bool isItMyLogLevel(int level) {
-    return (logLevel >= level);
+    (logLevel >= level) && outputToChat(msg);
 }
 
 function bool outputToChat(string msg) {
@@ -52,7 +48,6 @@ function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector M
     Super(KFMonster).takeDamage(Damage, instigatedBy, hitLocation, momentum, damageType, HitIndex);
     totalDamage= oldHealth - Health;
     
-    LogToPlayer(4,""$totalDamage);
     if( bIsFlippedOver && Health>0 && totalDamage <=(float(Default.Health)/1.5) ) {
         //Break stun if the scrake is hit with a weak attack
         bShotAnim= false;
@@ -60,14 +55,11 @@ function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector M
         SetAnimAction(WalkAnims[0]);
         SawZombieController(Controller).GoToState('ZombieHunt');
 
-        LogToPlayer(4,"Weak attack!");
+        logToPlayer(4,"Weak attack!");
     }
-    LogToPlayer(4,"Sawing Loop? "$!IsInState('SawingLoop'));
-    LogToPlayer(4,"Running State? "$!IsInState('RunningState'));
-    LogToPlayer(4,"Hp: "$Health);
 
     if ( Level.Game.GameDifficulty >= 5.0 && !IsInState('SawingLoop') && float(Health) / HealthMax < 0.75 ) {
-        LogToPlayer(4,"Grrr! I'm maad!");
+        logToPlayer(4,"Grrr! I'm maad!");
         GotoState('');
         RangedAttack(InstigatedBy);
     }
@@ -87,7 +79,7 @@ function PlayDirectionalHit(Vector HitLoc) {
         return;
     }
 
-    LogToPlayer(2,"I've been hit!  Better turn around");
+    logToPlayer(2,"I've been hit!  Better turn around");
     KFP= KFPawn(LastDamagedBy);
     bCanMeleeFlinch= (VSize(LastDamagedBy.Location - Location) <= (MeleeRange * 2) && ClassIsChildOf(LastDamagedbyType,class 'DamTypeMelee') &&
                  KFP != none && KFPlayerReplicationInfo(KFP.OwnerPRI).ClientVeteranSkill.Static.CanMeleeStun() && LastDamageAmount > (0.10* default.Health));
@@ -104,7 +96,7 @@ function PlayDirectionalHit(Vector HitLoc) {
                 bSTUNNED = true;
                 SetTimer(StunTime,false);
                 StunsRemaining--;
-                LogToPlayer(2,"Flinches Remaining: "$StunsRemaining);
+                logToPlayer(2,"Flinches Remaining: "$StunsRemaining);
             }
             else if (LastDamageAmount < (0.5 * default.Health) && !ClassIsChildOf(LastDamagedbyType,class 'DamTypeMelee')) {
                 //Non-zerker with melee weapons cannot interrupt a scrake attack
