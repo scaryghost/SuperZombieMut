@@ -1,7 +1,7 @@
 class SuperHuskZombieController extends HuskZombieController;
 
 
-var float aimAtFeetZ;
+var float aimAtFeetZDelta;
 
 function PostBeginPlay() {
     super.PostBeginPlay();
@@ -11,8 +11,8 @@ function bool DefendCloseRange(float Dist) {
     return ( (Enemy.Weapon != None) && (Dist < 1000) );
 }
 
-static function setAimAtFeetZ(float z) {
-    default.aimAtFeetZ= z;
+static function setAimAtFeetZDelta(float z) {
+    default.aimAtFeetZDelta= z;
 }
 
 /*
@@ -73,9 +73,9 @@ function rotator AdjustAim(FireProperties FiredAmmunition, vector projStart, int
         // more or less lead target (with some random variation)
         FireSpot += FMin(1, 0.7 + 0.6 * FRand()) * TargetVel * TargetDist/projSpeed;
         FireSpot.Z = FMin(Target.Location.Z, FireSpot.Z);
-        if (default.aimAtFeetZ != 0.0 && Target.Physics == PHYS_Falling && bDefendCloseRange) {
+        if (default.aimAtFeetZDelta != 0.0 && Target.Physics == PHYS_Falling && bDefendCloseRange) {
             ZombieSuperHusk(pawn).logToPlayer(2,"Distance: "$TargetDist);
-            FireSpot.Z= default.aimAtFeetZ;
+            FireSpot.Z= Pawn.Location.Z + default.aimAtFeetZDelta;
         }
 
         if ( (Target.Physics != PHYS_Falling) && (FRand() < 0.55) && (VSize(FireSpot - ProjStart) > 1000) ) {
@@ -133,7 +133,8 @@ function rotator AdjustAim(FireProperties FiredAmmunition, vector projStart, int
         else
             bClean = ( (Target.Physics == PHYS_Falling) && FastTrace(FireSpot, ProjStart) );
         if (bClean && TargetDist > 625.0) {
-            setAimAtFeetZ(FireSpot.Z);
+            setAimAtFeetZDelta(FireSpot.Z - Pawn.Location.Z);
+            ZombieSuperHusk(pawn).logToPlayer(3,"Updated the Z delta: "$default.aimAtFeetZDelta);
         }
     }
 
@@ -212,10 +213,9 @@ function rotator AdjustAim(FireProperties FiredAmmunition, vector projStart, int
 
     //Make it so the Husk always shoots the ground it the target is close
     SetRotation(FireRotation);
-    ZombieSuperHusk(pawn).logToPlayer(3,"(" $ FireRotation.Pitch $ "," $ FireRotation.Yaw $ "," $ FireRotation.Roll $ ")");
     return FireRotation;
 }
 
 defaultproperties {
-    aimAtFeetZ= 0.0;
+    aimAtFeetZDelta= 0.0;
 }
