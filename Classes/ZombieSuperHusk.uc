@@ -1,7 +1,10 @@
 class ZombieSuperHusk extends ZombieHusk;
 
-var int consecutiveShots;
-var int maxConsecutiveShots;
+/**
+ *  consecutiveShots            How many consecutive shots the Super Husk has taken
+ *  maxConsecutiveShots         Max consecutive shots the Super Husk can take before the cool down timer kicks in
+ */
+var int consecutiveShots, maxConsecutiveShots;
 
 simulated function PostBeginPlay() {
     super.PostBeginPlay();
@@ -38,6 +41,7 @@ function RangedAttack(Actor A)
         Controller.bPreparingMove = true;
         Acceleration = vect(0,0,0);
 
+        //Increment the number of consecutive shtos taken and apply the cool down if needed
         consecutiveShots++;
         if(consecutiveShots < maxConsecutiveShots) {
             NextFireProjectileTime= Level.TimeSeconds;

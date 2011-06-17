@@ -1,23 +1,42 @@
 class SuperZombieMut extends Mutator
     config(SuperZombieMut);
 
+/**
+ *  Struct that stores what a specific zombie should be replaced with
+ */
 struct oldNewZombiePair {
     var string oldClass;
     var string newClass;
     var bool bReplace;
 };
 
+/**
+ *  Struct that stores all the property attributes
+ */
 struct propertyDescPair {
     var string property;
     var string longDescription;
     var string shortDescription;
 };
 
+/**
+ *  Configuration variables that store whether or not to replace the specimen
+ */
 var() config bool bReplaceCrawler, bReplaceStalker, bReplaceGorefast, bReplaceBloat, 
                 bReplaceSiren, bReplaceHusk, bReplaceScrake, bReplaceFleshpound, bReplaceBoss;
+/**
+ *  Array that stores all the replacement pairs
+ */
 var array<oldNewZombiePair> replacementArray;
+
+/**
+ *  Array that stores all the properties and their descriptions
+ */
 var array<propertyDescPair> propDescripArray;
 
+/**
+ *  Replaces the zombies in the given squadArray
+ */
 function replaceSpecialSquad(out array<KFGameType.SpecialSquad> squadArray) {
     local int i,j,k;
     local oldNewZombiePair replacementValue;

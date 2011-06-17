@@ -1,6 +1,14 @@
 class ZombieSuperBloat extends ZombieBloat;
 
+/**
+ *  bAmIBarfing     true if the bloat is in the barf animation
+ */
 var bool bAmIBarfing;
+
+/**
+ *  bileCoolDownTimer   timer that counts to when the bloat will spawn another set of pile pellets
+ *  bileCoolDownMax     max time in between pellet spawns
+ */
 var float bileCoolDownTimer,bileCoolDownMax;
 
 simulated function PostBeginPlay() {
@@ -9,6 +17,10 @@ simulated function PostBeginPlay() {
     bileCoolDownTimer= 0.0;
 }
 
+/**
+ *  Spawn extra sets of bile pellets here once the bile cool down timer
+ *  has reached the max limit
+ */
 simulated function Tick(float DeltaTime) {
     super.Tick(DeltaTime);
     if(!bDecapitated && bAmIBarfing) {

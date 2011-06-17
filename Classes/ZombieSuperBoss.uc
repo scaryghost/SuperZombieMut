@@ -1,17 +1,38 @@
 class ZombieSuperBoss extends ZombieBoss;
 
+/**
+ *  Struct to store how many times each player hit the patriarch
+ */
 struct damHitTracker {
     var Pawn instigator;
     var array<float> deltaTimes;
     var float firstTimeHit;
 };
 
-var int ChargeDamageThreshold;
-var int minEnemiesClose;
-var float pipebombDamageMult;
+/**
+ *  ChargeDamageThreshold       minimum damage the patriarch will take before charging any players within 700uu
+ *  minEnemiesClose             minimum number of enemies close to the patriarch that will trigger the AOE kneel
+ */
+var int ChargeDamageThreshold, minEnemiesClose;
+
+/**
+ *  bJustSpawned                true if the pariarch just spawned.  The flag will prevent the patriarch from destroying 
+ *                              pipe bombs during his introduction scene
+ */
 var bool bJustSpawned;
-var float spawnTimer, attackPipeCoolDown;
-var float minPipeDistance;
+
+/**
+ *  spawnTimer                  track how long the patriarch has spawned
+ *  attackPipeCoolDown          cool down timer so the patriarch will not shoot another 
+ *                              pile of pipes until his first rocket as exploded
+ *  pipebombDamageMult          the pipe bomb scaling used to reduce pipe damage to the patriarch
+ *  minPipeDistance             minimum distance that will trigger the patriarch's anti-pipebomb attack
+ */
+var float spawnTimer, attackPipeCoolDown, pipebombDamageMult, minPipeDistance;
+
+/**
+ *  hsDamHistList               stores everyone who attacked the patriarch with hunting shotguns
+ */
 var array<damHitTracker> hsDamHitList;
 
 simulated function PostBeginPlay() {
@@ -21,6 +42,9 @@ simulated function PostBeginPlay() {
     spawnTimer= 0.0;
 }
 
+/**
+ *  Give the patriarch more to do during each tick
+ */
 simulated function Tick(float DeltaTime) {
     local PipeBombProjectile CheckProjectile;
     local PipeBombProjectile LastProjectile;
@@ -32,19 +56,33 @@ simulated function Tick(float DeltaTime) {
 
     super.Tick(DeltaTime);
 
+    /**
+     *  If the patriarch has finished his introduction, the pipe bomb cooldown timer has expire 
+     *  and is in the base state, checking if a pipe bomb pile is visible
+     */
     if(!bJustSpawned && attackPipeCoolDown <= 0.0 && bBaseState) {
         pipeCount= 0;
         playerCount= 0;
+        /**
+         *  Count how many pipe bombs are visible within a radius
+         */
         foreach VisibleCollidingActors( class 'PipeBombProjectile', CheckProjectile, minPipeDistance, Location ) {
             pipeCount++;
             LastProjectile= CheckProjectile;
         }
         if(pipeCount >= 2) {
+            /**
+             *  Count how many players are visible within twice the radius
+             */
             foreach VisibleCollidingActors( class 'KFHumanPawn', CheckHP, minPipeDistance*2, Location ) {
                 playerCount++;
             }
         }
 
+        /**
+         *  If the visible number of pipes is <= 2 and there are visible players near it, 
+         *  charge through the pipes.  Otherwise, if the pipe count is >=2, just shoot it
+         */
         if(pipeCount <= 2 && PlayerCount != 0) {
             SetAnimAction('transition');
             LastForceChargeTime = Level.TimeSeconds;
@@ -53,6 +91,8 @@ simulated function Tick(float DeltaTime) {
             Controller.Target= LastProjectile;
             Controller.Focus= LastProjectile;
             GotoState('AttackPipes');
+            //Calculate how long the LAW rocket will travel so the patriarch doesn't fire another one 
+            //at the samep pile until the first one detonates
             attackPipeCoolDown= minPipeDistance/(class'BossLAWProj'.default.MaxSpeed)+GetAnimDuration('PreFireMissile');
         }
     }
@@ -61,7 +101,10 @@ simulated function Tick(float DeltaTime) {
     bJustSpawned= (spawnTimer <= GetAnimDuration('Entrance'));
 }
 
-
+/**
+ *  Calculates how many enemies are within a certain distance of the patriarch.
+ *  Distance is given in the function parameter.
+ */
 function int numEnemiesAround(float minDist) {
     local Controller C;
     local int count;
@@ -76,6 +119,9 @@ function int numEnemiesAround(float minDist) {
     return count;
 }
 
+/**
+ *  Temp state for when the Patriarch attacks a pipe pile
+ */ 
 state AttackPipes {
 Ignores RangedAttack;
 
@@ -89,6 +135,10 @@ Ignores RangedAttack;
         GoToState('FireMissile');
     }
 }
+
+/**
+ *  State to have the patriarch charge right through the pipe bombs.
+ */
 state ChargePipes extends Charging {
     // Don't override speed in this state
     function bool CanSpeedAdjust() {
@@ -157,6 +207,9 @@ state ChargePipes extends Charging {
     }
 }
 
+/**
+ *  Allow the patriarch to automatically destroy any welded door in his path
+ */
 State Escaping { // Got hurt and running away...
     function DoorAttack(Actor A) {
         local vector hitLocation;
@@ -227,6 +280,9 @@ Begin:
     }
 }
 
+/**
+ *  Give the patriarch new responses when he takes damage
+ */
 function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector Momentum, class<DamageType> damageType, optional int HitIndex) {  
     local float DamagerDistSq;
     local float UsedPipeBombDamScale;
@@ -234,13 +290,11 @@ function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector M
     local vector Start;
     local Rotator R;
 
+    //If the patriarch was hit with the hunting shotgun, update the list and see if anyone was cheating
     if(class<DamTypeDBShotgun>(damageType) != none && updateHsDamHitList(InstigatedBy)) {
         Controller.Target= InstigatedBy;
         Controller.Focus= InstigatedBy;
         GotoState('KillCheater');
-        return;
-    }
-    if(ZombieSuperBoss(InstigatedBy) != none || InstigatedBy == none) {
         return;
     }
 
@@ -267,12 +321,15 @@ function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector M
     OldHealth= Health;
     Super(KFMonster).TakeDamage(Damage,instigatedBy,hitlocation,Momentum,damageType);
 
+    /**
+     *  Reset the charge accumulator if 10 seconds have passed since the patriarch last took damage.  
+     *  Old Patriarch code had this wrong and never incremented the accumulator
+     */
     if( LastDamageTime != 0.0 && Level.TimeSeconds - LastDamageTime > 10 ) {
         ChargeDamage = 0;
     }
      
     ChargeDamage += (OldHealth-Health);
-
     LastDamageTime = Level.TimeSeconds;
     if( ShouldChargeFromDamage() && ChargeDamage > ChargeDamageThreshold ) {
         // If someone close up is shooting us, just charge them
@@ -301,6 +358,9 @@ function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector M
             KFMonsterController(Controller).bUseFreezeHack = True;
             numEnemies= numEnemiesAround(150);
 
+            /**
+             *  If the patriarch is surrounded by enemies with melee weapons, do the AOE kneel to hurt them
+             */
             if(numEnemies >= minEnemiesClose) {
                 outputToChat("Learn how to do something other than lumberjack gang-bang you noobs.");
                 Start = GetBoneCoords('tip').Origin;
@@ -311,6 +371,9 @@ function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector M
     }
 } 
 
+/**
+ *  Update the list of people who have hit the patriarch with the hunting shotgun
+ */
 function bool updateHsDamHitList(pawn Instigator) {
     local int i;
     local bool bFound;
@@ -345,6 +408,10 @@ function bool updateHsDamHitList(pawn Instigator) {
     return false;
 }
 
+/**
+ *  If the super Patriarch has detected someone using the auto HSG glitch,
+ *  run over to him and 1 shot him.
+ */
 state KillCheater extends ChargePipes {
 Ignores TakeDamage;   
     function BeginState() {

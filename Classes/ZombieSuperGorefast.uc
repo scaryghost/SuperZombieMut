@@ -1,5 +1,8 @@
 class ZombieSuperGorefast extends ZombieGoreFast;
 
+/**
+ *  minRageDist         minimum distance to trigger the Super Gorefast's rage state
+ */
 var float minRageDist;
 
 simulated function PostBeginPlay() {
@@ -37,10 +40,10 @@ state RunningState {
             return;
         else if ( CanAttack(A) ) {
             bShotAnim = true;
-
-            // Randomly do a moving attack so the player can't kite the zed
-                SetAnimAction('ClawAndMove');
-                RunAttackTimeout = GetAnimDuration('GoreAttack1', 1.0);
+            
+            //Always do the charging melee attack
+            SetAnimAction('ClawAndMove');
+            RunAttackTimeout = GetAnimDuration('GoreAttack1', 1.0);
             return;
         }
     }
