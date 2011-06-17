@@ -2,6 +2,7 @@ class ZombieSuperFP extends ZombieFleshPound;
 
 var int logLevel;
 var float rageDamage, rageDamageLimit, rageShield, rageShieldLimit;
+var int totalDamageRageThreshold,totalRageAccumulator;
 
 simulated function PostBeginPlay() {
     super.PostBeginPlay();
@@ -32,6 +33,21 @@ function bool outputToChat(string msg) {
     }
 
     return true;
+}
+
+function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector Momentum, class<DamageType> damageType, optional int HitIndex) {
+    local int oldHealth;
+
+    oldHealth= Health;
+    super.TakeDamage(Damage, InstigatedBy, Hitlocation, Momentum, damageType, HitIndex);
+    totalRageAccumulator+= (oldHealth - Health);
+
+	if (!isInState('BeginRaging') && !bDecapitated && 
+        totalRageAccumulator >= totalDamageRageThreshold && 
+        !bChargingPlayer && (!(bCrispified && bBurnified) || bFrustrated) ) {
+        totalRageAccumulator= 0;
+        StartCharging();
+    }
 }
 
 function bool MeleeDamageTarget(int hitdamage, vector pushdir) {
@@ -181,17 +197,6 @@ defaultproperties {
     logLevel= 0
     MenuName="Super FleshPound"
     ControllerClass=Class'SuperZombie.SuperFPZombieController'
+    totalDamageRageThreshold= 1080
 }
 
-//
-//Medic:
-//5/15
-//6/20
-
-//Berserker:
-//11/35
-//15/55
-
-//Everyone else:
-//20/62
-//26/80 - 21/65 - 14/45 - 4/12.75
