@@ -1,29 +1,14 @@
 class ZombieSuperStalker extends ZombieStalker;
 
 var int logLevel;
-var float meleeCoolDownTimer;
-var float defaultCoolDown;
-var bool bMeleeCoolDown;
 
 simulated function PostBeginPlay() {
     logToPlayer(1,"Come, give us two kisses!");
-    defaultCoolDown= GetAnimDuration('StalkerAttack1', 1.0);
-    meleeCoolDownTimer= defaultCoolDown;
-    bMeleeCoolDown= false;
     super.PostBeginPlay();
 }
 
 simulated function Tick(float DeltaTime) {
     super.Tick(DeltaTime);
-    if(bMeleeCoolDown) {
-        meleeCoolDownTimer-= DeltaTime;
-    }
-    if(meleeCoolDownTimer <= 0) {
-        meleeCoolDownTimer= defaultCoolDown;
-        bMeleeCoolDown= false;
-    }
-
-    logToPlayer(3,"Melee Cooldown: "$meleeCoolDownTimer);
     // Keep the stalker moving toward its target when attacking
     if( Role == ROLE_Authority && bShotAnim && !bWaitForAnim ) {
         if( LookTarget!=None ) {
@@ -51,11 +36,10 @@ function bool outputToChat(string msg) {
 function RangedAttack(Actor A) {
     if ( bShotAnim || Physics == PHYS_Swimming)
         return;
-    else if ( !bMeleeCoolDown && CanAttack(A) ) {
+    else if ( CanAttack(A) ) {
         bShotAnim = true;
         SetAnimAction('ClawAndMove');
         //PlaySound(sound'Claw2s', SLOT_None); KFTODO: Replace this
-        bMeleeCoolDown= true;
         return;
     }
 }
