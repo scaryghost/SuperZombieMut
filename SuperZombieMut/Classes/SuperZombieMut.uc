@@ -35,18 +35,18 @@ function replaceSpecialSquad(out array<KFGameType.SpecialSquad> squadArray) {
 }
 
 function PostBeginPlay() {
-	local int i,k;
-	local KFGameType KF;
+    local int i,k;
+    local KFGameType KF;
     local oldNewZombiePair replacementValue;
 
-	KF = KFGameType(Level.Game);
-  	if (Level.NetMode != NM_Standalone)
-		AddToPackageMap("SuperZombie");
+    KF = KFGameType(Level.Game);
+    if (Level.NetMode != NM_Standalone)
+        AddToPackageMap("SuperZombie");
 
-	if (KF == none) {
-		Destroy();
-		return;
-	}
+    if (KF == none) {
+        Destroy();
+        return;
+    }
 
     replacementArray[0].bReplace= bReplaceFleshpound;
     replacementArray[1].bReplace= bReplaceGorefast;
@@ -90,11 +90,11 @@ function PostBeginPlay() {
     class'ZombieSuperHusk'.default.logLevel= debugLogLevel;
     class'ZombieSuperBloat'.default.logLevel= debugLogLevel;
 
-	SetTimer(0.1, false);
+    SetTimer(0.1, false);
 }
 
 function Timer() {
-	Destroy();
+    Destroy();
 }
 
 static function FillPlayInfo(PlayInfo PlayInfo) {
@@ -127,9 +127,9 @@ static event string GetDescriptionText(string property) {
 
 defaultproperties {
     debugLogLevel=0;
-	GroupName="KFSuperZombieMut"
-	FriendlyName="Super Zombie"
-	Description="Alters the behavior of the specimens.  This mutator's version is 1.6."
+    GroupName="KFSuperZombieMut"
+    FriendlyName="Super Zombie"
+    Description="Alters the behavior of the specimens.  This mutator's version is 1.6."
     replacementArray(0)=(oldClass="KFChar.ZombieFleshPound",newClass="SuperZombie.ZombieSuperFP",bReplace=false)
     replacementArray(1)=(oldClass="KFChar.ZombieGorefast",newClass="SuperZombie.ZombieSuperGorefast",bReplace=false)
     replacementArray(2)=(oldClass="KFChar.ZombieStalker",newClass="SuperZombie.ZombieSuperStalker",bReplace=false)

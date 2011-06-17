@@ -373,12 +373,12 @@ state KillCheater extends ChargePipes {
 Ignores TakeDamage;   
     function BeginState() {
         super.BeginState();
-        outputToChat("You're pathetic, needing to glitch in a PvE game.");
+        outputToChat("I shall smite those who use the hunting shotgun glitch");
     } 
 
     function bool MeleeDamageTarget(int hitdamage, vector pushdir) {
-		pushdir = Normal(Controller.Target.Location-Location)*1000000; // Fly bitch!
-	    if(Super.MeleeDamageTarget(100000, pushdir)) {
+        pushdir = Normal(Controller.Target.Location-Location)*1000000; // Fly bitch!
+        if(Super.MeleeDamageTarget(100000, pushdir)) {
             GotoState('');
             return true;
         }
