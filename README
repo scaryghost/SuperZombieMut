@@ -13,7 +13,7 @@ check the wedadmin configuration page to make sure your desired specimens
 are active if it you are running the mutator for the first time.
 
 To add the specimens in sandbox mode, you must add them to the monster 
-class list.  The package name is "SuperZombie" and the specimens available 
+class list.  The package name is "SuperZombieMut" and the specimens available 
 are:
 
     ZombieSuperFP

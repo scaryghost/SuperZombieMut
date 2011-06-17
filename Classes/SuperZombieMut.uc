@@ -59,7 +59,7 @@ function PostBeginPlay() {
 
     KF = KFGameType(Level.Game);
     if (Level.NetMode != NM_Standalone)
-        AddToPackageMap("SuperZombie");
+        AddToPackageMap("SuperZombieMut");
 
     if (KF == none) {
         Destroy();
