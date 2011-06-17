@@ -134,15 +134,15 @@ static event string GetDescriptionText(string property) {
 defaultproperties {
     GroupName="KFSuperZombieMut"
     FriendlyName="Super Zombie"
-    Description="Alters the behavior of the specimens.  This mutator's version is 1.6."
-    replacementArray(0)=(oldClass="KFChar.ZombieFleshPound",newClass="SuperZombie.ZombieSuperFP",bReplace=false)
-    replacementArray(1)=(oldClass="KFChar.ZombieGorefast",newClass="SuperZombie.ZombieSuperGorefast",bReplace=false)
-    replacementArray(2)=(oldClass="KFChar.ZombieStalker",newClass="SuperZombie.ZombieSuperStalker",bReplace=false)
-    replacementArray(3)=(oldClass="KFChar.ZombieSiren",newClass="SuperZombie.ZombieSuperSiren",bReplace=false)
-    replacementArray(4)=(oldClass="KFChar.ZombieScrake",newClass="SuperZombie.ZombieSuperScrake",bReplace=false)
-    replacementArray(5)=(oldClass="KFChar.ZombieHusk",newClass="SuperZombie.ZombieSuperHusk",bReplace=false)
+    Description="Alters the behavior of the specimens.  This mutator's version is 1.7."
+    replacementArray(0)=(oldClass="KFChar.ZombieFleshPound",newClass="SuperZombieMut.ZombieSuperFP",bReplace=false)
+    replacementArray(1)=(oldClass="KFChar.ZombieGorefast",newClass="SuperZombieMut.ZombieSuperGorefast",bReplace=false)
+    replacementArray(2)=(oldClass="KFChar.ZombieStalker",newClass="SuperZombieMut.ZombieSuperStalker",bReplace=false)
+    replacementArray(3)=(oldClass="KFChar.ZombieSiren",newClass="SuperZombieMut.ZombieSuperSiren",bReplace=false)
+    replacementArray(4)=(oldClass="KFChar.ZombieScrake",newClass="SuperZombieMut.ZombieSuperScrake",bReplace=false)
+    replacementArray(5)=(oldClass="KFChar.ZombieHusk",newClass="SuperZombieMut.ZombieSuperHusk",bReplace=false)
     replacementArray(6)=(oldClass="KFChar.ZombieCrawler",newClass="KFChar.ZombieShade",bReplace=false)
-    replacementArray(7)=(oldClass="KFChar.ZombieBloat",newClass="SuperZombie.ZombieSuperBloat",bReplace=false)
+    replacementArray(7)=(oldClass="KFChar.ZombieBloat",newClass="SuperZombieMut.ZombieSuperBloat",bReplace=false)
     propDescripArray(0)=(property="bReplaceCrawler",longDescription="Replace Crawlers with Shades",shortDescription="Replace Crawlers")
     propDescripArray(1)=(property="bReplaceStalker",longDescription="Replace Stalkers with SuperStalkers",shortDescription="Replace Stalkers")
     propDescripArray(2)=(property="bReplaceGorefast",longDescription="Replace Gorefasts with SuperGorefasts",shortDescription="Replace Gorefasts")
