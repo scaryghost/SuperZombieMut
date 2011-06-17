@@ -1,10 +1,12 @@
-// Zombie Monster for KF Invasion gametype
 class ZombieSuperSiren extends ZombieSiren;
 
 simulated function PostBeginPlay() {
     super.PostBeginPlay();
 }
 
+/**
+ *  Modified the function so the screams hit through doors as well as damaging them
+ */ 
 simulated function SpawnTwoShots() {
     DoShakeEffect();
 
@@ -20,6 +22,10 @@ simulated function SpawnTwoShots() {
     }
 }
 
+/**
+ *  Changed the Super Siren's screen to hit through all objects
+ *  TODO: Make the scream do less damage per non human hit?
+ */
 simulated function HurtRadiusThroughDoor( float DamageAmount, float DamageRadius, class<DamageType> DamageType, float Momentum, vector HitLocation ) {
     local actor Victims;
     local float damageScale, dist;
@@ -30,6 +36,7 @@ simulated function HurtRadiusThroughDoor( float DamageAmount, float DamageRadius
         return;
 
     bHurtEntry = true;
+    //Changed to CollidingActors
     foreach CollidingActors( class 'Actor', Victims, DamageRadius, HitLocation ) {
         if( (Victims != self) && !Victims.IsA('FluidSurfaceInfo') && 
             !Victims.IsA('KFMonster') && !Victims.IsA('ExtendedZCollision') ) {

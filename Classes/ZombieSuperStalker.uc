@@ -4,6 +4,9 @@ simulated function PostBeginPlay() {
     super.PostBeginPlay();
 }
 
+/**
+ *  Changed the Tick function to match the gorefasts, so she can do a moving melee attack
+ */
 simulated function Tick(float DeltaTime) {
     super.Tick(DeltaTime);
     // Keep the stalker moving toward its target when attacking
@@ -14,6 +17,9 @@ simulated function Tick(float DeltaTime) {
     }
 }
 
+/**
+ *  Stalker will always claw and move
+ */
 function RangedAttack(Actor A) {
     if ( bShotAnim || Physics == PHYS_Swimming)
         return;
@@ -25,6 +31,7 @@ function RangedAttack(Actor A) {
     }
 }
 
+// Copied from the Gorefast code
 // Overridden to handle playing upper body only attacks when moving
 simulated event SetAnimAction(name NewAction) {
     if( NewAction=='' )
@@ -41,7 +48,7 @@ simulated event SetAnimAction(name NewAction) {
     }
 }
 
-
+// Copied from the Gorefast code, updated with the stalker attacks
 // Handle playing the anim action on the upper body only if we're attacking and moving
 simulated function int AttackAndMoveDoAnimAction( name AnimName ) {
     local int meleeAnimIndex;

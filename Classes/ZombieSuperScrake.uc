@@ -1,12 +1,23 @@
 class ZombieSuperScrake extends ZombieScrake;
 
+/**
+ *  maxTimesFlipOver            How many times the scrake can be stunned.  When it is -1, the 
+ *                              the scrake cannot be stunned
+ */
 var int maxTimesFlipOver;
+
+/**
+ *  bIsFlippedOver              true if the scrake is flipped over, i.e. stunned
+ */
 var bool bIsFlippedOver;
 
 simulated function PostBeginPlay() {
     super.PostBeginPlay();
 }
 
+/**
+ *  Changed so the scrake only flips over a fixed number of times
+ */
 function bool FlipOver() {
     local bool bCalledFlipOver;
     maxTimesFlipOver--;
@@ -29,8 +40,10 @@ function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector M
     Super(KFMonster).takeDamage(Damage, instigatedBy, hitLocation, momentum, damageType, HitIndex);
     totalDamage= oldHealth - Health;
     
+    /** 
+     *  Break stun if the scrake is hit with a weak attack
+     */
     if( bIsFlippedOver && Health>0 && totalDamage <=(float(Default.Health)/1.5) ) {
-        //Break stun if the scrake is hit with a weak attack
         bShotAnim= false;
         bIsFlippedOver= false;
         SetAnimAction(WalkAnims[0]);
@@ -75,7 +88,9 @@ function PlayDirectionalHit(Vector HitLoc) {
                 StunsRemaining--;
             }
             else if (LastDamageAmount < (0.5 * default.Health) && !ClassIsChildOf(LastDamagedbyType,class 'DamTypeMelee')) {
-                //Non-zerker with melee weapons cannot interrupt a scrake attack
+                /**
+                 *  Non-zerker with melee weapons cannot interrupt a scrake attack
+                 */
                 SetAnimAction(KFHitFront);
             }
         }
