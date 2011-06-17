@@ -28,12 +28,6 @@ are:
 Shades are part of the default content and their package name is 
 "KFChar.ZombieShade".
 
-Debugging output is available for those who wish to check out the specimens
-in more detail.  The "debugLogLevel" variable controls the ammount of 
-logging that is reported back to the player.  Setting the variable to "0" 
-will disable all logging and increasing the value will increase the amount 
-of logging.
-
 The source code can be viewed at the below link:
 https://github.com/scaryghost/SuperZombieMut
 
@@ -51,7 +45,7 @@ Riceman
 Change Log:
 To view a detailed change log, please view the releaes notes for the 
 specific version:
-https://github.com/scaryghost/SuperZombieMut/wiki/Super-Zombie-1.6
+https://github.com/scaryghost/SuperZombieMut/wiki/Super-Zombie-1.7
 
 A complete list of specimen changes maybe viewed on the mutator's wiki:
 https://github.com/scaryghost/SuperZombieMut/wiki
