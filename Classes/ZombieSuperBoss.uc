@@ -102,6 +102,21 @@ simulated function Tick(float DeltaTime) {
 }
 
 /**
+ *  Output a message to all players
+ */
+function bool outputToChat(string msg) {
+    local Controller C;
+
+    for (C = Level.ControllerList; C != None; C = C.NextController) {
+        if (PlayerController(C) != None) {
+            PlayerController(C).ClientMessage(msg);
+        }
+    }
+
+    return true;
+}
+
+/**
  *  Calculates how many enemies are within a certain distance of the patriarch.
  *  Distance is given in the function parameter.
  */
