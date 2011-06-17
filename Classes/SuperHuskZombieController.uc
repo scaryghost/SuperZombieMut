@@ -1,6 +1,8 @@
 class SuperHuskZombieController extends HuskZombieController;
 
-
+/**
+ *  aimAtFeetZDelta     The Z offset the husk needs to aim at to hit the target's feet
+ */
 var float aimAtFeetZDelta;
 
 function PostBeginPlay() {
@@ -15,11 +17,6 @@ static function setAimAtFeetZDelta(float z) {
     default.aimAtFeetZDelta= z;
 }
 
-/*
-AdjustAim()
-Returns a rotation which is the direction the bot should aim - after introducing the appropriate aiming error
-Overridden to cause the zed to fire at the feet more often - Ramm
-*/
 function rotator AdjustAim(FireProperties FiredAmmunition, vector projStart, int aimerror) {
     local rotator FireRotation, TargetLook;
     local float FireDist, TargetDist, ProjSpeed;
@@ -71,6 +68,11 @@ function rotator AdjustAim(FireProperties FiredAmmunition, vector projStart, int
         // more or less lead target (with some random variation)
         FireSpot += FMin(1, 0.7 + 0.6 * FRand()) * TargetVel * TargetDist/projSpeed;
         FireSpot.Z = FMin(Target.Location.Z, FireSpot.Z);
+        /**
+         *  If the target is within 1000uu, offset the Z coordinate of the 
+         *  FireSpot vector with aimAtFeetZDelta.  Otherwise, the husk will 
+         *  aim at behind the target, not at his feet.
+         */
         if (default.aimAtFeetZDelta != 0.0 && Target.Physics == PHYS_Falling && bDefendCloseRange) {
             FireSpot.Z= Pawn.Location.Z + default.aimAtFeetZDelta;
         }
@@ -128,6 +130,11 @@ function rotator AdjustAim(FireProperties FiredAmmunition, vector projStart, int
         }
         else
             bClean = ( (Target.Physics == PHYS_Falling) && FastTrace(FireSpot, ProjStart) );
+        /**
+         *  Update the aimAtFeetZDelta variable with the appropriate offset 
+         *  once the Husk decides to aim at the target's feet.  Update the 
+         *  default property so all Super Husks can access it
+         */
         if (bClean && TargetDist > 625.0) {
             setAimAtFeetZDelta(FireSpot.Z - Pawn.Location.Z);
         }

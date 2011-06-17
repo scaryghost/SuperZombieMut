@@ -50,6 +50,6 @@ function RangedAttack(Actor A)
 
 defaultproperties {
     maxConsecutiveShots= 2;
-    ControllerClass=Class'SuperZombie.SuperHuskZombieController'
+    ControllerClass=Class'SuperZombieMut.SuperHuskZombieController'
     MenuName= "Super Husk"
 }
