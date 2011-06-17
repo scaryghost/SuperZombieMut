@@ -1,7 +1,18 @@
 class ZombieSuperFP extends ZombieFleshPound;
 
+/**
+ *  rageDamage          accumulator that stores how much damage the fleshpound did when enraged
+ *  rageDamageLimit     the limit that the accumulator must exceed so the fleshpound will not rage again
+ *  rageShield          accumulator that stores how much shield damage the fleshpound did when enraged
+ *  rageShieldLimit     the limit the shield accumulator must exceed so the fleshpound will not rage again
+ */
 var float rageDamage, rageDamageLimit, rageShield, rageShieldLimit;
-var int totalDamageRageThreshold,totalRageAccumulator;
+
+/**
+ *  totalDamageRageThreshold    max damage that the fleshpound can take before raging
+ *  totalRageAccumulator        accumulator to store how much damage the fleshpound has taken
+ */
+var int totalDamageRageThreshold, totalRageAccumulator;
 
 simulated function PostBeginPlay() {
     super.PostBeginPlay();
@@ -22,6 +33,10 @@ function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector M
     super.TakeDamage(Damage, InstigatedBy, Hitlocation, Momentum, damageType, HitIndex);
     totalRageAccumulator+= (oldHealth - Health);
 
+    /**
+     *  If the fleshpound isn't raging and the accumulator 
+     *  has exceeded the threshold, rage and reset the accumulator
+     */
 	if (!isInState('BeginRaging') && !bDecapitated && 
         totalRageAccumulator >= totalDamageRageThreshold && 
         !bChargingPlayer && (!(bCrispified && bBurnified) || bFrustrated) ) {
@@ -30,6 +45,10 @@ function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector M
     }
 }
 
+/**
+ *  Track if all the "hits" the swing animation made contact.  If not 
+ *  bMissTarget will be set to true
+ */
 function bool MeleeDamageTarget(int hitdamage, vector pushdir) {
     local bool didIHit;
     
@@ -39,15 +58,24 @@ function bool MeleeDamageTarget(int hitdamage, vector pushdir) {
     return didIHit;
 }
 
+/**
+ *  Check if the fleshpound was attacking a door or a person
+ */
 simulated event SetAnimAction(name NewAction) {
     super.SetAnimAction(newAction);
     SuperFPZombieController(Controller).bAttackedTarget= 
         (NewAction == 'Claw') || (NewAction == 'DoorBash');
 }
 
+/**
+ *  Overwrite the RageCharging state so the fleshpound will 
+ *  rage again if he doesn't deal out enough damage.
+ */
 state RageCharging {
-//Not sure why we are Ignoring StartCharging()
-//but best leave the code as is
+/**
+ *  Not sure why we are Ignoring StartCharging()
+ *  but best leave the code as is
+ */
 Ignores StartCharging;
 
     function PlayDirectionalHit(Vector HitLoc) {
@@ -58,7 +86,6 @@ Ignores StartCharging;
         return super.CanGetOutOfWay();
     }
 
-    // Don't override speed in this state
     function bool CanSpeedAdjust() {
         return super.CanSpeedAdjust();
     }
@@ -79,12 +106,12 @@ Ignores StartCharging;
         super.Bump(Other);
     }
 
-    // If fleshie hits his target on a charge, then he should settle down for abit.
     function bool MeleeDamageTarget(int hitdamage, vector pushdir) {
         local bool RetVal,bWasEnemy;
         local float oldEnemyHealth, oldEnemyShield;
         local bool bAttackingHuman;
 
+        //Only rage again if he was attacking a human
         bAttackingHuman= (KFHumanPawn(Controller.Target) != none);
 
         if (bAttackingHuman) {
@@ -102,6 +129,10 @@ Ignores StartCharging;
 
        
         if(RetVal && bWasEnemy) {
+            /**
+             *  If we haven't reached our damage threshold, rage again, 
+             *  otherwise reset the accumulators
+             */
             if(bAttackingHuman && (oldEnemyShield <= 0.0 && rageDamage < rageDamageLimit || 
                 (rageShield < rageShieldLimit && rageDamage < rageDamageLimit * 0.175))) {
                 GotoState('RageAgain');
@@ -117,8 +148,10 @@ Ignores StartCharging;
 }
 
 
-//Had to add this temporary state because on local hosts, enraged fp attacks call
-//MeleeDamageTarget twice.
+/**
+ *  Had to add this temporary state because on local hosts, enraged fp 
+ *  attacks call MeleeDamageTarget twice
+ */
 state RageAgain {
     function BeginState() {
     }
@@ -168,7 +201,7 @@ Begin:
 
 defaultproperties {
     MenuName="Super FleshPound"
-    ControllerClass=Class'SuperZombie.SuperFPZombieController'
+    ControllerClass=Class'SuperZombieMut.SuperFPZombieController'
     totalDamageRageThreshold= 1080
 }
 
