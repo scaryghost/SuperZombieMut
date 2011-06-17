@@ -39,8 +39,6 @@ function rotator AdjustAim(FireProperties FiredAmmunition, vector projStart, int
             return Rotation;
     }
     FireSpot = Target.Location;
-    ZombieSuperHusk(pawn).logToPlayer(3,"Target loc: (" $ FireSpot.X $ "," $ FireSpot.Y $ "," $ FireSpot.Z $ ")");
-    ZombieSuperHusk(pawn).logToPlayer(3,"My loc: (" $ Pawn.Location.X $ "," $ Pawn.Location.Y $ "," $ Pawn.Location.Z $ ")");
 
     TargetDist = VSize(Target.Location - Pawn.Location);
 
@@ -74,7 +72,6 @@ function rotator AdjustAim(FireProperties FiredAmmunition, vector projStart, int
         FireSpot += FMin(1, 0.7 + 0.6 * FRand()) * TargetVel * TargetDist/projSpeed;
         FireSpot.Z = FMin(Target.Location.Z, FireSpot.Z);
         if (default.aimAtFeetZDelta != 0.0 && Target.Physics == PHYS_Falling && bDefendCloseRange) {
-            ZombieSuperHusk(pawn).logToPlayer(2,"Distance: "$TargetDist);
             FireSpot.Z= Pawn.Location.Z + default.aimAtFeetZDelta;
         }
 
@@ -120,7 +117,6 @@ function rotator AdjustAim(FireProperties FiredAmmunition, vector projStart, int
     if ( FiredAmmunition.bTrySplash && (Pawn(Target) != None) && (((Target.Physics == PHYS_Falling)
         && (Pawn.Location.Z + 80 >= Target.Location.Z)) || ((Pawn.Location.Z + 19 >= Target.Location.Z)
         && (bDefendCloseRange || bWantsToAimAtFeet))) ) {
-        ZombieSuperHusk(pawn).logToPlayer(3,"(" $ FireSpot.X $ "," $ FireSpot.Y $ "," $ FireSpot.Z $ ")");
         HitActor = Trace(HitLocation, HitNormal, FireSpot - vect(0,0,1) * (Target.CollisionHeight + 10), FireSpot, false);
 
         bClean = (HitActor == None);
@@ -134,7 +130,6 @@ function rotator AdjustAim(FireProperties FiredAmmunition, vector projStart, int
             bClean = ( (Target.Physics == PHYS_Falling) && FastTrace(FireSpot, ProjStart) );
         if (bClean && TargetDist > 625.0) {
             setAimAtFeetZDelta(FireSpot.Z - Pawn.Location.Z);
-            ZombieSuperHusk(pawn).logToPlayer(3,"Updated the Z delta: "$default.aimAtFeetZDelta);
         }
     }
 

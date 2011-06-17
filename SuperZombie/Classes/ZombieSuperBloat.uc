@@ -1,6 +1,5 @@
 class ZombieSuperBloat extends ZombieBloat;
 
-var int logLevel;
 var bool bAmIBarfing;
 var float bileCoolDownTimer,bileCoolDownMax;
 
@@ -8,7 +7,6 @@ simulated function PostBeginPlay() {
     super.PostBeginPlay();
     bAmIBarfing= false;
     bileCoolDownTimer= 0.0;
-    logToPlayer(1,"I'm skinny!");
 }
 
 simulated function Tick(float DeltaTime) {
@@ -20,22 +18,6 @@ simulated function Tick(float DeltaTime) {
             bileCoolDownTimer= 0.0;
         }
     }
-}
-
-function logToPlayer(int level, string msg) {
-    (logLevel >= level) && outputToChat(msg);
-}
-
-function bool outputToChat(string msg) {
-    local Controller C;
-
-    for (C = Level.ControllerList; C != None; C = C.NextController) {
-        if (PlayerController(C) != None) {
-            PlayerController(C).ClientMessage(msg);
-        }
-    }
-
-    return true;
 }
 
 function RangedAttack(Actor A) {
@@ -90,7 +72,6 @@ simulated function AnimEnd(int Channel) {
 }
 
 defaultproperties {
-    logLevel= 0;
     bileCoolDownMax= 0.75;
     MenuName= "Super Bloat"
 }

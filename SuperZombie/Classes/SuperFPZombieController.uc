@@ -16,19 +16,16 @@ function PostBeginPlay() {
 }
 
 function bool FindNewEnemy() {
-    ZombieSuperFP(pawn).logToPlayer(3,"Searching for enemy");
     bFindNewEnemy= true;
     return super.FindNewEnemy();
 }
 
 function BreakUpDoor(KFDoorMover Other, bool bTryDistanceAttack) {
-    ZombieSuperFP(pawn).logToPlayer(3,"FP SMASH DOOR!");
     bSmashDoor= true;
     super.BreakUpDoor(Other,bTryDistanceAttack);
 }
 
 function Startle(Actor Feared) {
-    ZombieSuperFP(pawn).logToPlayer(3,"Ahh!! Grenade!");
     bStartled= True;
     super.Startle(Feared);
 }
@@ -36,7 +33,6 @@ function Startle(Actor Feared) {
 state ZombieCharge {
     function Tick( float Delta ) {
         super.Tick(Delta);
-        ZombieSuperFP(pawn).logToPlayer(4,"Time left: "$(RageFrustrationThreshhold-RageFrustrationTimer));
     }
 
     function bool StrafeFromDamage(float Damage, class<DamageType> DamageType, bool bFindDest) {

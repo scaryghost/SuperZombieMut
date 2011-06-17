@@ -1,27 +1,8 @@
 // Zombie Monster for KF Invasion gametype
 class ZombieSuperSiren extends ZombieSiren;
 
-var int logLevel;
-
 simulated function PostBeginPlay() {
-    logToPlayer(1,"They hate it when I sing!");
     super.PostBeginPlay();
-}
-
-function logToPlayer(int level, string msg) {
-    (logLevel >= level) && outputToChat(msg);
-}
-
-function bool outputToChat(string msg) {
-    local Controller C;
-
-    for (C = Level.ControllerList; C != None; C = C.NextController) {
-        if (PlayerController(C) != None) {
-            PlayerController(C).ClientMessage(msg);
-        }
-    }
-
-    return true;
 }
 
 simulated function SpawnTwoShots() {
@@ -84,7 +65,6 @@ simulated function HurtRadiusThroughDoor( float DamageAmount, float DamageRadius
 
 defaultproperties {
     MenuName="Super Siren"
-    logLevel= 0;
     ScreamRadius=700
     ScreamForce=-200000
 }

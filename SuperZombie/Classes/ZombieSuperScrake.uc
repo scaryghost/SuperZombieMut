@@ -1,34 +1,15 @@
 class ZombieSuperScrake extends ZombieScrake;
 
 var int maxTimesFlipOver;
-var int logLevel;
 var bool bIsFlippedOver;
 
 simulated function PostBeginPlay() {
     super.PostBeginPlay();
-    logToPlayer(1,"I like scrubs");
-}
-
-function logToPlayer(int level, string msg) {
-    (logLevel >= level) && outputToChat(msg);
-}
-
-function bool outputToChat(string msg) {
-    local Controller C;
-
-    for (C = Level.ControllerList; C != None; C = C.NextController) {
-        if (PlayerController(C) != None) {
-            PlayerController(C).ClientMessage(msg);
-        }
-    }
-
-    return true;
 }
 
 function bool FlipOver() {
     local bool bCalledFlipOver;
     maxTimesFlipOver--;
-    logToPlayer(3,"Stuns Remaining: "$maxTimesFlipOver);
     bCalledFlipOver= ((maxTimesFlipOver >= 0) && super.FlipOver());
     bIsFlippedOver= bIsFlippedOver || bCalledFlipOver;
     return bCalledFlipOver;
@@ -54,12 +35,9 @@ function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector M
         bIsFlippedOver= false;
         SetAnimAction(WalkAnims[0]);
         SawZombieController(Controller).GoToState('ZombieHunt');
-
-        logToPlayer(4,"Weak attack!");
     }
 
     if ( Level.Game.GameDifficulty >= 5.0 && !IsInState('SawingLoop') && float(Health) / HealthMax < 0.75 ) {
-        logToPlayer(4,"Grrr! I'm maad!");
         GotoState('');
         RangedAttack(InstigatedBy);
     }
@@ -79,7 +57,6 @@ function PlayDirectionalHit(Vector HitLoc) {
         return;
     }
 
-    logToPlayer(2,"I've been hit!  Better turn around");
     KFP= KFPawn(LastDamagedBy);
     bCanMeleeFlinch= (VSize(LastDamagedBy.Location - Location) <= (MeleeRange * 2) && ClassIsChildOf(LastDamagedbyType,class 'DamTypeMelee') &&
                  KFP != none && KFPlayerReplicationInfo(KFP.OwnerPRI).ClientVeteranSkill.Static.CanMeleeStun() && LastDamageAmount > (0.10* default.Health));
@@ -96,7 +73,6 @@ function PlayDirectionalHit(Vector HitLoc) {
                 bSTUNNED = true;
                 SetTimer(StunTime,false);
                 StunsRemaining--;
-                logToPlayer(2,"Flinches Remaining: "$StunsRemaining);
             }
             else if (LastDamageAmount < (0.5 * default.Health) && !ClassIsChildOf(LastDamagedbyType,class 'DamTypeMelee')) {
                 //Non-zerker with melee weapons cannot interrupt a scrake attack
@@ -112,7 +88,6 @@ function PlayDirectionalHit(Vector HitLoc) {
 }
 
 defaultproperties {
-    logLevel= 0;
     maxTimesFlipOver= 1
     bIsFlippedOver= false
     MenuName= "Super Scrake"

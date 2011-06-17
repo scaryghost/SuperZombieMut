@@ -1,9 +1,6 @@
 class ZombieSuperStalker extends ZombieStalker;
 
-var int logLevel;
-
 simulated function PostBeginPlay() {
-    logToPlayer(1,"Come, give us two kisses!");
     super.PostBeginPlay();
 }
 
@@ -15,22 +12,6 @@ simulated function Tick(float DeltaTime) {
             Acceleration = AccelRate * Normal(LookTarget.Location - Location);
         }
     }
-}
-
-function logToPlayer(int level, string msg) {
-    (logLevel >= level) && outputToChat(msg);
-}
-
-function bool outputToChat(string msg) {
-    local Controller C;
-
-    for (C = Level.ControllerList; C != None; C = C.NextController) {
-        if (PlayerController(C) != None) {
-            PlayerController(C).ClientMessage(msg);
-        }
-    }
-
-    return true;
 }
 
 function RangedAttack(Actor A) {
@@ -72,7 +53,6 @@ simulated function int AttackAndMoveDoAnimAction( name AnimName ) {
         CurrentDamtype = ZombieDamType[meleeAnimIndex];
 
         duration= GetAnimDuration(AnimName, 1.0);
-        logToPlayer(2,"Melee animation duration: "$duration);
     }
 
     if( AnimName=='StalkerSpinAttack' || AnimName=='StalkerAttack1' || AnimName=='JumpAttack') {
@@ -86,6 +66,5 @@ simulated function int AttackAndMoveDoAnimAction( name AnimName ) {
 }
 
 defaultproperties {
-    logLevel= 0;
     MenuName= "Super Stalker"
 }

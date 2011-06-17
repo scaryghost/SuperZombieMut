@@ -1,29 +1,11 @@
 class ZombieSuperHusk extends ZombieHusk;
 
-var int logLevel;
 var int consecutiveShots;
 var int maxConsecutiveShots;
 
 simulated function PostBeginPlay() {
     super.PostBeginPlay();
-    logToPlayer(1,"There you aren't!");
     consecutiveShots= 0;
-}
-
-function logToPlayer(int level, string msg) {
-    (logLevel >= level) && outputToChat(msg);
-}
-
-function bool outputToChat(string msg) {
-    local Controller C;
-
-    for (C = Level.ControllerList; C != None; C = C.NextController) {
-        if (PlayerController(C) != None) {
-            PlayerController(C).ClientMessage(msg);
-        }
-    }
-
-    return true;
 }
 
 function RangedAttack(Actor A)
@@ -67,7 +49,6 @@ function RangedAttack(Actor A)
 }
 
 defaultproperties {
-    logLevel= 0;
     maxConsecutiveShots= 2;
     ControllerClass=Class'SuperZombie.SuperHuskZombieController'
     MenuName= "Super Husk"

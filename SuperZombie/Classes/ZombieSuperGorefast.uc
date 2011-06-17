@@ -1,28 +1,10 @@
 class ZombieSuperGorefast extends ZombieGoreFast;
 
-var int logLevel;
 var float minRageDist;
 
 simulated function PostBeginPlay() {
-    logToPlayer(1,"Insert joke on a gorefast line here!");
     minRageDist= 1400.0;
     super.PostBeginPlay();
-}
-
-function logToPlayer(int level, string msg) {
-    (logLevel >= level) && outputToChat(msg);
-}
-
-function bool outputToChat(string msg) {
-    local Controller C;
-
-    for (C = Level.ControllerList; C != None; C = C.NextController) {
-        if (PlayerController(C) != None) {
-            PlayerController(C).ClientMessage(msg);
-        }
-    }
-
-    return true;
 }
 
 function RangedAttack(Actor A) {
@@ -83,6 +65,5 @@ CheckCharge:
 }
 
 defaultproperties {
-    logLevel= 0;
     MenuName= "Super Gorefast"
 }

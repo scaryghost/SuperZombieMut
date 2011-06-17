@@ -1,6 +1,5 @@
 class ZombieSuperFP extends ZombieFleshPound;
 
-var int logLevel;
 var float rageDamage, rageDamageLimit, rageShield, rageShieldLimit;
 var int totalDamageRageThreshold,totalRageAccumulator;
 
@@ -8,31 +7,12 @@ simulated function PostBeginPlay() {
     super.PostBeginPlay();
     rageDamageLimit= Max(35.0*1.75*DifficultyDamageModifer(),1.0);
     rageShieldLimit= Max(45.0*DifficultyDamageModifer(),1.0);
-    logToPlayer(3,"dmg limit: "$rageDamageLimit);
-    logToPlayer(3,"shield limit: "$rageShieldLimit);
     rageDamage= 0.0;
     rageShield= 0.0;
-    logToPlayer(1,"Level of agression, 12!");
 }
 
 simulated function Tick(float DeltaTime) {
     super.Tick(DeltaTime);
-}
-
-function logToPlayer(int level, string msg) {
-    (logLevel >= level) && outputToChat(msg);
-}
-
-function bool outputToChat(string msg) {
-    local Controller C;
-
-    for (C = Level.ControllerList; C != None; C = C.NextController) {
-        if (PlayerController(C) != None) {
-            PlayerController(C).ClientMessage(msg);
-        }
-    }
-
-    return true;
 }
 
 function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector Momentum, class<DamageType> damageType, optional int HitIndex) {
@@ -56,7 +36,6 @@ function bool MeleeDamageTarget(int hitdamage, vector pushdir) {
     didIHit= super.MeleeDamageTarget(hitdamage, pushdir);
     SuperFPZombieController(Controller).bMissTarget= 
         SuperFPZombieController(Controller).bMissTarget || !didIHit;
-    logToPlayer(2,"Did I hit?  "$didIHit);
     return didIHit;
 }
 
@@ -119,8 +98,6 @@ Ignores StartCharging;
         if (bAttackingHuman) {
             rageDamage+= oldEnemyHealth - KFHumanPawn(Controller.Target).Health;
             rageShield+= oldEnemyShield - KFHumanPawn(Controller.Target).ShieldStrength;
-            logToPlayer(3,"Total dmg dealt: "$rageDamage);
-            logToPlayer(3,"Total shield lost: "$rageShield);
         }
 
        
@@ -144,11 +121,9 @@ Ignores StartCharging;
 //MeleeDamageTarget twice.
 state RageAgain {
     function BeginState() {
-        logToPlayer(2,"Entering Temp state");
     }
 
     function EndState() {
-        logToPlayer(2,"Leaving temp state");
     }
 
     function bool MeleeDamageTarget(int hitdamage, vector pushdir) {
@@ -169,8 +144,6 @@ state RageAgain {
         if (bAttackingHuman) {
             rageDamage+= oldEnemyHealth - KFHumanPawn(Controller.Target).Health;
             rageShield+= oldEnemyShield - KFHumanPawn(Controller.Target).ShieldStrength;
-            logToPlayer(3,"Total dmg dealt: "$rageDamage);
-            logToPlayer(3,"Total shield lost: "$rageShield);
         }
        
         if(RetVal && bWasEnemy) {
@@ -194,7 +167,6 @@ Begin:
 }
 
 defaultproperties {
-    logLevel= 0
     MenuName="Super FleshPound"
     ControllerClass=Class'SuperZombie.SuperFPZombieController'
     totalDamageRageThreshold= 1080
