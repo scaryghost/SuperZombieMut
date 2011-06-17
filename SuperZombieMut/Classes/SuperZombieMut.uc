@@ -13,7 +13,6 @@ struct propertyDescPair {
     var string shortDescription;
 };
 
-var() config int debugLogLevel;
 var() config bool bReplaceCrawler, bReplaceStalker, bReplaceGorefast, bReplaceBloat, 
                 bReplaceSiren, bReplaceHusk, bReplaceScrake, bReplaceFleshpound, bReplaceBoss;
 var array<oldNewZombiePair> replacementArray;
@@ -81,15 +80,6 @@ function PostBeginPlay() {
         KF.FallbackMonsterClass= "SuperZombie.ZombieSuperStalker";
     }
 
-    class'ZombieSuperFP'.default.logLevel= debugLogLevel;
-    class'ZombieSuperBoss'.default.logLevel= debugLogLevel;
-    class'ZombieSuperGorefast'.default.logLevel= debugLogLevel;
-    class'ZombieSuperStalker'.default.logLevel= debugLogLevel;
-    class'ZombieSuperSiren'.default.logLevel= debugLogLevel;
-    class'ZombieSuperScrake'.default.logLevel= debugLogLevel;
-    class'ZombieSuperHusk'.default.logLevel= debugLogLevel;
-    class'ZombieSuperBloat'.default.logLevel= debugLogLevel;
-
     SetTimer(0.1, false);
 }
 
@@ -104,10 +94,7 @@ static function FillPlayInfo(PlayInfo PlayInfo) {
     Super.FillPlayInfo(PlayInfo);
    
     mutConfigGroup= "Super Zombie Config"; 
-    //debugLogLevel info is stored in index 0
-    PlayInfo.AddSetting(mutConfigGroup, default.propDescripArray[0].property, 
-            default.propDescripArray[0].shortDescription, 0, 1, "Text", "0.1;0:4",,,true);
-    for(i= 1; i<default.propDescripArray.Length;i++) {
+    for(i= 0; i<default.propDescripArray.Length;i++) {
         PlayInfo.AddSetting(mutConfigGroup, default.propDescripArray[i].property, 
         default.propDescripArray[i].shortDescription, 0, 0, "Check");
     }
@@ -126,7 +113,6 @@ static event string GetDescriptionText(string property) {
 }
 
 defaultproperties {
-    debugLogLevel=0;
     GroupName="KFSuperZombieMut"
     FriendlyName="Super Zombie"
     Description="Alters the behavior of the specimens.  This mutator's version is 1.6."
@@ -138,14 +124,13 @@ defaultproperties {
     replacementArray(5)=(oldClass="KFChar.ZombieHusk",newClass="SuperZombie.ZombieSuperHusk",bReplace=false)
     replacementArray(6)=(oldClass="KFChar.ZombieCrawler",newClass="KFChar.ZombieShade",bReplace=false)
     replacementArray(7)=(oldClass="KFChar.ZombieBloat",newClass="SuperZombie.ZombieSuperBloat",bReplace=false)
-    propDescripArray(0)=(property="debugLogLevel",longDescription="Adjust the debug log level for the Super Zombie Mutator",shortDescription="Debug log level")
-    propDescripArray(1)=(property="bReplaceCrawler",longDescription="Replace Crawlers with Shades",shortDescription="Replace Crawlers")
-    propDescripArray(2)=(property="bReplaceStalker",longDescription="Replace Stalkers with SuperStalkers",shortDescription="Replace Stalkers")
-    propDescripArray(3)=(property="bReplaceGorefast",longDescription="Replace Gorefasts with SuperGorefasts",shortDescription="Replace Gorefasts")
-    propDescripArray(4)=(property="bReplaceBloat",longDescription="Replace Bloats with SuperBloats",shortDescription="Replace Bloats")
-    propDescripArray(5)=(property="bReplaceSiren",longDescription="Replace Sirens with SuperSirens",shortDescription="Replace Sirens")
-    propDescripArray(6)=(property="bReplaceHusk",longDescription="Replace Husks with SuperHusks",shortDescription="Replace Husks")
-    propDescripArray(7)=(property="bReplaceScrake",longDescription="Replace Scrakes with SuperScrakes",shortDescription="Replace Scrakes")
-    propDescripArray(8)=(property="bReplaceFleshpound",longDescription="Replace Fleshpounds with SuperFleshpounds",shortDescription="Replace Fleshpounds")
-    propDescripArray(9)=(property="bReplaceBoss",longDescription="Replace the Patriarch with the SuperPatriarch",shortDescription="Replace Patriarch")
+    propDescripArray(0)=(property="bReplaceCrawler",longDescription="Replace Crawlers with Shades",shortDescription="Replace Crawlers")
+    propDescripArray(1)=(property="bReplaceStalker",longDescription="Replace Stalkers with SuperStalkers",shortDescription="Replace Stalkers")
+    propDescripArray(2)=(property="bReplaceGorefast",longDescription="Replace Gorefasts with SuperGorefasts",shortDescription="Replace Gorefasts")
+    propDescripArray(3)=(property="bReplaceBloat",longDescription="Replace Bloats with SuperBloats",shortDescription="Replace Bloats")
+    propDescripArray(4)=(property="bReplaceSiren",longDescription="Replace Sirens with SuperSirens",shortDescription="Replace Sirens")
+    propDescripArray(5)=(property="bReplaceHusk",longDescription="Replace Husks with SuperHusks",shortDescription="Replace Husks")
+    propDescripArray(6)=(property="bReplaceScrake",longDescription="Replace Scrakes with SuperScrakes",shortDescription="Replace Scrakes")
+    propDescripArray(7)=(property="bReplaceFleshpound",longDescription="Replace Fleshpounds with SuperFleshpounds",shortDescription="Replace Fleshpounds")
+    propDescripArray(8)=(property="bReplaceBoss",longDescription="Replace the Patriarch with the SuperPatriarch",shortDescription="Replace Patriarch")
 }
