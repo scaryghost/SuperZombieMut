@@ -1,4 +1,4 @@
-class ZombieSuperBoss extends ZombieBoss;
+class ZombieSuperBoss extends ZombieBoss_CIRCUS;
 
 /**
  *  Struct to store how many times each player hit the patriarch
