@@ -93,10 +93,10 @@ function PostBeginPlay() {
     replaceSpecialSquad(KF.FinalSquads);
 
     if (bReplaceBoss) {
-        KF.EndGameBossClass= "SuperZombie.ZombieSuperBoss";
+        KF.EndGameBossClass= "SuperZombieMut.ZombieSuperBoss";
     }
     if (bReplaceStalker) {
-        KF.FallbackMonsterClass= "SuperZombie.ZombieSuperStalker";
+        KF.FallbackMonsterClass= "SuperZombieMut.ZombieSuperStalker";
     }
 
     SetTimer(0.1, false);
@@ -134,7 +134,7 @@ static event string GetDescriptionText(string property) {
 defaultproperties {
     GroupName="KFSuperZombieMut"
     FriendlyName="Super Zombie"
-    Description="Alters the behavior of the specimens.  This mutator's version is 1.7."
+    Description="Alters the behavior of the specimens.  This mutator's version is 1.7.1."
     replacementArray(0)=(oldClass="KFChar.ZombieFleshPound",newClass="SuperZombieMut.ZombieSuperFP",bReplace=false)
     replacementArray(1)=(oldClass="KFChar.ZombieGorefast",newClass="SuperZombieMut.ZombieSuperGorefast",bReplace=false)
     replacementArray(2)=(oldClass="KFChar.ZombieStalker",newClass="SuperZombieMut.ZombieSuperStalker",bReplace=false)
