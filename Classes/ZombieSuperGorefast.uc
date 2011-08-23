@@ -1,4 +1,4 @@
-class ZombieSuperGorefast extends ZombieGoreFast_CIRCUS;
+class ZombieSuperGorefast extends ZombieGoreFast;
 
 /**
  *  minRageDist         minimum distance to trigger the Super Gorefast's rage state

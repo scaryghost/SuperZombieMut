@@ -1,4 +1,4 @@
-class ZombieSuperFP extends ZombieFleshPound_CIRCUS;
+class ZombieSuperFP extends ZombieFleshPound;
 
 /**
  *  rageDamage          accumulator that stores how much damage the fleshpound did when enraged

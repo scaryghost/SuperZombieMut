@@ -1,4 +1,4 @@
-class ZombieSuperScrake extends ZombieScrake_CIRCUS;
+class ZombieSuperScrake extends ZombieScrake;
 
 /**
  *  maxTimesFlipOver            How many times the scrake can be stunned.  When it is -1, the 

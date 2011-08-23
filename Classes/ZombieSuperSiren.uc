@@ -1,4 +1,4 @@
-class ZombieSuperSiren extends ZombieSiren_CIRCUS;
+class ZombieSuperSiren extends ZombieSiren;
 
 simulated function PostBeginPlay() {
     super.PostBeginPlay();

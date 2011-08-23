@@ -1,4 +1,4 @@
-class ZombieSuperStalker extends ZombieStalker_CIRCUS;
+class ZombieSuperStalker extends ZombieStalker;
 
 simulated function PostBeginPlay() {
     super.PostBeginPlay();

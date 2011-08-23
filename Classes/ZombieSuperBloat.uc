@@ -1,4 +1,4 @@
-class ZombieSuperBloat extends ZombieBloat_CIRCUS;
+class ZombieSuperBloat extends ZombieBloat;
 
 /**
  *  bAmIBarfing     true if the bloat is in the barf animation
