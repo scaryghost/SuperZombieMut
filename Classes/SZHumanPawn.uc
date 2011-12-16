@@ -12,7 +12,7 @@ simulated function PostBeginPlay() {
 /**
  * Copied from KFHumanPawn.ModifyVelocity() and added
  * extra code to scale the InvenetorySpeedModifier and 
- * GetMovementSpeedModifier from 0 to 1
+ * GetMovementSpeedModifier between 0 and 1
  */
 simulated event ModifyVelocity(float DeltaTime, vector OldVelocity) {
     local float WeightMod, HealthMod;
