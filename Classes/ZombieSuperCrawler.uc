@@ -1,5 +1,11 @@
 class ZombieSuperCrawler extends ZombieCrawler;
 
+simluated function PostBeginPlay() {
+    super.PostBeginPlay();
+    PounceSpeed= Rand(221)+330;
+    MeleeRange= Rand(41)+50;
+}
+
 /**
  * Copied from ZombieCrawler.Bump() but changed damage type
  * to be the new poison damage type
