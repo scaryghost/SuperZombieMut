@@ -1,0 +1,3 @@
+class DamTypeCrawlerPoison extends DamTypeZombieAttack;
+
+
