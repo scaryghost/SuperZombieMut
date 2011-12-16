@@ -1,6 +1,6 @@
 class ZombieSuperCrawler extends ZombieCrawler;
 
-simluated function PostBeginPlay() {
+simulated function PostBeginPlay() {
     super.PostBeginPlay();
     PounceSpeed= Rand(221)+330;
     MeleeRange= Rand(41)+50;
