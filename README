@@ -24,9 +24,7 @@ are:
     ZombieSuperScrake
     ZombieSuperHusk
     ZombieSuperBloat
-
-Shades are part of the default content and their package name is 
-"KFChar.ZombieShade".
+    ZombieSuperCrawler
 
 The source code can be viewed at the below link:
 https://github.com/scaryghost/SuperZombieMut
@@ -45,7 +43,7 @@ Riceman
 Change Log:
 To view a detailed change log, please view the releaes notes for the 
 specific version:
-https://github.com/scaryghost/SuperZombieMut/wiki/Super-Zombie-1.7
+https://github.com/scaryghost/SuperZombieMut/wiki/Super-Zombie-1.8
 
 A complete list of specimen changes maybe viewed on the mutator's wiki:
 https://github.com/scaryghost/SuperZombieMut/wiki
