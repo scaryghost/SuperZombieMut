@@ -28,19 +28,13 @@ var bool bJustSpawned;
  *  pipebombDamageMult          the pipe bomb scaling used to reduce pipe damage to the patriarch
  *  minPipeDistance             minimum distance that will trigger the patriarch's anti-pipebomb attack
  */
-var float spawnTimer, attackPipeCoolDown, pipebombDamageMult, minPipeDistance;
+var float spawnTimer, attackPipeCoolDown, pipebombDamageMult, minPipeDistance, LastDamageTime2, ChargeDamage2;
 
 /**
  *  hsDamHistList               stores everyone who attacked the patriarch with hunting shotguns
  */
 var array<damHitTracker> hsDamHitList;
 
-simulated function PostBeginPlay() {
-    super.PostBeginPlay();
-    ChargeDamageThreshold= 1000;
-    bJustSpawned= true;
-    spawnTimer= 0.0;
-}
 
 /**
  *  Give the patriarch more to do during each tick
@@ -149,9 +143,24 @@ Ignores RangedAttack;
     }
 }
 
+state Charging {
+    function BeginState() {
+        super.BeginState();
+        /**
+         * Make the patriarch charge more often if there are more players
+         */
+        NumChargeAttacks = Rand(Level.Game.NumPlayers)+1;
+    }
+}
+
+/**
+ * Moved the AOE kneel to the extended KnockDown state
+ */
 state KnockDown {
     function BeginState() {
         local int numEnemies;
+        local vector Start;
+        local Rotator R;
 
         super.BeginState();
 
@@ -195,7 +204,7 @@ state ChargePipes extends Charging {
 /**
  *  Allow the patriarch to automatically destroy any welded door in his path
  */
-State Escaping { // Got hurt and running away...
+State Escaping { 
     function DoorAttack(Actor A) {
         local vector hitLocation;
         local vector momentum;
@@ -216,10 +225,7 @@ State Escaping { // Got hurt and running away...
  */
 function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector Momentum, class<DamageType> damageType, optional int HitIndex) {  
     local float DamagerDistSq;
-    local float UsedPipeBombDamScale;
     local float oldHealth;
-    local vector Start;
-    local Rotator R;
 
     //If the patriarch was hit with the hunting shotgun, update the list and see if anyone was cheating
     if(class<DamTypeDBShotgun>(damageType) != none && updateHsDamHitList(InstigatedBy)) {
@@ -230,64 +236,30 @@ function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector M
     }
 
 
-    if ( class<DamTypeCrossbow>(damageType) == none && class<DamTypeCrossbowHeadShot>(damageType) == none ) {
-        bOnlyDamagedByCrossbow = false;
-    }
-
-    // Scale damage from the pipebomb down a bit if lots of pipe bomb damage happens
-    // at around the same times. Prevent players from putting all thier pipe bombs
-    // in one place and owning the patriarch in one blow.
-    if ( class<DamTypePipeBomb>(damageType) != none ) {
-       UsedPipeBombDamScale = FMax(0,(1.0 - PipeBombDamageScale));
-
-       PipeBombDamageScale += pipebombDamageMult;
-
-       if( PipeBombDamageScale > 1.0 ) {
-           PipeBombDamageScale = 1.0;
-       }
-
-       Damage *= UsedPipeBombDamScale;
-    }
-
     OldHealth= Health;
-    Super(KFMonster).TakeDamage(Damage,instigatedBy,hitlocation,Momentum,damageType);
+    Super.TakeDamage(Damage,instigatedBy,hitlocation,Momentum,damageType);
 
     /**
      *  Reset the charge accumulator if 10 seconds have passed since the patriarch last took damage.  
      *  Old Patriarch code had this wrong and never incremented the accumulator
      */
-    if( LastDamageTime != 0.0 && Level.TimeSeconds - LastDamageTime > 10 ) {
-        ChargeDamage = 0;
+    if( LastDamageTime2 != 0.0 && Level.TimeSeconds - LastDamageTime2 > 10 ) {
+        ChargeDamage2 = 0;
     }
      
-    ChargeDamage += (OldHealth-Health);
-    LastDamageTime = Level.TimeSeconds;
-    if( ShouldChargeFromDamage() && ChargeDamage > ChargeDamageThreshold ) {
-        // If someone close up is shooting us, just charge them
+    ChargeDamage2 += (OldHealth-Health);
+    LastDamageTime2 = Level.TimeSeconds;
+    if( ShouldChargeFromDamage() && ChargeDamage2 > ChargeDamageThreshold ) {
         if( InstigatedBy != none ) {
             DamagerDistSq = VSizeSquared(Location - InstigatedBy.Location);
-
             if( DamagerDistSq < (700 * 700) ) {
                 SetAnimAction('transition');
-                ChargeDamage=0;
+                ChargeDamage2=0;
                 LastForceChargeTime = Level.TimeSeconds;
                 GoToState('Charging');
                 return;
             }
         }
-    }
-
-    if( Health<=0 || SyringeCount==3 || IsInState('Escaping') || IsInState('KnockDown') /*|| bShotAnim*/ )
-        Return;
-
-    if( (SyringeCount==0 && Health<HealingLevels[0]) || (SyringeCount==1 && Health<HealingLevels[1]) || (SyringeCount==2 && Health<HealingLevels[2]) ) {
-
-            bShotAnim = true;
-            Acceleration = vect(0,0,0);
-            SetAnimAction('KnockDown');
-            HandleWaitForAnim('KnockDown');
-            KFMonsterController(Controller).bUseFreezeHack = True;
-            GoToState('KnockDown');
     }
 } 
 
@@ -373,4 +345,7 @@ defaultproperties {
     minEnemiesClose= 3
     pipebombDamageMult= 0.075;
     minPipeDistance= 1250.0;
+    ChargeDamageThreshold= 1000;
+    bJustSpawned= true;
+    spawnTimer= 0.0;
 }
