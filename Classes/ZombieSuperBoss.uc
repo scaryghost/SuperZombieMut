@@ -48,7 +48,7 @@ simulated function PostBeginPlay() {
 simulated function Tick(float DeltaTime) {
     local PipeBombProjectile CheckProjectile;
     local PipeBombProjectile LastProjectile;
-    local KFHumanPawn CheckHP;
+    local SZHumanPawn CheckHP;
     local int pipeCount,playerCount;
     local bool bBaseState;
 
@@ -74,7 +74,7 @@ simulated function Tick(float DeltaTime) {
             /**
              *  Count how many players are visible within twice the radius
              */
-            foreach VisibleCollidingActors( class 'KFHumanPawn', CheckHP, minPipeDistance*2, Location ) {
+            foreach VisibleCollidingActors( class 'SZHumanPawn', CheckHP, minPipeDistance*2, Location ) {
                 playerCount++;
             }
         }
@@ -144,10 +144,29 @@ Ignores RangedAttack;
         bShotAnim = true;
         Acceleration = vect(0,0,0);
         SetAnimAction('PreFireMissile');
-
         HandleWaitForAnim('PreFireMissile');
-
         GoToState('FireMissile');
+    }
+}
+
+state KnockDown {
+    function BeginState() {
+        local int numEnemies;
+
+        super.BeginState();
+
+        numEnemies= numEnemiesAround(150);
+
+        /**
+         *  If the patriarch is surrounded by enemies with melee weapons, do the AOE kneel to hurt them
+         */
+        if(numEnemies >= minEnemiesClose) {
+            outputToChat("Learn how to do something other than lumberjack gang-bang you noobs.");
+            Start = GetBoneCoords('tip').Origin;
+            R.Pitch= -16384;
+            Spawn(Class'BossLAWProj',,,Start,R);
+        }
+
     }
 }
 
@@ -155,55 +174,6 @@ Ignores RangedAttack;
  *  State to have the patriarch charge right through the pipe bombs.
  */
 state ChargePipes extends Charging {
-    // Don't override speed in this state
-    function bool CanSpeedAdjust() {
-        return super.CanSpeedAdjust();
-    }
-
-    function bool ShouldChargeFromDamage() {
-        return super.ShouldChargeFromDamage();
-    }
-
-    function BeginState() {
-        super.BeginState();
-    }
-
-    function EndState() {
-        super.EndState();
-    }
-
-    function Tick( float Delta ) {
-
-        // Keep the flesh pound moving toward its target when attacking
-        if( Role == ROLE_Authority && bShotAnim) {
-            if( bChargingPlayer ) {
-                bChargingPlayer = false;
-                if( Level.NetMode!=NM_DedicatedServer )
-                    PostNetReceive();
-            }
-            GroundSpeed = OriginalGroundSpeed * 1.25;
-            if( LookTarget!=None ) {
-                Acceleration = AccelRate * Normal(LookTarget.Location - Location);
-            }
-        }
-        else {
-            if( !bChargingPlayer ) {
-                bChargingPlayer = true;
-                if( Level.NetMode!=NM_DedicatedServer )
-                    PostNetReceive();
-            }
-
-            GroundSpeed = OriginalGroundSpeed * 2.5;
-        }
-
-
-        Global.Tick(Delta);
-    }
-
-    function bool MeleeDamageTarget(int hitdamage, vector pushdir) {
-        return super.MeleeDamageTarget(hitdamage, pushdir);
-    }
-
     function RangedAttack(Actor A) {
         if( VSize(A.Location-Location)>700 && Level.TimeSeconds - LastForceChargeTime > 3.0 )
             GoToState('');
@@ -239,60 +209,6 @@ State Escaping { // Got hurt and running away...
             KFDoorMover(A).GoBang(self,hitLocation,momentum,Class'BossLAWProj'.default.MyDamageType);
         }
     }
-
-    function BeginHealing() {
-        super.BeginHealing();
-    }
-
-    function RangedAttack(Actor A) {
-        super.RangedAttack(A);
-    }
-
-    function bool MeleeDamageTarget(int hitdamage, vector pushdir) {
-        return super.MeleeDamageTarget(hitdamage, pushdir);
-    }
-
-    function Tick( float Delta ) {
-        // Keep the flesh pound moving toward its target when attacking
-        if( Role == ROLE_Authority && bShotAnim) {
-            if( bChargingPlayer ) {
-                bChargingPlayer = false;
-                if( Level.NetMode!=NM_DedicatedServer )
-                    PostNetReceive();
-            }
-            GroundSpeed = OriginalGroundSpeed * 1.25;
-            if( ChargeDamage > ChargeDamageThreshold && LookTarget!=None ) {
-                Acceleration = AccelRate * Normal(LookTarget.Location - Location);
-            }
-        }
-        else {
-            if( !bChargingPlayer ) {
-                bChargingPlayer = true;
-                if( Level.NetMode!=NM_DedicatedServer )
-                    PostNetReceive();
-            }
-
-            GroundSpeed = OriginalGroundSpeed * 2.5;
-        }
-        Global.Tick(Delta);
-    }
-
-    function BeginState() {
-        super.BeginState();
-    }
-
-    function EndState() {
-        super.EndState();
-    }
-
-Begin:
-    While( true ) {
-        Sleep(0.5);
-        if( !bCloaked && !bShotAnim )
-            CloakBoss();
-        if( !Controller.IsInState('SyrRetreat') && !Controller.IsInState('WaitForAnim'))
-            Controller.GoToState('SyrRetreat');
-    }
 }
 
 /**
@@ -301,7 +217,7 @@ Begin:
 function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector Momentum, class<DamageType> damageType, optional int HitIndex) {  
     local float DamagerDistSq;
     local float UsedPipeBombDamScale;
-    local int numEnemies, oldHealth; 
+    local float oldHealth;
     local vector Start;
     local Rotator R;
 
@@ -371,17 +287,6 @@ function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector M
             SetAnimAction('KnockDown');
             HandleWaitForAnim('KnockDown');
             KFMonsterController(Controller).bUseFreezeHack = True;
-            numEnemies= numEnemiesAround(150);
-
-            /**
-             *  If the patriarch is surrounded by enemies with melee weapons, do the AOE kneel to hurt them
-             */
-            if(numEnemies >= minEnemiesClose) {
-                outputToChat("Learn how to do something other than lumberjack gang-bang you noobs.");
-                Start = GetBoneCoords('tip').Origin;
-                R.Pitch= -16384;
-                Spawn(Class'BossLAWProj',,,Start,R);
-            }
             GoToState('KnockDown');
     }
 } 
