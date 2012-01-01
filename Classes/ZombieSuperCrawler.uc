@@ -22,6 +22,8 @@ event Bump(actor Other) {
 }
 
 defaultproperties {
+    GroundSpeed= 190.00000
+    WaterSpeed= 175.00000
     ZombieDamType(0)=Class'SuperZombieMut.DamTypeCrawlerPoison'
     ZombieDamType(1)=Class'SuperZombieMut.DamTypeCrawlerPoison'
     ZombieDamType(2)=Class'SuperZombieMut.DamTypeCrawlerPoison'
