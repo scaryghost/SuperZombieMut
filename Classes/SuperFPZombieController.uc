@@ -17,12 +17,6 @@ var float prevRageTimer,prevRageThreshold;
 
 function PostBeginPlay() {
     super.PostBeginPlay();
-    bFindNewEnemy= false;
-    bSmashDoor= false;
-    bStartled= false;
-    bAttackedTarget= false;
-    bMissTarget= false;
-    prevRageTimer= 0;
     prevRageThreshold= default.RageFrustrationThreshhold + (Frand() * 5); 
 }
 
@@ -69,4 +63,13 @@ state ZombieCharge {
         prevRageTimer= RageFrustrationTimer;
         prevRageThreshold= RageFrustrationThreshhold;
     }
+}
+
+defaultproperties {
+    bFindNewEnemy= false;
+    bSmashDoor= false;
+    bStartled= false;
+    bAttackedTarget= false;
+    bMissTarget= false;
+    prevRageTimer= 0;
 }

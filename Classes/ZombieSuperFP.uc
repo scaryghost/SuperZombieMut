@@ -1,4 +1,4 @@
-class ZombieSuperFP extends ZombieFleshPound;
+class ZombieSuperFP extends ZombieFleshPound_XMas;
 
 /**
  *  rageDamage          accumulator that stores how much damage the fleshpound did when enraged
@@ -18,8 +18,6 @@ simulated function PostBeginPlay() {
     super.PostBeginPlay();
     rageDamageLimit= Max(35.0*1.75*DifficultyDamageModifer(),1.0);
     rageShieldLimit= Max(45.0*DifficultyDamageModifer(),1.0);
-    rageDamage= 0.0;
-    rageShield= 0.0;
 }
 
 simulated function Tick(float DeltaTime) {
@@ -77,35 +75,6 @@ state RageCharging {
  *  but best leave the code as is
  */
 Ignores StartCharging;
-
-    function PlayDirectionalHit(Vector HitLoc) {
-        super.PlayDirectionalHit(HitLoc);
-    }
-
-    function bool CanGetOutOfWay() {
-        return super.CanGetOutOfWay();
-    }
-
-    function bool CanSpeedAdjust() {
-        return super.CanSpeedAdjust();
-    }
-
-    function BeginState() {
-        super.BeginState();
-    }
-
-    function EndState() {
-        super.EndState();
-    }
-
-    function Tick( float Delta ) {
-        super.Tick(Delta);
-    }
-
-    function Bump( Actor Other ) {
-        super.Bump(Other);
-    }
-
     function bool MeleeDamageTarget(int hitdamage, vector pushdir) {
         local bool RetVal,bWasEnemy;
         local float oldEnemyHealth, oldEnemyShield;
@@ -153,11 +122,6 @@ Ignores StartCharging;
  *  attacks call MeleeDamageTarget twice
  */
 state RageAgain {
-    function BeginState() {
-    }
-
-    function EndState() {
-    }
 
     function bool MeleeDamageTarget(int hitdamage, vector pushdir) {
         local bool RetVal,bWasEnemy;
@@ -194,7 +158,7 @@ state RageAgain {
     }
 
 Begin:
-    if( Level.NetMode ==NM_DedicatedServer ) {
+    if( Level.NetMode == NM_DedicatedServer ) {
         StartCharging();
     }
 }
@@ -203,5 +167,7 @@ defaultproperties {
     MenuName="Super FleshPound"
     ControllerClass=Class'SuperZombieMut.SuperFPZombieController'
     totalDamageRageThreshold= 1080
+    rageDamage= 0.0;
+    rageShield= 0.0;
 }
 
