@@ -25,10 +25,11 @@ var bool bJustSpawned;
  *  spawnTimer                  track how long the patriarch has spawned
  *  attackPipeCoolDown          cool down timer so the patriarch will not shoot another 
  *                              pile of pipes until his first rocket as exploded
- *  pipebombDamageMult          the pipe bomb scaling used to reduce pipe damage to the patriarch
  *  minPipeDistance             minimum distance that will trigger the patriarch's anti-pipebomb attack
+ *  LastDamageTime2             Serves the same function as LastDamageTime.  Old usage was flawed and would never work
+ *  ChargeDamage2               Serves the same function as ChargeDamage.  Old usage was flawed and never work
  */
-var float spawnTimer, attackPipeCoolDown, pipebombDamageMult, minPipeDistance, LastDamageTime2, ChargeDamage2;
+var float spawnTimer, attackPipeCoolDown, minPipeDistance, LastDamageTime2, ChargeDamage2;
 
 /**
  *  hsDamHistList               stores everyone who attacked the patriarch with hunting shotguns
@@ -85,8 +86,10 @@ simulated function Tick(float DeltaTime) {
             Controller.Target= LastProjectile;
             Controller.Focus= LastProjectile;
             GotoState('AttackPipes');
-            //Calculate how long the LAW rocket will travel so the patriarch doesn't fire another one 
-            //at the samep pile until the first one detonates
+            /**
+             *  Calculate how long the LAW rocket will travel so the patriarch doesn't fire another one 
+             *  at the samep pile until the first one detonates
+             */
             attackPipeCoolDown= minPipeDistance/(class'BossLAWProj'.default.MaxSpeed)+GetAnimDuration('PreFireMissile');
         }
     }
@@ -343,7 +346,6 @@ Ignores TakeDamage;
 defaultproperties {
     MenuName= "Super Patriarch"
     minEnemiesClose= 3
-    pipebombDamageMult= 0.075;
     minPipeDistance= 1250.0;
     ChargeDamageThreshold= 1000;
     bJustSpawned= true;
