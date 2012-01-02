@@ -46,22 +46,6 @@ function Startle(Actor Feared) {
  *  under cetain conditions
  */
 state ZombieCharge {
-    function Tick( float Delta ) {
-        super.Tick(Delta);
-    }
-
-    function bool StrafeFromDamage(float Damage, class<DamageType> DamageType, bool bFindDest) {
-        return super.StrafeFromDamage(Damage, DamageType, bFindDest);
-    }
-
-    function bool TryStrafe(vector sideDir) {
-        return super.TryStrafe(sideDir);
-    }
-
-    function Timer() {
-        super.Timer();
-    }
-
     function BeginState() {
         super.BeginState();
         /**
@@ -85,17 +69,4 @@ state ZombieCharge {
         prevRageTimer= RageFrustrationTimer;
         prevRageThreshold= RageFrustrationThreshhold;
     }
-
-WaitForAnim:
-
-    if ( Monster(Pawn).bShotAnim ) {
-        Goto('Moving');
-    }
-    if ( !FindBestPathToward(Enemy, false,true) )
-        GotoState('ZombieRestFormation');
-Moving:
-    MoveToward(Enemy);
-    WhatToDoNext(17);
-    if ( bSoaking )
-        SoakStop("STUCK IN CHARGING!");
 }
