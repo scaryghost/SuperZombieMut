@@ -22,6 +22,7 @@ event Bump(actor Other) {
 }
 
 defaultproperties {
+    MenuName="Super Crawler"
     GroundSpeed= 190.00000
     WaterSpeed= 175.00000
     ZombieDamType(0)=Class'SuperZombieMut.DamTypeCrawlerPoison'
