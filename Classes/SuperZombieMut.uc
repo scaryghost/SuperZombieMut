@@ -59,7 +59,7 @@ function PostBeginPlay() {
 
     KF = KFGameType(Level.Game);
     if (Level.NetMode != NM_Standalone)
-        AddToPackageMap("SuperZombieMut");
+        AddToPackageMap("SuperZombieMut_ServerPerks");
 
     if (KF == none) {
         Destroy();
@@ -93,14 +93,14 @@ function PostBeginPlay() {
     replaceSpecialSquad(KF.FinalSquads);
 
     if (bReplaceBoss) {
-        KF.EndGameBossClass= "SuperZombieMut.ZombieSuperBoss";
+        KF.EndGameBossClass= "SuperZombieMut_ServerPerks.ZombieSuperBoss";
     }
     if (bReplaceStalker) {
-        KF.FallbackMonsterClass= "SuperZombieMut.ZombieSuperStalker";
+        KF.FallbackMonsterClass= "SuperZombieMut_ServerPerks.ZombieSuperStalker";
     }
 
-    KF.PlayerControllerClass= class'SuperZombieMut.SZPlayerController';
-    KF.PlayerControllerClassName= "SuperZombieMut.SZPlayerController";
+    KF.PlayerControllerClass= class'SuperZombieMut_ServerPerks.SZPlayerController';
+    KF.PlayerControllerClassName= "SuperZombieMut_ServerPerks.SZPlayerController";
 
     SetTimer(0.1, false);
 }
@@ -138,14 +138,14 @@ defaultproperties {
     GroupName="KFSuperZombieMut"
     FriendlyName="Super Zombies"
     Description="Gives specimens new abilities and behaviors.  This mutator's version is 1.8.1."
-    replacementArray(0)=(oldClass="KFChar.ZombieFleshPound",newClass="SuperZombieMut.ZombieSuperFP",bReplace=false)
-    replacementArray(1)=(oldClass="KFChar.ZombieGorefast",newClass="SuperZombieMut.ZombieSuperGorefast",bReplace=false)
-    replacementArray(2)=(oldClass="KFChar.ZombieStalker",newClass="SuperZombieMut.ZombieSuperStalker",bReplace=false)
-    replacementArray(3)=(oldClass="KFChar.ZombieSiren",newClass="SuperZombieMut.ZombieSuperSiren",bReplace=false)
-    replacementArray(4)=(oldClass="KFChar.ZombieScrake",newClass="SuperZombieMut.ZombieSuperScrake",bReplace=false)
-    replacementArray(5)=(oldClass="KFChar.ZombieHusk",newClass="SuperZombieMut.ZombieSuperHusk",bReplace=false)
-    replacementArray(6)=(oldClass="KFChar.ZombieCrawler",newClass="SuperZombieMut.ZombieSuperCrawler",bReplace=false)
-    replacementArray(7)=(oldClass="KFChar.ZombieBloat",newClass="SuperZombieMut.ZombieSuperBloat",bReplace=false)
+    replacementArray(0)=(oldClass="KFChar.ZombieFleshPound",newClass="SuperZombieMut_ServerPerks.ZombieSuperFP",bReplace=false)
+    replacementArray(1)=(oldClass="KFChar.ZombieGorefast",newClass="SuperZombieMut_ServerPerks.ZombieSuperGorefast",bReplace=false)
+    replacementArray(2)=(oldClass="KFChar.ZombieStalker",newClass="SuperZombieMut_ServerPerks.ZombieSuperStalker",bReplace=false)
+    replacementArray(3)=(oldClass="KFChar.ZombieSiren",newClass="SuperZombieMut_ServerPerks.ZombieSuperSiren",bReplace=false)
+    replacementArray(4)=(oldClass="KFChar.ZombieScrake",newClass="SuperZombieMut_ServerPerks.ZombieSuperScrake",bReplace=false)
+    replacementArray(5)=(oldClass="KFChar.ZombieHusk",newClass="SuperZombieMut_ServerPerks.ZombieSuperHusk",bReplace=false)
+    replacementArray(6)=(oldClass="KFChar.ZombieCrawler",newClass="SuperZombieMut_ServerPerks.ZombieSuperCrawler",bReplace=false)
+    replacementArray(7)=(oldClass="KFChar.ZombieBloat",newClass="SuperZombieMut_ServerPerks.ZombieSuperBloat",bReplace=false)
     propDescripArray(0)=(property="bReplaceCrawler",longDescription="Replace Crawlers with SuperCrawlers",shortDescription="Replace Crawlers")
     propDescripArray(1)=(property="bReplaceStalker",longDescription="Replace Stalkers with SuperStalkers",shortDescription="Replace Stalkers")
     propDescripArray(2)=(property="bReplaceGorefast",longDescription="Replace Gorefasts with SuperGorefasts",shortDescription="Replace Gorefasts")

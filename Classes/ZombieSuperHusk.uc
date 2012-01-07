@@ -53,6 +53,6 @@ function RangedAttack(Actor A) {
 }
 
 defaultproperties {
-    ControllerClass=Class'SuperZombieMut.SuperHuskZombieController'
+    ControllerClass=Class'SuperZombieMut_ServerPerks.SuperHuskZombieController'
     MenuName= "Super Husk"
 }

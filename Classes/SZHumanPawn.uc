@@ -43,7 +43,7 @@ simulated event ModifyVelocity(float DeltaTime, vector OldVelocity) {
 
 function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector momentum, 
         class<DamageType> damageType, optional int HitIdx ) {
-    if (damageType == class'SuperZombieMut.DamTypeCrawlerPoison') {
+    if (damageType == class'SuperZombieMut_ServerPerks.DamTypeCrawlerPoison') {
         speedPenaltyStartTime= Level.TimeSeconds;
     }
     super.TakeDamage(Damage, instigatedBy, hitlocation, momentum, damageType, HitIdx);

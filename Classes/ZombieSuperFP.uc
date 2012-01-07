@@ -165,7 +165,7 @@ Begin:
 
 defaultproperties {
     MenuName="Super FleshPound"
-    ControllerClass=Class'SuperZombieMut.SuperFPZombieController'
+    ControllerClass=Class'SuperZombieMut_ServerPerks.SuperFPZombieController'
     totalDamageRageThreshold= 1080
     rageDamage= 0.0;
     rageShield= 0.0;

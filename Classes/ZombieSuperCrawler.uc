@@ -13,7 +13,7 @@ simulated function PostBeginPlay() {
 event Bump(actor Other) {
     if(bPouncing && KFHumanPawn(Other)!=none ) {
         KFHumanPawn(Other).TakeDamage(((MeleeDamage - (MeleeDamage * 0.05)) + (MeleeDamage * (FRand() * 0.1))), 
-                self ,self.Location,self.velocity, Class'SuperZombieMut.DamTypeCrawlerPoison');
+                self ,self.Location,self.velocity, Class'SuperZombieMut_ServerPerks.DamTypeCrawlerPoison');
         if (KFHumanPawn(Other).Health <=0) {
             KFHumanPawn(Other).SpawnGibs(self.rotation, 1);
         }
@@ -25,7 +25,7 @@ defaultproperties {
     MenuName="Super Crawler"
     GroundSpeed= 190.00000
     WaterSpeed= 175.00000
-    ZombieDamType(0)=Class'SuperZombieMut.DamTypeCrawlerPoison'
-    ZombieDamType(1)=Class'SuperZombieMut.DamTypeCrawlerPoison'
-    ZombieDamType(2)=Class'SuperZombieMut.DamTypeCrawlerPoison'
+    ZombieDamType(0)=Class'SuperZombieMut_ServerPerks.DamTypeCrawlerPoison'
+    ZombieDamType(1)=Class'SuperZombieMut_ServerPerks.DamTypeCrawlerPoison'
+    ZombieDamType(2)=Class'SuperZombieMut_ServerPerks.DamTypeCrawlerPoison'
 }
