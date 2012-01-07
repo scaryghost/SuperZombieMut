@@ -2,7 +2,6 @@ class SZHumanPawn extends KFHumanPawn;
 
 var float maxSpeedPenaltyTime;
 var float speedPenaltyStartTime;
-var float prevSpeed;
 
 simulated function PostBeginPlay() {
     super.PostBeginPlay();
@@ -19,7 +18,6 @@ simulated event ModifyVelocity(float DeltaTime, vector OldVelocity) {
     local float EncumbrancePercentage;
     local KFPlayerReplicationInfo kfpri;
     local float speedBonusScale;
-    local string speedMsg;
 
     super(KFPawn).ModifyVelocity(DeltaTime, OldVelocity);
 
@@ -39,11 +37,6 @@ simulated event ModifyVelocity(float DeltaTime, vector OldVelocity) {
             // GetMovementSpeedModifier returns a multiplier >= 1.0
             GroundSpeed*= (kfpri.ClientVeteranSkill.static.GetMovementSpeedModifier(kfpri, 
                     KFGameReplicationInfo(Level.GRI)) - 1 ) * speedBonusScale + 1;
-        }
-        if (prevSpeed != GroundSpeed) {
-            speedMsg= chr(27)$chr(1)$chr(200)$chr(26)$"Ground speed: "$GroundSpeed;
-            KFPC.ClientMessage(speedMsg);
-            prevSpeed= GroundSpeed;
         }
     }
 }
