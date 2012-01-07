@@ -12,6 +12,8 @@ specimens they wish to replace.  For dedicated servers, you should double
 check the wedadmin configuration page to make sure your desired specimens 
 are active if it you are running the mutator for the first time.
 
+This version of the mutator is compatible with Marco's ServerPerks mutator.
+
 To add the specimens in sandbox mode, you must add them to the monster 
 class list.  The package name is "SuperZombieMut" and the specimens available 
 are:
