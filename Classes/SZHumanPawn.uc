@@ -1,4 +1,4 @@
-class SZHumanPawn extends KFHumanPawn;
+class SZHumanPawn extends SRHumanPawn;
 
 var float maxSpeedPenaltyTime;
 var float speedPenaltyStartTime;
