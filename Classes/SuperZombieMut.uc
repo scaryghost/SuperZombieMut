@@ -136,8 +136,8 @@ static event string GetDescriptionText(string property) {
 
 defaultproperties {
     GroupName="KFSuperZombieMut"
-    FriendlyName="Super Zombies v1.8.2sr"
-    Description="Gives specimens new abilities and behaviors.  This mutator's version is 1.8.2 and is compatible with ServerPerks V5.50."
+    FriendlyName="Super Zombies v1.8.3sr"
+    Description="Gives specimens new abilities and behaviors.  This mutator's version is 1.8.3 and is compatible with ServerPerks V6.00."
     replacementArray(0)=(oldClass="KFChar.ZombieFleshPound",newClass="SuperZombieMut_ServerPerks.ZombieSuperFP",bReplace=false)
     replacementArray(1)=(oldClass="KFChar.ZombieGorefast",newClass="SuperZombieMut_ServerPerks.ZombieSuperGorefast",bReplace=false)
     replacementArray(2)=(oldClass="KFChar.ZombieStalker",newClass="SuperZombieMut_ServerPerks.ZombieSuperStalker",bReplace=false)
