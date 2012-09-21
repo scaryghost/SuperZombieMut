@@ -2,10 +2,22 @@ class SZHumanPawn extends KFHumanPawn;
 
 var float maxSpeedPenaltyTime;
 var float speedPenaltyStartTime;
+var int bleedCount, nextBleedTime, bleedPeriod, maxBleedCount;
+var Pawn bleedInstigator;
 
 simulated function PostBeginPlay() {
     super.PostBeginPlay();
     speedPenaltyStartTime= Level.TimeSeconds - maxSpeedPenaltyTime;
+}
+
+simulated function Tick(float DeltaTime) {
+    super.Tick(DeltaTime);
+
+    if (bleedCount > 0 && nextBleedTime < Level.TimeSeconds) {
+        nextBleedTime+= bleedPeriod;
+        TakeDamage(2+Rand(3), bleedInstigator, Location, vect(0,0,0), class'DamTypeBleed');
+        bleedCount--;
+    }
 }
 
 /**
@@ -43,12 +55,18 @@ simulated event ModifyVelocity(float DeltaTime, vector OldVelocity) {
 
 function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector momentum, 
         class<DamageType> damageType, optional int HitIdx ) {
-    if (damageType == class'SuperZombieMut.DamTypeCrawlerPoison') {
+    if (class<DamTypeCrawlerPoison>(damageType) != none) {
         speedPenaltyStartTime= Level.TimeSeconds;
+    } else if (bleedCount <= 0 && class<DamTypeBleed>(damageType) != none) {
+        nextBleedTime= Level.TimeSeconds + bleedPeriod;
+        bleedInstigator= instigatedBy;
+        bleedCount= maxBleedCount;
     }
     super.TakeDamage(Damage, instigatedBy, hitlocation, momentum, damageType, HitIdx);
 }
 
 defaultproperties {
     maxSpeedPenaltyTime= 10
+    maxBleedCount= 5;
+    bleedPeriod= 2;
 }

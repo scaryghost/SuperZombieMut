@@ -74,4 +74,7 @@ simulated function int AttackAndMoveDoAnimAction( name AnimName ) {
 
 defaultproperties {
     MenuName= "Super Stalker"
+    ZombieDamType(0)=Class'DamTypeBleed'
+    ZombieDamType(1)=Class'DamTypeBleed'
+    ZombieDamType(2)=Class'DamTypeBleed'
 }
