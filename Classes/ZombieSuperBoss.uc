@@ -37,17 +37,14 @@ simulated function Tick(float DeltaTime) {
     if(!bJustSpawned && attackPipeCoolDown <= 0.0 && bBaseState) {
         pipeCount= 0;
         playerCount= 0;
-        /**
-         *  Count how many pipe bombs are visible within a radius
-         */
+        
+        //Count how many pipe bombs are visible within a radius
         foreach VisibleCollidingActors( class 'PipeBombProjectile', CheckProjectile, minPipeDistance, Location ) {
             pipeCount++;
             LastProjectile= CheckProjectile;
         }
         if(pipeCount >= 2) {
-            /**
-             *  Count how many players are visible within twice the radius
-             */
+            //Count how many players are visible within twice the radius
             foreach VisibleCollidingActors( class 'SZHumanPawn', CheckHP, minPipeDistance*2, Location ) {
                 playerCount++;
             }
@@ -180,5 +177,5 @@ defaultproperties {
     minPipeDistance= 1250.0;
     ChargeDamageThreshold= 1000;
     bJustSpawned= true;
-    spawnTimer= 0.0;
+    ControllerClass=class'ZombieSuperBossController'
 }
