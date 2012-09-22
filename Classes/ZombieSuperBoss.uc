@@ -1,24 +1,9 @@
 class ZombieSuperBoss extends ZombieBoss;
 
-/**
- *  Struct to store how many times each player hit the patriarch
- */
-struct damHitTracker {
-    var Pawn instigator;
-    var array<float> deltaTimes;
-    var float firstTimeHit;
-};
+/** Minimum damage the patriarch will take before charging any players within 700uu */
+var int ChargeDamageThreshold;
 
-/**
- *  ChargeDamageThreshold       minimum damage the patriarch will take before charging any players within 700uu
- *  minEnemiesClose             minimum number of enemies close to the patriarch that will trigger the AOE kneel
- */
-var int ChargeDamageThreshold, minEnemiesClose;
-
-/**
- *  bJustSpawned                true if the pariarch just spawned.  The flag will prevent the patriarch from destroying 
- *                              pipe bombs during his introduction scene
- */
+/** True if the pariarch just spawned.  The flag will prevent the patriarch from attacking pipe bombs during the intro scene  */
 var bool bJustSpawned;
 
 /**
@@ -30,12 +15,6 @@ var bool bJustSpawned;
  *  ChargeDamage2               Serves the same function as ChargeDamage.  Old usage was flawed and never work
  */
 var float spawnTimer, attackPipeCoolDown, minPipeDistance, LastDamageTime2, ChargeDamage2;
-
-/**
- *  hsDamHistList               stores everyone who attacked the patriarch with hunting shotguns
- */
-var array<damHitTracker> hsDamHitList;
-
 
 /**
  *  Give the patriarch more to do during each tick
@@ -88,7 +67,7 @@ simulated function Tick(float DeltaTime) {
             GotoState('AttackPipes');
             /**
              *  Calculate how long the LAW rocket will travel so the patriarch doesn't fire another one 
-             *  at the samep pile until the first one detonates
+             *  at the same pile until the first one detonates
              */
             attackPipeCoolDown= minPipeDistance/(class'BossLAWProj'.default.MaxSpeed)+GetAnimDuration('PreFireMissile');
         }
@@ -96,39 +75,6 @@ simulated function Tick(float DeltaTime) {
     spawnTimer+= DeltaTime;
     attackPipeCoolDown= FMax(0,attackPipeCoolDown-DeltaTime);
     bJustSpawned= (spawnTimer <= GetAnimDuration('Entrance'));
-}
-
-/**
- *  Output a message to all players
- */
-function bool outputToChat(string msg) {
-    local Controller C;
-
-    for (C = Level.ControllerList; C != None; C = C.NextController) {
-        if (PlayerController(C) != None) {
-            PlayerController(C).ClientMessage(msg);
-        }
-    }
-
-    return true;
-}
-
-/**
- *  Calculates how many enemies are within a certain distance of the patriarch.
- *  Distance is given in the function parameter.
- */
-function int numEnemiesAround(float minDist) {
-    local Controller C;
-    local int count;
-
-    count= 0;
-    For( C=Level.ControllerList; C!=None; C=C.NextController ) {
-        if( C.bIsPlayer && C.Pawn!=None && VSize(C.Pawn.Location-Location)<=minDist && 
-            FastTrace(C.Pawn.Location,Location) && C.Pawn.Weapon != None && C.Pawn.Weapon.bMeleeWeapon) {
-            count++;
-        }
-    }
-    return count;
 }
 
 /**
@@ -149,36 +95,8 @@ Ignores RangedAttack;
 state Charging {
     function BeginState() {
         super.BeginState();
-        /**
-         * Make the patriarch charge more often if there are more players
-         */
+        // Make the patriarch charge more often if there are more players
         NumChargeAttacks = Rand(Level.Game.NumPlayers)+1;
-    }
-}
-
-/**
- * Moved the AOE kneel to the extended KnockDown state
- */
-state KnockDown {
-    function BeginState() {
-        local int numEnemies;
-        local vector Start;
-        local Rotator R;
-
-        super.BeginState();
-
-        numEnemies= numEnemiesAround(150);
-
-        /**
-         *  If the patriarch is surrounded by enemies with melee weapons, do the AOE kneel to hurt them
-         */
-        if(numEnemies >= minEnemiesClose) {
-            outputToChat("Learn how to do something other than lumberjack gang-bang you noobs.");
-            Start = GetBoneCoords('tip').Origin;
-            R.Pitch= -16384;
-            Spawn(Class'BossLAWProj',,,Start,R);
-        }
-
     }
 }
 
@@ -230,15 +148,6 @@ function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector M
     local float DamagerDistSq;
     local float oldHealth;
 
-    //If the patriarch was hit with the hunting shotgun, update the list and see if anyone was cheating
-    if(class<DamTypeDBShotgun>(damageType) != none && updateHsDamHitList(InstigatedBy)) {
-        Controller.Target= InstigatedBy;
-        Controller.Focus= InstigatedBy;
-        GotoState('KillCheater');
-        return;
-    }
-
-
     OldHealth= Health;
     Super.TakeDamage(Damage,instigatedBy,hitlocation,Momentum,damageType);
 
@@ -266,86 +175,8 @@ function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector M
     }
 } 
 
-/**
- *  Update the list of people who have hit the patriarch with the hunting shotgun
- */
-function bool updateHsDamHitList(pawn Instigator) {
-    local int i;
-    local bool bFound;
-    local float deltaTime;
-    local int len;
-
-    bFound= false;
-    for(i=0; i< hsDamHitList.length; i++) {
-        len= hsDamHitList[i].deltaTimes.length;
-        if(hsDamHitList[i].instigator == Instigator) {
-            deltaTime= Level.TimeSeconds - hsDamHitList[i].firstTimeHit;
-            if(deltaTime >= 1.0) {
-                if(hsDamHitList[i].deltaTimes.length >= 3) {
-                    return true;
-                }
-                hsDamHitList[i].deltaTimes.length= 1;
-                hsDamHitList[i].deltaTimes[0]= Level.TimeSeconds;
-                hsDamHitList[i].firstTimeHit= Level.TimeSeconds;
-            } else if(Level.TimeSeconds-hsDamHitList[i].deltaTimes[len-1] >= 0.25) {
-                hsDamHitList[i].deltaTimes[len]= Level.TimeSeconds;
-            }
-            bFound= true;
-            break;
-        }
-    }
-    if(!bFound) {
-        hsDamHitList.length= hsDamHitList.length+1;
-        hsDamHitList[hsDamHitList.length-1].instigator= Instigator;
-        hsDamHitList[hsDamHitList.length-1].deltaTimes[0]= Level.TimeSeconds;
-        hsDamHitList[hsDamHitList.length-1].firstTimeHit= Level.TimeSeconds;
-    }
-    return false;
-}
-
-/**
- *  If the super Patriarch has detected someone using the auto HSG glitch,
- *  run over to him and 1 shot him.
- */
-state KillCheater extends ChargePipes {
-Ignores TakeDamage;   
-    function BeginState() {
-        super.BeginState();
-        outputToChat("I shall smite those who use the hunting shotgun glitch");
-    } 
-
-    function bool MeleeDamageTarget(int hitdamage, vector pushdir) {
-        pushdir = Normal(Controller.Target.Location-Location)*1000000; // Fly bitch!
-        if(Super.MeleeDamageTarget(100000, pushdir)) {
-            GotoState('');
-            return true;
-        }
-        return false;
-    }
-
-    function RangedAttack(Actor A) {
-        if ( bShotAnim )
-            return;
-        else if ( IsCloseEnuf(A) )
-        {
-            if( bCloaked )
-                UnCloakBoss();
-            bShotAnim = true;
-            Acceleration = vect(0,0,0);
-            Acceleration = (A.Location-Location);
-            SetAnimAction('MeleeClaw');
-        }
-    }
-
-    function EndState() {
-       super.EndState(); 
-       outputToChat("ProTip: Get some skill you noob.");
-    }
-}
-
 defaultproperties {
     MenuName= "Super Patriarch"
-    minEnemiesClose= 3
     minPipeDistance= 1250.0;
     ChargeDamageThreshold= 1000;
     bJustSpawned= true;
