@@ -1,42 +1,35 @@
 class SuperZombieMut extends Mutator
     config(SuperZombieMut);
 
-/**
- *  Struct that stores what a specific zombie should be replaced with
- */
+/** Struct that stores what a specific zombie should be replaced with */
 struct oldNewZombiePair {
     var string oldClass;
     var string newClass;
     var bool bReplace;
 };
 
-/**
- *  Struct that stores all the property attributes
- */
+/** Struct that stores all the property attributes */
 struct propertyDescPair {
     var string property;
     var string longDescription;
     var string shortDescription;
 };
 
-/**
- *  Configuration variables that store whether or not to replace the specimen
- */
+/** Configuration variables that store whether or not to replace the specimen */
 var() config bool bReplaceCrawler, bReplaceStalker, bReplaceGorefast, bReplaceBloat, 
                 bReplaceSiren, bReplaceHusk, bReplaceScrake, bReplaceFleshpound, bReplaceBoss;
-/**
- *  Array that stores all the replacement pairs
- */
-var array<oldNewZombiePair> replacementArray;
 
-/**
- *  Array that stores all the properties and their descriptions
- */
+/** Player controller to be used by the game in ${package}.${class} format */
+var() config string playerController;
+/** Semi colon separated list of available, supported custom controllers */
+var() config array<string> compatibleControllers;
+
+/** Array that stores all the replacement pairs */
+var array<oldNewZombiePair> replacementArray;
+/** Array that stores all the properties and their descriptions */
 var array<propertyDescPair> propDescripArray;
 
-/**
- *  Replaces the zombies in the given squadArray
- */
+/** Replaces the zombies in the given squadArray */
 function replaceSpecialSquad(out array<KFGameType.SpecialSquad> squadArray) {
     local int i,j,k;
     local oldNewZombiePair replacementValue;
@@ -58,9 +51,6 @@ function PostBeginPlay() {
     local oldNewZombiePair replacementValue;
 
     KF = KFGameType(Level.Game);
-    if (Level.NetMode != NM_Standalone)
-        AddToPackageMap("SuperZombieMut");
-
     if (KF == none) {
         Destroy();
         return;
@@ -99,18 +89,20 @@ function PostBeginPlay() {
         KF.FallbackMonsterClass= "SuperZombieMut.ZombieSuperStalker";
     }
 
-    KF.PlayerControllerClass= class'SuperZombieMut.SZPlayerController';
-    KF.PlayerControllerClassName= "SuperZombieMut.SZPlayerController";
-
-    SetTimer(0.1, false);
-}
-
-function Timer() {
-    Destroy();
+    //Load up the selected player controller
+    KF.PlayerControllerClass= class<PlayerController>(DynamicLoadObject(playerController, class'Class'));
+    KF.PlayerControllerClassName= playerController;
+    if (Level.NetMode != NM_Standalone) {
+        AddToPackageMap("SuperZombieMut");
+        if (KF.PlayerControllerClass != class'SZPlayerController') {
+            //If the player controller is part of another package, add that to the package map
+            AddToPackageMap(string(KF.PlayerControllerClass.Outer.name));
+        }
+    }
 }
 
 static function FillPlayInfo(PlayInfo PlayInfo) {
-    local string mutConfigGroup;
+    local string mutConfigGroup, controllers;
     local int i;
 
     Super.FillPlayInfo(PlayInfo);
@@ -120,6 +112,12 @@ static function FillPlayInfo(PlayInfo PlayInfo) {
         PlayInfo.AddSetting(mutConfigGroup, default.propDescripArray[i].property, 
         default.propDescripArray[i].shortDescription, 0, 0, "Check");
     }
+    for(i= 0; i < default.compatibleControllers.Length; i++) {
+        if (i != 0) 
+            controllers$= ";";
+        controllers$= default.compatibleControllers[i];
+    }
+    PlayInfo.AddSetting(mutConfigGroup, "playerController", "Compatability", 0, 1, "Select", controllers, "Xb",,true);
 }
 
 static event string GetDescriptionText(string property) {
@@ -136,8 +134,9 @@ static event string GetDescriptionText(string property) {
 
 defaultproperties {
     GroupName="KFSuperZombieMut"
-    FriendlyName="Super Zombies"
-    Description="Gives specimens new abilities and behaviors.  This mutator's version is 1.8.1."
+    FriendlyName="Super Zombies v2.0"
+    Description="Gives specimens new abilities and behaviors.  This mutator's version is 2.0."
+
     replacementArray(0)=(oldClass="KFChar.ZombieFleshPound",newClass="SuperZombieMut.ZombieSuperFP",bReplace=false)
     replacementArray(1)=(oldClass="KFChar.ZombieGorefast",newClass="SuperZombieMut.ZombieSuperGorefast",bReplace=false)
     replacementArray(2)=(oldClass="KFChar.ZombieStalker",newClass="SuperZombieMut.ZombieSuperStalker",bReplace=false)
@@ -155,4 +154,7 @@ defaultproperties {
     propDescripArray(6)=(property="bReplaceScrake",longDescription="Replace Scrakes with SuperScrakes",shortDescription="Replace Scrakes")
     propDescripArray(7)=(property="bReplaceFleshpound",longDescription="Replace Fleshpounds with SuperFleshpounds",shortDescription="Replace Fleshpounds")
     propDescripArray(8)=(property="bReplaceBoss",longDescription="Replace the Patriarch with the SuperPatriarch",shortDescription="Replace Patriarch")
+
+    playerController= "SuperZombieMut.SZPlayerController"
+    compatibleControllers(0)= "SuperZombieMut.SZPlayerController;Vanilla KF"
 }
