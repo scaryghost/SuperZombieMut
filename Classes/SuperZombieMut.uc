@@ -29,6 +29,9 @@ var array<oldNewZombiePair> replacementArray;
 /** Array that stores all the properties and their descriptions */
 var array<propertyDescPair> propDescripArray;
 
+var BleedingPawns BP;
+var PoisonedPawns PP;
+
 /** Replaces the zombies in the given squadArray */
 function replaceSpecialSquad(out array<KFGameType.SpecialSquad> squadArray) {
     local int i,j,k;
@@ -55,6 +58,9 @@ function PostBeginPlay() {
         Destroy();
         return;
     }
+
+    PP= spawn(class'PoisonedPawns');
+    BP= spawn(class'BleedingPawns');
 
     replacementArray[0].bReplace= bReplaceFleshpound;
     replacementArray[1].bReplace= bReplaceGorefast;
@@ -90,6 +96,7 @@ function PostBeginPlay() {
     }
 
     //Load up the selected player controller
+/*
     KF.PlayerControllerClass= class<PlayerController>(DynamicLoadObject(playerController, class'Class'));
     KF.PlayerControllerClassName= playerController;
     if (Level.NetMode != NM_Standalone) {
@@ -99,6 +106,16 @@ function PostBeginPlay() {
             AddToPackageMap(string(KF.PlayerControllerClass.Outer.name));
         }
     }
+*/
+}
+
+function bool CheckReplacement(Actor Other, out byte bSuperRelevant) {
+    if (ZombieSuperCrawler(Other) != none) {
+        ZombieSuperCrawler(Other).mut= self;
+    } else if (ZombieSuperStalker(Other) != none) {
+        ZombieSuperStalker(Other).mut= self;
+    }
+    return true;
 }
 
 static function FillPlayInfo(PlayInfo PlayInfo) {
@@ -145,6 +162,7 @@ defaultproperties {
     replacementArray(5)=(oldClass="KFChar.ZombieHusk",newClass="SuperZombieMut.ZombieSuperHusk",bReplace=false)
     replacementArray(6)=(oldClass="KFChar.ZombieCrawler",newClass="SuperZombieMut.ZombieSuperCrawler",bReplace=false)
     replacementArray(7)=(oldClass="KFChar.ZombieBloat",newClass="SuperZombieMut.ZombieSuperBloat",bReplace=false)
+
     propDescripArray(0)=(property="bReplaceCrawler",longDescription="Replace Crawlers with SuperCrawlers",shortDescription="Replace Crawlers")
     propDescripArray(1)=(property="bReplaceStalker",longDescription="Replace Stalkers with SuperStalkers",shortDescription="Replace Stalkers")
     propDescripArray(2)=(property="bReplaceGorefast",longDescription="Replace Gorefasts with SuperGorefasts",shortDescription="Replace Gorefasts")

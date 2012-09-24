@@ -1,5 +1,7 @@
 class ZombieSuperStalker extends ZombieStalker;
 
+var SuperZombieMut mut;
+
 simulated function PostBeginPlay() {
     super.PostBeginPlay();
 }
@@ -70,6 +72,16 @@ simulated function int AttackAndMoveDoAnimAction( name AnimName ) {
     }
 
     return super.DoAnimAction( AnimName );
+}
+
+function bool MeleeDamageTarget(int hitdamage, vector pushdir) {
+    local bool result;
+
+    result= super.MeleeDamageTarget(hitdamage, pushdir);
+    if (result && KFHumanPawn(Controller.Target) != none) {
+        mut.BP.addPawn(KFHumanPawn(Controller.Target), Self);
+    }
+    return result;
 }
 
 defaultproperties {

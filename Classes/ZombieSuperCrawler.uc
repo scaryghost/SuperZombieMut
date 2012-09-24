@@ -1,5 +1,7 @@
 class ZombieSuperCrawler extends ZombieCrawler;
 
+var SuperZombieMut mut;
+
 simulated function PostBeginPlay() {
     super.PostBeginPlay();
     PounceSpeed= Rand(221)+330;
@@ -11,14 +13,10 @@ simulated function PostBeginPlay() {
  * to be the new poison damage type
  */
 event Bump(actor Other) {
-    if(bPouncing && KFHumanPawn(Other)!=none ) {
-        KFHumanPawn(Other).TakeDamage(((MeleeDamage - (MeleeDamage * 0.05)) + (MeleeDamage * (FRand() * 0.1))), 
-                self ,self.Location,self.velocity, Class'SuperZombieMut.DamTypeCrawlerPoison');
-        if (KFHumanPawn(Other).Health <=0) {
-            KFHumanPawn(Other).SpawnGibs(self.rotation, 1);
-        }
-        bPouncing=false;
+    if (bPouncing && KFHumanPawn(Other) != none) {
+        mut.PP.addPawn(KFHumanPawn(Other));
     }
+    super.Bump(Other);
 }
 
 defaultproperties {
