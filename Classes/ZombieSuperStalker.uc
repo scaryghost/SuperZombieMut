@@ -86,7 +86,4 @@ function bool MeleeDamageTarget(int hitdamage, vector pushdir) {
 
 defaultproperties {
     MenuName= "Super Stalker"
-    ZombieDamType(0)=Class'DamTypeBleed'
-    ZombieDamType(1)=Class'DamTypeBleed'
-    ZombieDamType(2)=Class'DamTypeBleed'
 }

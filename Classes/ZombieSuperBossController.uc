@@ -2,12 +2,11 @@ class ZombieSuperBossController extends BossZombieController;
 
 var int selection;
 
-/**
- closest= 0
- lowest hp / shield= 1
- fastest= 2
- carrying most weight= 3
- */
+function PostBeginPlay() {
+    super.PostBeginPlay();
+    selection= rand(4);
+}
+
 function bool FindNewEnemy() {
     local Pawn BestEnemy;
     local Controller PC;

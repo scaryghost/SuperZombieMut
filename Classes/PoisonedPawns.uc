@@ -31,7 +31,6 @@ function tick(float DeltaTime) {
             pawns[i].P.GroundSpeed*= (kfpri.ClientVeteranSkill.static.GetMovementSpeedModifier(kfpri, 
                     KFGameReplicationInfo(Level.GRI)) - 1 ) * speedBonusScale + 1;
         }
-
         if (speedBonusScale < 1) {
             i++;
         } else {
@@ -50,7 +49,6 @@ function addPawn(KFHumanPawn P) {
             return;
         }
     }
-
     pawns.Length= pawns.Length + 1;
     pawns[pawns.Length - 1].P= P;
     pawns[pawns.Length - 1].startTime= Level.TimeSeconds;

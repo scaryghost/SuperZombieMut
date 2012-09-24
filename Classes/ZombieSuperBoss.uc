@@ -22,7 +22,7 @@ var float spawnTimer, attackPipeCoolDown, minPipeDistance, LastDamageTime2, Char
 simulated function Tick(float DeltaTime) {
     local PipeBombProjectile CheckProjectile;
     local PipeBombProjectile LastProjectile;
-    local SZHumanPawn CheckHP;
+    local KFHumanPawn CheckHP;
     local int pipeCount,playerCount;
     local bool bBaseState;
 
@@ -45,7 +45,7 @@ simulated function Tick(float DeltaTime) {
         }
         if(pipeCount >= 2) {
             //Count how many players are visible within twice the radius
-            foreach VisibleCollidingActors( class 'SZHumanPawn', CheckHP, minPipeDistance*2, Location ) {
+            foreach VisibleCollidingActors( class 'KFHumanPawn', CheckHP, minPipeDistance*2, Location ) {
                 playerCount++;
             }
         }

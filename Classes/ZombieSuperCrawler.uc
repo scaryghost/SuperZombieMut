@@ -19,11 +19,17 @@ event Bump(actor Other) {
     super.Bump(Other);
 }
 
+function bool MeleeDamageTarget(int hitdamage, vector pushdir) {
+    local bool result;
+
+    result= super.MeleeDamageTarget(hitdamage, pushdir);
+    if (result && KFHumanPawn(Controller.Target) != none) {
+        mut.PP.addPawn(KFHumanPawn(Controller.Target));
+    }
+    return result;
+}
 defaultproperties {
     MenuName="Super Crawler"
     GroundSpeed= 190.00000
     WaterSpeed= 175.00000
-    ZombieDamType(0)=Class'SuperZombieMut.DamTypeCrawlerPoison'
-    ZombieDamType(1)=Class'SuperZombieMut.DamTypeCrawlerPoison'
-    ZombieDamType(2)=Class'SuperZombieMut.DamTypeCrawlerPoison'
 }

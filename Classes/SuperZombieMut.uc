@@ -19,11 +19,6 @@ struct propertyDescPair {
 var() config bool bReplaceCrawler, bReplaceStalker, bReplaceGorefast, bReplaceBloat, 
                 bReplaceSiren, bReplaceHusk, bReplaceScrake, bReplaceFleshpound, bReplaceBoss;
 
-/** Player controller to be used by the game in ${package}.${class} format */
-var() config string playerController;
-/** Semi colon separated list of available, supported custom controllers */
-var() config array<string> compatibleControllers;
-
 /** Array that stores all the replacement pairs */
 var array<oldNewZombiePair> replacementArray;
 /** Array that stores all the properties and their descriptions */
@@ -94,19 +89,6 @@ function PostBeginPlay() {
     if (bReplaceStalker) {
         KF.FallbackMonsterClass= "SuperZombieMut.ZombieSuperStalker";
     }
-
-    //Load up the selected player controller
-/*
-    KF.PlayerControllerClass= class<PlayerController>(DynamicLoadObject(playerController, class'Class'));
-    KF.PlayerControllerClassName= playerController;
-    if (Level.NetMode != NM_Standalone) {
-        AddToPackageMap("SuperZombieMut");
-        if (KF.PlayerControllerClass != class'SZPlayerController') {
-            //If the player controller is part of another package, add that to the package map
-            AddToPackageMap(string(KF.PlayerControllerClass.Outer.name));
-        }
-    }
-*/
 }
 
 function bool CheckReplacement(Actor Other, out byte bSuperRelevant) {
@@ -119,7 +101,7 @@ function bool CheckReplacement(Actor Other, out byte bSuperRelevant) {
 }
 
 static function FillPlayInfo(PlayInfo PlayInfo) {
-    local string mutConfigGroup, controllers;
+    local string mutConfigGroup;
     local int i;
 
     Super.FillPlayInfo(PlayInfo);
@@ -129,12 +111,6 @@ static function FillPlayInfo(PlayInfo PlayInfo) {
         PlayInfo.AddSetting(mutConfigGroup, default.propDescripArray[i].property, 
         default.propDescripArray[i].shortDescription, 0, 0, "Check");
     }
-    for(i= 0; i < default.compatibleControllers.Length; i++) {
-        if (i != 0) 
-            controllers$= ";";
-        controllers$= default.compatibleControllers[i];
-    }
-    PlayInfo.AddSetting(mutConfigGroup, "playerController", "Compatability", 0, 1, "Select", controllers, "Xb",,true);
 }
 
 static event string GetDescriptionText(string property) {
@@ -172,7 +148,4 @@ defaultproperties {
     propDescripArray(6)=(property="bReplaceScrake",longDescription="Replace Scrakes with SuperScrakes",shortDescription="Replace Scrakes")
     propDescripArray(7)=(property="bReplaceFleshpound",longDescription="Replace Fleshpounds with SuperFleshpounds",shortDescription="Replace Fleshpounds")
     propDescripArray(8)=(property="bReplaceBoss",longDescription="Replace the Patriarch with the SuperPatriarch",shortDescription="Replace Patriarch")
-
-    playerController= "SuperZombieMut.SZPlayerController"
-    compatibleControllers(0)= "SuperZombieMut.SZPlayerController;Vanilla KF"
 }
