@@ -10,19 +10,18 @@ var bool bJustSpawned;
  *  spawnTimer                  track how long the patriarch has spawned
  *  attackPipeCoolDown          cool down timer so the patriarch will not shoot another 
  *                              pile of pipes until his first rocket as exploded
- *  minPipeDistance             minimum distance that will trigger the patriarch's anti-pipebomb attack
  *  LastDamageTime2             Serves the same function as LastDamageTime.  Old usage was flawed and would never work
  *  ChargeDamage2               Serves the same function as ChargeDamage.  Old usage was flawed and never work
  */
-var float spawnTimer, attackPipeCoolDown, minPipeDistance, LastDamageTime2, ChargeDamage2;
+var float spawnTimer, attackPipeCoolDown, LastDamageTime2, ChargeDamage2;
 
 /**
  *  Give the patriarch more to do during each tick
  */
 simulated function Tick(float DeltaTime) {
-    local PipeBombProjectile CheckProjectile;
-    local PipeBombProjectile LastProjectile;
-    local KFHumanPawn CheckHP;
+    local PipeBombProjectile checkProjectile;
+    local PipeBombProjectile lastProjectile;
+    local KFHumanPawn checkHP, lastHP;
     local int pipeCount,playerCount;
     local bool bBaseState;
 
@@ -35,38 +34,31 @@ simulated function Tick(float DeltaTime) {
      *  and is in the base state, checking if a pipe bomb pile is visible
      */
     if(!bJustSpawned && attackPipeCoolDown <= 0.0 && bBaseState) {
-        pipeCount= 0;
-        playerCount= 0;
-        
-        //Count how many pipe bombs are visible within a radius
-        foreach VisibleCollidingActors( class 'PipeBombProjectile', CheckProjectile, minPipeDistance, Location ) {
+        //Count how many pipe bombs are visible
+        foreach VisibleActors(class'PipeBombProjectile', checkProjectile) {
             pipeCount++;
-            LastProjectile= CheckProjectile;
+            lastProjectile= checkProjectile;
         }
         if(pipeCount >= 2) {
-            //Count how many players are visible within twice the radius
-            foreach VisibleCollidingActors( class 'KFHumanPawn', CheckHP, minPipeDistance*2, Location ) {
+            //Count how many players are visible within its blast radius
+            foreach lastProjectile.VisibleActors(class'KFHumanPawn', checkHP) {
                 playerCount++;
+                lastHP= checkHP;
             }
-        }
-
-        /**
-         *  If the visible number of pipes is <= 2 and there are visible players near it, 
-         *  charge through the pipes.  Otherwise, if the pipe count is >=2, just shoot it
-         */
-        if(pipeCount <= 2 && PlayerCount != 0) {
-            SetAnimAction('transition');
-            LastForceChargeTime = Level.TimeSeconds;
-            GoToState('ChargePipes');
-        } else if(pipeCount >= 2) {
-            Controller.Target= LastProjectile;
-            Controller.Focus= LastProjectile;
-            GotoState('AttackPipes');
-            /**
-             *  Calculate how long the LAW rocket will travel so the patriarch doesn't fire another one 
-             *  at the same pile until the first one detonates
-             */
-            attackPipeCoolDown= minPipeDistance/(class'BossLAWProj'.default.MaxSpeed)+GetAnimDuration('PreFireMissile');
+            if (playerCount == 0 || VSize(lastHP.Location - lastProjectile.Location) <= class'BossLAWProj'.default.DamageRadius) {
+                Controller.Target= lastProjectile;
+                Controller.Focus= lastProjectile;
+                GotoState('AttackPipes');
+                /**
+                 *  Calculate how long the LAW rocket will travel so the patriarch doesn't fire another one 
+                 *  at the same pile until the first one detonates
+                 */
+                attackPipeCoolDown= VSize(Location - lastProjectile.Location)/(class'BossLAWProj'.default.MaxSpeed)+GetAnimDuration('PreFireMissile');
+            } else {
+                SetAnimAction('transition');
+                LastForceChargeTime = Level.TimeSeconds;
+                GoToState('ChargePipes');
+            }
         }
     }
     spawnTimer+= DeltaTime;
@@ -74,9 +66,7 @@ simulated function Tick(float DeltaTime) {
     bJustSpawned= (spawnTimer <= GetAnimDuration('Entrance'));
 }
 
-/**
- *  Temp state for when the Patriarch attacks a pipe pile
- */ 
+/** Temp state for when the Patriarch attacks a pipe pile */ 
 state AttackPipes {
 Ignores RangedAttack;
 
@@ -92,14 +82,22 @@ Ignores RangedAttack;
 state Charging {
     function BeginState() {
         super.BeginState();
-        // Make the patriarch charge more often if there are more players
-        NumChargeAttacks = Rand(Level.Game.NumPlayers)+1;
+        //Randomly make the patriach want to land 2 consecutive melee strikes
+        NumChargeAttacks= 1 + round(FRand());
+    }
+
+    function bool MeleeDamageTarget(int hitdamage, vector pushdir) {
+        local bool RetVal;
+        RetVal= Global.MeleeDamageTarget(hitdamage, pushdir*1.5);
+
+        //only subtract is the target was hit
+        if (RetVal)
+            NumChargeAttacks--;
+        return RetVal;
     }
 }
 
-/**
- *  State to have the patriarch charge right through the pipe bombs.
- */
+/** State to have the patriarch charge right through the pipe bombs. */
 state ChargePipes extends Charging {
     function RangedAttack(Actor A) {
         if( VSize(A.Location-Location)>700 && Level.TimeSeconds - LastForceChargeTime > 3.0 )
@@ -119,9 +117,7 @@ state ChargePipes extends Charging {
     }
 }
 
-/**
- *  Allow the patriarch to automatically destroy any welded door in his path
- */
+/** Allow the patriarch to automatically destroy any welded door in his path */
 State Escaping { 
     function DoorAttack(Actor A) {
         local vector hitLocation;
@@ -138,9 +134,7 @@ State Escaping {
     }
 }
 
-/**
- *  Give the patriarch new responses when he takes damage
- */
+/** Give the patriarch new responses when he takes damage */
 function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector Momentum, class<DamageType> damageType, optional int HitIndex) {  
     local float DamagerDistSq;
     local float oldHealth;
@@ -158,10 +152,10 @@ function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector M
      
     ChargeDamage2 += (OldHealth-Health);
     LastDamageTime2 = Level.TimeSeconds;
-    if( ShouldChargeFromDamage() && ChargeDamage2 > ChargeDamageThreshold ) {
-        if( InstigatedBy != none ) {
+    if (ChargeDamage2 > ChargeDamageThreshold ) {
+        if (InstigatedBy != none) {
             DamagerDistSq = VSizeSquared(Location - InstigatedBy.Location);
-            if( DamagerDistSq < (700 * 700) ) {
+            if (DamagerDistSq < (700 * 700)) {
                 SetAnimAction('transition');
                 ChargeDamage2=0;
                 LastForceChargeTime = Level.TimeSeconds;
@@ -170,12 +164,87 @@ function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector M
             }
         }
     }
+}
+
+function RangedAttack(Actor A) {
+    local float D;
+    local bool bOnlyE;
+    local bool bDesireChainGun;
+
+    // Randomly make him want to chaingun more
+    if (Controller.LineOfSightTo(A) && FRand() < 0.15 && LastChainGunTime<Level.TimeSeconds) {
+        bDesireChainGun = true;
+    }
+
+    if ( bShotAnim )
+        return;
+    D = VSize(A.Location-Location);
+    bOnlyE = (Pawn(A)!=None && OnlyEnemyAround(Pawn(A)));
+    if (IsCloseEnuf(A)) {
+        bShotAnim = true;
+        if (Health > 1500 && Pawn(A) != None && FRand() < 0.5) {
+            SetAnimAction('MeleeImpale');
+        }
+        else {
+            SetAnimAction('MeleeClaw');
+            //PlaySound(sound'Claw2s', SLOT_None); KFTODO: Replace this
+        }
+    }
+    else if (Level.TimeSeconds - LastSneakedTime > 15.0) {  //SZ: Reduce min sneak time interval to 15s
+        if (FRand() < 0.3) {
+            // Wait another 20 to try this again
+            LastSneakedTime = Level.TimeSeconds;//+FRand()*120;
+            Return;
+        }
+        SetAnimAction('transition');
+        GoToState('SneakAround');
+    }
+    else if (bChargingPlayer && (bOnlyE || D<200))
+        Return;
+    else if (!bDesireChainGun && !bChargingPlayer && (D<300 || (D<700 && bOnlyE)) &&
+        (Level.TimeSeconds - LastChargeTime > (5.0 + 2.0 * FRand())) ) {    //SZ: Reduce min charge interval to [5,7] seconds
+        SetAnimAction('transition');
+        GoToState('Charging');
+    }
+    else if (LastMissileTime < Level.TimeSeconds && D > 500) {
+        if (!Controller.LineOfSightTo(A) || FRand() > 0.75) {
+            LastMissileTime = Level.TimeSeconds+FRand() * 5;
+            Return;
+        }
+
+        LastMissileTime = Level.TimeSeconds + 10 + FRand() * 5; //SZ: Reduce min missile interval to [10,15] seconds
+
+        bShotAnim = true;
+        Acceleration = vect(0,0,0);
+        SetAnimAction('PreFireMissile');
+
+        HandleWaitForAnim('PreFireMissile');
+
+        GoToState('FireMissile');
+    }
+    else if (!bWaitForAnim && !bShotAnim && LastChainGunTime<Level.TimeSeconds) {
+        if (!Controller.LineOfSightTo(A) || FRand()> 0.85) {
+            LastChainGunTime = Level.TimeSeconds+FRand()*4;
+            Return;
+        }
+
+        LastChainGunTime = Level.TimeSeconds + 5 + FRand() * 5; //SZ: Reduce min chaingun interval to [5,10] seconds
+
+        bShotAnim = true;
+        Acceleration = vect(0,0,0);
+        SetAnimAction('PreFireMG');
+
+        HandleWaitForAnim('PreFireMG');
+        MGFireCounter =  Rand(60) + 35;
+
+        GoToState('FireChaingun');
+    }
 } 
 
 defaultproperties {
     MenuName= "Super Patriarch"
-    minPipeDistance= 1250.0;
     ChargeDamageThreshold= 1000;
     bJustSpawned= true;
     ControllerClass=class'ZombieSuperBossController'
+    ImpaleMeleeDamageRange= 75;
 }
