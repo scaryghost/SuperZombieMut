@@ -1,8 +1,6 @@
 class SuperHuskZombieController extends HuskZombieController;
 
-/**
- *  aimAtFeetZDelta     The Z offset the husk needs to aim at to hit the target's feet
- */
+/** The Z offset the husk needs to aim at to hit the target's feet */
 var float aimAtFeetZDelta;
 
 function PostBeginPlay() {

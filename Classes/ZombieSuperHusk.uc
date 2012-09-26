@@ -8,7 +8,6 @@ var int consecutiveShots, maxConsecutiveShots;
 
 simulated function PostBeginPlay() {
     super.PostBeginPlay();
-    consecutiveShots= 0;
     maxConsecutiveShots= Rand(5)+1;
 }
 
@@ -96,6 +95,6 @@ function RangedAttack(Actor A) {
 }
 
 defaultproperties {
-    ControllerClass=Class'SuperZombieMut.SuperHuskZombieController'
+    ControllerClass=Class'SuperHuskZombieController'
     MenuName= "Super Husk"
 }

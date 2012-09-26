@@ -14,7 +14,6 @@ var float bileCoolDownTimer,bileCoolDownMax;
 simulated function PostBeginPlay() {
     super.PostBeginPlay();
     bAmIBarfing= false;
-    bileCoolDownTimer= 0.0;
 }
 
 /**
