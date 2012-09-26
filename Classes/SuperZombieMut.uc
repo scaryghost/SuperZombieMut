@@ -53,6 +53,7 @@ function PostBeginPlay() {
         Destroy();
         return;
     }
+    AddToPackageMap("SuperZombieMut");
 
     PP= spawn(class'PoisonedPawns');
     BP= spawn(class'BleedingPawns');
@@ -127,8 +128,8 @@ static event string GetDescriptionText(string property) {
 
 defaultproperties {
     GroupName="KFSuperZombieMut"
-    FriendlyName="Super Zombies v2.0"
-    Description="Gives specimens new abilities and behaviors.  This mutator's version is 2.0."
+    FriendlyName="Super Zombies v2.0.1"
+    Description="Gives specimens new abilities and behaviors.  This mutator's version is 2.0.1"
 
     replacementArray(0)=(oldClass="KFChar.ZombieFleshPound",newClass="SuperZombieMut.ZombieSuperFP",bReplace=false)
     replacementArray(1)=(oldClass="KFChar.ZombieGorefast",newClass="SuperZombieMut.ZombieSuperGorefast",bReplace=false)

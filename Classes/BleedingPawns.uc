@@ -17,17 +17,17 @@ function Tick(float DeltaTime) {
 
     end= pawns.Length;
     while(i < end) {
-        if (pawns[i].nextBleedTime < Level.TimeSeconds) {
-            pawns[i].bleedCount--;
-            pawns[i].nextBleedTime+= bleedPeriod;
-            pawns[i].P.TakeDamage(2 + rand(1), pawns[i].instigator, pawns[i].P.Location, vect(0, 0, 0), class'DamTypeSlashingAttack');
-            pawns[i].P.healthToGive-= 5;
-        }
-        if (pawns[i].bleedCount <= 0) {
+        if (pawns[i].P != none && pawns[i].bleedCount > 0) {
+            if (pawns[i].nextBleedTime < Level.TimeSeconds) {
+                pawns[i].bleedCount--;
+                pawns[i].nextBleedTime+= bleedPeriod;
+                pawns[i].P.TakeDamage(2 + rand(1), pawns[i].instigator, pawns[i].P.Location, vect(0, 0, 0), class'DamTypeSlashingAttack');
+                pawns[i].P.healthToGive-= 5;
+            }
+            i++;
+        } else {
             pawns.remove(i, 1);
             end--;
-        } else {
-            i++;
         }
     }
 }
@@ -45,7 +45,7 @@ function addPawn(KFHumanPawn P, Pawn instigator) {
 
     pawns.Length= pawns.Length + 1;
     pawns[pawns.Length - 1].P= P;
-    pawns[pawns.Length - 1].nextBleedTime= Level.TimeSeconds + bleedPeriod;
+    pawns[pawns.Length - 1].nextBleedTime= Level.TimeSeconds;
     pawns[pawns.Length - 1].instigator= instigator;
     pawns[pawns.Length - 1].bleedCount= maxBleedCount;
 }
