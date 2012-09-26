@@ -21,6 +21,7 @@ function Tick(float DeltaTime) {
             pawns[i].bleedCount--;
             pawns[i].nextBleedTime+= bleedPeriod;
             pawns[i].P.TakeDamage(2 + rand(1), pawns[i].instigator, pawns[i].P.Location, vect(0, 0, 0), class'DamTypeSlashingAttack');
+            pawns[i].P.healthToGive-= 5;
         }
         if (pawns[i].bleedCount <= 0) {
             pawns.remove(i, 1);
