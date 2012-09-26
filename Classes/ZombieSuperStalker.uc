@@ -86,4 +86,5 @@ function bool MeleeDamageTarget(int hitdamage, vector pushdir) {
 
 defaultproperties {
     MenuName= "Super Stalker"
+    MeleeDamage= 5;
 }

@@ -20,7 +20,7 @@ function Tick(float DeltaTime) {
         if (pawns[i].nextBleedTime < Level.TimeSeconds) {
             pawns[i].bleedCount--;
             pawns[i].nextBleedTime+= bleedPeriod;
-            pawns[i].P.TakeDamage(2 + rand(3), pawns[i].instigator, pawns[i].P.Location, vect(0, 0, 0), class'DamTypeSlashingAttack');
+            pawns[i].P.TakeDamage(2 + rand(1), pawns[i].instigator, pawns[i].P.Location, vect(0, 0, 0), class'DamTypeSlashingAttack');
         }
         if (pawns[i].bleedCount <= 0) {
             pawns.remove(i, 1);
@@ -50,6 +50,6 @@ function addPawn(KFHumanPawn P, Pawn instigator) {
 }
 
 defaultproperties {
-    maxBleedCount= 5;
-    bleedPeriod= 2;
+    maxBleedCount= 7;
+    bleedPeriod= 1.5;
 }
