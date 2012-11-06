@@ -1,18 +1,40 @@
 class SZInteraction extends Interaction;
 
-var HudBase.NumericWidget health;
+var Material bleedIcon, poisonIcon;
+var float size;
 
 event NotifyLevelChange(){
     Master.RemoveInteraction(self);
 }
 
 function PostRender(Canvas canvas) {
-    health.value= KFPlayerReplicationInfo(ViewportOwner.Actor.PlayerReplicationInfo).PlayerHealth;
-    HudBase(ViewportOwner.Actor.myHud).DrawNumericWidget(canvas, health, class'HUDKillingFloor'.default.DigitsSmall);
+    local SZReplicationInfo szRI;
+    local int x, y, offset;
+
+    szRI= class'SZReplicationInfo'.static.findSZri(ViewportOwner.Actor.PlayerReplicationInfo);
+    if (szRI != none) {
+        offset= 2;
+        if (szRI.isBleeding) {
+            x= canvas.ClipX * 0.007;
+            y= canvas.ClipY * 0.93 - size * offset;
+            offset++;
+            canvas.SetPos(x, y);
+            canvas.DrawTile(bleedIcon, size, size, 0, 0, bleedIcon.MaterialUSize(), bleedIcon.MaterialVSize());
+        }
+        if (szRI.isPoisoned) {
+            x= canvas.ClipX * 0.007;
+            y= canvas.ClipY * 0.93 - size * offset;
+            canvas.SetPos(x, y);
+            canvas.DrawTile(poisonIcon, size, size, 0, 0, bleedIcon.MaterialUSize(), bleedIcon.MaterialVSize());
+        }
+    }
 }
 
 defaultproperties {
     bActive= true
     bVisible= true
-    health=(RenderStyle=STY_Alpha,TextureScale=0.300000,PosX=0.042500,PosY=0.950000,Tints[0]=(B=0,G=255,R=0,A=200),Tints[1]=(B=0,G=255,R=0,A=200))
+
+    size= 75.6
+    bleedIcon= Texture'SuperZombieMut.BleedIcon'
+    poisonIcon= Texture'SuperZombieMut.PoisonIcon'
 }
