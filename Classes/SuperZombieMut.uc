@@ -126,6 +126,16 @@ static event string GetDescriptionText(string property) {
     return Super.GetDescriptionText(property);
 }
 
+simulated function Tick(float DeltaTime) {
+    local PlayerController PC;
+ 
+    PC = Level.GetLocalPlayerController();
+    if (PC != None) { 
+        PC.Player.InteractionMaster.AddInteraction("SuperZombieMut.SZInteraction", PC.Player);
+    }
+    Disable('Tick');
+}
+
 defaultproperties {
     GroupName="KFSuperZombieMut"
     FriendlyName="Super Zombies v2.0.1"
