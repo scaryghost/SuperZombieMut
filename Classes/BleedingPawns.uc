@@ -14,6 +14,7 @@ var array<BleedingPawn> pawns;
 function Tick(float DeltaTime) {
     local int i;
     local int end;
+    local SZReplicationInfo szRI;
 
     end= pawns.Length;
     while(i < end) {
@@ -26,6 +27,10 @@ function Tick(float DeltaTime) {
             }
             i++;
         } else {
+            szRI= class'SZReplicationInfo'.static.findSZri(pawns[i].P.PlayerReplicationInfo);
+            if (szRI != none) {
+                szRI.isBleeding= false;
+            }
             pawns.remove(i, 1);
             end--;
         }
@@ -34,6 +39,7 @@ function Tick(float DeltaTime) {
 
 function addPawn(KFHumanPawn P, Pawn instigator) {
     local int i;
+    local SZReplicationInfo szRI;
     
     for(i= 0; i < pawns.Length; i++) {
         if (pawns[i].P == P) {
@@ -48,6 +54,11 @@ function addPawn(KFHumanPawn P, Pawn instigator) {
     pawns[pawns.Length - 1].nextBleedTime= Level.TimeSeconds;
     pawns[pawns.Length - 1].instigator= instigator;
     pawns[pawns.Length - 1].bleedCount= maxBleedCount;
+
+    szRI= class'SZReplicationInfo'.static.findSZri(P.PlayerReplicationInfo);
+    if (szRI != none) {
+        szRI.isBleeding= true;
+    }
 }
 
 defaultproperties {

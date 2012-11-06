@@ -93,7 +93,15 @@ function PostBeginPlay() {
 }
 
 function bool CheckReplacement(Actor Other, out byte bSuperRelevant) {
-    if (ZombieSuperCrawler(Other) != none) {
+    local PlayerReplicationInfo pri;
+    local SZReplicationInfo szRI;
+
+    if (PlayerReplicationInfo(Other) != none && 
+            PlayerReplicationInfo(Other).Owner != none) {
+        pri= PlayerReplicationInfo(Other);
+        szRI= spawn(class'SZReplicationInfo', pri.Owner);
+        szRI.ownerPRI= pri;
+    } if (ZombieSuperCrawler(Other) != none) {
         ZombieSuperCrawler(Other).mut= self;
     } else if (ZombieSuperStalker(Other) != none) {
         ZombieSuperStalker(Other).mut= self;
