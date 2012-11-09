@@ -19,30 +19,26 @@ function bool FlipOver() {
 function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector Momentum, class<DamageType> damageType, optional int HitIndex) {
     local bool bIsHeadShot;
     local int oldHealth;
-    local int totalDamage;
+    local float headShotCheckScale;
 
     oldHealth= Health;
-    bIsHeadShot = IsHeadShot(Hitlocation, normal(Momentum), 1.0);
-    if ( Level.Game.GameDifficulty >= 5.0 && bIsHeadshot && (class<DamTypeCrossbow>(damageType) != none || class<DamTypeCrossbowHeadShot>(damageType) != none) ) {
-        Damage *= 0.5; // Was 0.5 in Balance Round 1, then 0.6 in Round 2, back to 0.5 in Round 3
+    if (class<KFWeaponDamageType>(damageType).default.bCheckForHeadShots) {
+        headShotCheckScale= 1.0;
+        if (class<DamTypeMelee>(damageType) != none) {
+            headShotCheckScale*= 1.25;
+        }
+        bIsHeadShot = IsHeadShot(Hitlocation, normal(Momentum), 1.0);
     }
-
-    Super(KFMonster).takeDamage(Damage, instigatedBy, hitLocation, momentum, damageType, HitIndex);
-    totalDamage= oldHealth - Health;
+    Super.takeDamage(Damage, instigatedBy, hitLocation, momentum, damageType, HitIndex);
     
     /** 
      *  Break stun if the scrake is hit with a weak attack or not head shotted with an attack that can head shot
      */
-    if( bIsFlippedOver && Health>0 && (!bIsHeadShot && class<KFWeaponDamageType>(damageType).default.bCheckForHeadShots || totalDamage <=(float(Default.Health)/1.5))) {
+    if( bIsFlippedOver && Health>0 && (!bIsHeadShot && class<KFWeaponDamageType>(damageType).default.bCheckForHeadShots || (oldHealth - Health) <=(float(Default.Health)/1.5))) {
         bShotAnim= false;
         bIsFlippedOver= false;
         SetAnimAction(WalkAnims[0]);
         SawZombieController(Controller).GoToState('ZombieHunt');
-    }
-
-    if ( Level.Game.GameDifficulty >= 5.0 && !IsInState('SawingLoop') && float(Health) / HealthMax < 0.75 ) {
-        GotoState('');
-        RangedAttack(InstigatedBy);
     }
 
 } 
