@@ -25,7 +25,7 @@ function PostRender(Canvas canvas) {
             x= canvas.ClipX * 0.007;
             y= canvas.ClipY * 0.93 - size * offset;
             canvas.SetPos(x, y);
-            canvas.DrawTile(poisonIcon, size, size, 0, 0, bleedIcon.MaterialUSize(), bleedIcon.MaterialVSize());
+            canvas.DrawTile(poisonIcon, size, size, 0, 0, poisonIcon.MaterialUSize(), poisonIcon.MaterialVSize());
         }
     }
 }
