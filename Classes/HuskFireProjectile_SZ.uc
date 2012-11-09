@@ -3,7 +3,8 @@ class HuskFireProjectile_SZ extends KFChar.HuskFireProjectile;
 simulated singular function Touch(Actor Other) {
     local vector    HitLocation, HitNormal;
 
-    if ( Other == None ) // Other just got destroyed in its touch?
+    //Don't touch bulletwhip attachment.  Taken from HuskFireProjectile
+    if ( Other == None || KFBulletWhipAttachment(Other) != none )
         return;
     if ( Other.bProjTarget || Other.bBlockActors ) {
         LastTouched = Other;
@@ -21,8 +22,4 @@ simulated singular function Touch(Actor Other) {
         if ( (Role < ROLE_Authority) && (Other.Role == ROLE_Authority) && (Pawn(Other) != None) )
             ClientSideTouch(Other, HitLocation);
     }
-}
-
-simulated function ProcessTouch(Actor Other, Vector HitLocation) {
-    super(Projectile).ProcessTouch(Other, HitLocation);
 }
