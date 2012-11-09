@@ -1,19 +1,9 @@
 class ZombieSuperScrake extends ZombieScrake;
 
-/**
- *  maxTimesFlipOver            How many times the scrake can be stunned.  When it is -1, the 
- *                              the scrake cannot be stunned
- */
+/** maxTimesFlipOver    How many times the scrake can be stunned.  When it is -1, the the scrake cannot be stunned */
 var int maxTimesFlipOver;
-
-/**
- *  bIsFlippedOver              true if the scrake is flipped over, i.e. stunned
- */
+/** bIsFlippedOver  True if the scrake is flipped over, i.e. stunned */
 var bool bIsFlippedOver;
-
-simulated function PostBeginPlay() {
-    super.PostBeginPlay();
-}
 
 /**
  *  Changed so the scrake only flips over a fixed number of times
@@ -41,9 +31,9 @@ function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector M
     totalDamage= oldHealth - Health;
     
     /** 
-     *  Break stun if the scrake is hit with a weak attack
+     *  Break stun if the scrake is hit with a weak attack or not head shotted with an attack that can head shot
      */
-    if( bIsFlippedOver && Health>0 && totalDamage <=(float(Default.Health)/1.5) ) {
+    if( bIsFlippedOver && Health>0 && (!bIsHeadShot && class<KFWeaponDamageType>(damageType).default.bCheckForHeadShots || totalDamage <=(float(Default.Health)/1.5))) {
         bShotAnim= false;
         bIsFlippedOver= false;
         SetAnimAction(WalkAnims[0]);
