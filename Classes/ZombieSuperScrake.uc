@@ -22,7 +22,7 @@ function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector M
     local float headShotCheckScale;
 
     oldHealth= Health;
-    if (class<KFWeaponDamageType>(damageType).default.bCheckForHeadShots) {
+    if (class<KFWeaponDamageType>(damageType) != none && class<KFWeaponDamageType>(damageType).default.bCheckForHeadShots) {
         headShotCheckScale= 1.0;
         if (class<DamTypeMelee>(damageType) != none) {
             headShotCheckScale*= 1.25;
@@ -34,7 +34,8 @@ function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector M
     /** 
      *  Break stun if the scrake is hit with a weak attack or not head shotted with an attack that can head shot
      */
-    if( bIsFlippedOver && Health>0 && (!bIsHeadShot && class<KFWeaponDamageType>(damageType).default.bCheckForHeadShots || (oldHealth - Health) <=(float(Default.Health)/1.5))) {
+    if( bIsFlippedOver && Health>0 && (!bIsHeadShot && class<KFWeaponDamageType>(damageType) != none && 
+            class<KFWeaponDamageType>(damageType).default.bCheckForHeadShots || (oldHealth - Health) <=(float(Default.Health)/1.5))) {
         bShotAnim= false;
         bIsFlippedOver= false;
         SetAnimAction(WalkAnims[0]);
