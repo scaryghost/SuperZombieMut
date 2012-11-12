@@ -149,6 +149,9 @@ defaultproperties {
     FriendlyName="Super Zombies v2.0.1"
     Description="Gives specimens new abilities and behaviors.  This mutator's version is 2.0.1"
 
+    RemoteRole= ROLE_SimulatedProxy
+    bAlwaysRelevant= true
+
     replacementArray(0)=(oldClass="KFChar.ZombieFleshPound",newClass="SuperZombieMut.ZombieSuperFP",bReplace=false)
     replacementArray(1)=(oldClass="KFChar.ZombieGorefast",newClass="SuperZombieMut.ZombieSuperGorefast",bReplace=false)
     replacementArray(2)=(oldClass="KFChar.ZombieStalker",newClass="SuperZombieMut.ZombieSuperStalker",bReplace=false)
