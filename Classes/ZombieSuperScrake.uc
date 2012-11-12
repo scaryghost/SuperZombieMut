@@ -10,8 +10,12 @@ var bool bIsFlippedOver;
  */
 function bool FlipOver() {
     local bool bCalledFlipOver;
+    local name  Sequence;
+    local float Frame, Rate;
+
+    GetAnimParams(ExpectingChannel, Sequence, Frame, Rate);
     maxTimesFlipOver--;
-    bCalledFlipOver= ((maxTimesFlipOver >= 0) && super.FlipOver());
+    bCalledFlipOver= ((Sequence == 'KnockedDown' || Sequence == 'SawZombieIdle' || maxTimesFlipOver >= 0) && super.FlipOver());
     bIsFlippedOver= bIsFlippedOver || bCalledFlipOver;
     return bCalledFlipOver;
 }
@@ -31,11 +35,9 @@ function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector M
     }
     Super.takeDamage(Damage, instigatedBy, hitLocation, momentum, damageType, HitIndex);
     
-    /** 
-     *  Break stun if the scrake is hit with a weak attack or not head shotted with an attack that can head shot
-     */
+    /** Break stun if the scrake is hit with a weak attack or not head shotted with an attack that can head shot */
     if( bIsFlippedOver && Health>0 && (!bIsHeadShot && class<KFWeaponDamageType>(damageType) != none && 
-            class<KFWeaponDamageType>(damageType).default.bCheckForHeadShots || (oldHealth - Health) <=(float(Default.Health)/1.5))) {
+            class<KFWeaponDamageType>(damageType).default.bCheckForHeadShots || (oldHealth - Health) * 1.5 <=(float(Default.Health)))) {
         bShotAnim= false;
         bIsFlippedOver= false;
         SetAnimAction(WalkAnims[0]);
@@ -75,9 +77,7 @@ function PlayDirectionalHit(Vector HitLoc) {
                 StunsRemaining--;
             }
             else if (LastDamageAmount < (0.5 * default.Health) && !ClassIsChildOf(LastDamagedbyType,class 'DamTypeMelee')) {
-                /**
-                 *  Non-zerker with melee weapons cannot interrupt a scrake attack
-                 */
+                /** Non-zerker with melee weapons cannot interrupt a scrake attack */
                 SetAnimAction(KFHitFront);
             }
         }
