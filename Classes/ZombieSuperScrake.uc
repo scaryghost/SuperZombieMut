@@ -15,7 +15,7 @@ function bool FlipOver() {
 
     GetAnimParams(ExpectingChannel, Sequence, Frame, Rate);
     maxTimesFlipOver--;
-    bCalledFlipOver= ((Sequence == 'KnockedDown' || Sequence == 'SawZombieIdle' || maxTimesFlipOver >= 0) && super.FlipOver());
+    bCalledFlipOver= ((bShotAnim && (Sequence == 'KnockDown' || Sequence == 'SawZombieIdle') || maxTimesFlipOver >= 0) && super.FlipOver());
     bIsFlippedOver= bIsFlippedOver || bCalledFlipOver;
     return bCalledFlipOver;
 }
