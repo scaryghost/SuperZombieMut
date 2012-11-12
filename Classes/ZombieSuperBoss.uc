@@ -134,6 +134,15 @@ State Escaping {
     }
 }
 
+/** Slightly change the conditions for charging from damage */
+function bool ShouldChargeFromDamage() {
+    // If we don;t want to heal, charge whoever damaged us!!!
+    if( (SyringeCount==0 && Health<HealingLevels[0]) || (SyringeCount==1 && Health<HealingLevels[1]) || (SyringeCount==2 && Health<HealingLevels[2])) {
+        return false;
+    }
+    return !bChargingPlayer;
+}
+
 /** Give the patriarch new responses when he takes damage */
 function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector Momentum, class<DamageType> damageType, optional int HitIndex) {  
     local float DamagerDistSq;
@@ -152,12 +161,11 @@ function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector M
      
     ChargeDamage2 += (OldHealth-Health);
     LastDamageTime2 = Level.TimeSeconds;
-    if (ChargeDamage2 > ChargeDamageThreshold ) {
+    if (ShouldChargeFromDamage() && ChargeDamage2 > ChargeDamageThreshold ) {
         if (InstigatedBy != none) {
             DamagerDistSq = VSizeSquared(Location - InstigatedBy.Location);
             if (DamagerDistSq < (700 * 700)) {
-                SetAnimAction('transition');
-                ChargeDamage2=0;
+                ChargeDamage2= 0;
                 LastForceChargeTime = Level.TimeSeconds;
                 GoToState('Charging');
                 return;
