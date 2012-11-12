@@ -2,10 +2,6 @@ class ZombieSuperStalker extends ZombieStalker;
 
 var SuperZombieMut mut;
 
-simulated function PostBeginPlay() {
-    super.PostBeginPlay();
-}
-
 /**
  *  Changed the Tick function to match the gorefasts, so she can do a moving melee attack
  */

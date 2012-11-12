@@ -1,9 +1,5 @@
 class ZombieSuperSiren extends ZombieSiren;
 
-simulated function PostBeginPlay() {
-    super.PostBeginPlay();
-}
-
 /**
  *  Modified the function so the screams hit through doors as well as damaging them
  */ 

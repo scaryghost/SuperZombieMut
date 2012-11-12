@@ -1,14 +1,7 @@
 class ZombieSuperGorefast extends ZombieGoreFast;
 
-/**
- *  minRageDist         minimum distance to trigger the Super Gorefast's rage state
- */
+/** minRageDist minimum distance to trigger the Super Gorefast's rage state */
 var float minRageDist;
-
-simulated function PostBeginPlay() {
-    minRageDist= 1400.0;
-    super.PostBeginPlay();
-}
 
 function RangedAttack(Actor A) {
     Super(KFMonster).RangedAttack(A);
@@ -69,4 +62,5 @@ CheckCharge:
 
 defaultproperties {
     MenuName= "Super Gorefast"
+    minRageDist= 1400
 }

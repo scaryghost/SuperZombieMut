@@ -11,11 +11,6 @@ var bool bAmIBarfing;
  */
 var float bileCoolDownTimer,bileCoolDownMax;
 
-simulated function PostBeginPlay() {
-    super.PostBeginPlay();
-    bAmIBarfing= false;
-}
-
 /**
  *  Spawn extra sets of bile pellets here once the bile cool down timer
  *  has reached the max limit
@@ -85,4 +80,5 @@ simulated function AnimEnd(int Channel) {
 defaultproperties {
     bileCoolDownMax= 0.75;
     MenuName= "Super Bloat"
+    bAmIBarfing= false
 }

@@ -20,10 +20,6 @@ simulated function PostBeginPlay() {
     rageShieldLimit= Max(45.0*DifficultyDamageModifer(),1.0);
 }
 
-simulated function Tick(float DeltaTime) {
-    super.Tick(DeltaTime);
-}
-
 function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector Momentum, class<DamageType> damageType, optional int HitIndex) {
     local int oldHealth;
 
