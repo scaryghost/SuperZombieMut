@@ -146,8 +146,8 @@ simulated function Tick(float DeltaTime) {
 
 defaultproperties {
     GroupName="KFSuperZombieMut"
-    FriendlyName="Super Zombies v2.0.1"
-    Description="Gives specimens new abilities and behaviors.  This mutator's version is 2.0.1"
+    FriendlyName="Super Zombies v2.1"
+    Description="Gives specimens new abilities and behaviors.  This mutator's version is 2.1"
 
     RemoteRole= ROLE_SimulatedProxy
     bAlwaysRelevant= true
