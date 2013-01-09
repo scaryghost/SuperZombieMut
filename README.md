@@ -1,6 +1,6 @@
 SuperZombieMut
-Gives Killing Floor specimens new abilities
 ==================
+Gives Killing Floor specimens new abilities
 
 ### Author
 Scary Ghost
