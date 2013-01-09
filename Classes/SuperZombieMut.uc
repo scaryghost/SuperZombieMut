@@ -28,7 +28,7 @@ var BleedingPawns BP;
 var PoisonedPawns PP;
 
 /** Replaces the zombies in the given squadArray */
-function replaceSpecialSquad(out array<KFGameType.SpecialSquad> squadArray) {
+function replaceSpecialSquad(out array<KFMonstersCollection.SpecialSquad> squadArray) {
     local int i,j,k;
     local oldNewZombiePair replacementValue;
     for(j=0; j<squadArray.Length; j++) {
@@ -48,11 +48,12 @@ function PostBeginPlay() {
     local KFGameType KF;
     local oldNewZombiePair replacementValue;
 
-    KF = KFGameType(Level.Game);
+    KF= KFGameType(Level.Game);
     if (KF == none) {
         Destroy();
         return;
     }
+    KF.MonsterCollection=class'SZMonstersCollection';
     AddToPackageMap("SuperZombieMut");
 
     PP= spawn(class'PoisonedPawns');
@@ -68,27 +69,27 @@ function PostBeginPlay() {
     replacementArray[7].bReplace= bReplaceBloat;
 
     //Replace all instances of the old specimens with the new ones 
-    for( i=0; i<KF.StandardMonsterClasses.Length; i++) {
+    for( i=0; i < KF.MonsterCollection.default.MonsterClasses.Length; i++) {
         for(k=0; k<replacementArray.Length; k++) {
             replacementValue= replacementArray[k];
             //Use ~= for case insensitive compare
-            if (replacementValue.bReplace && KF.StandardMonsterClasses[i].MClassName ~= replacementValue.oldClass) {
-                KF.StandardMonsterClasses[i].MClassName= replacementValue.newClass;
+            if (replacementValue.bReplace && KF.MonsterCollection.default.MonsterClasses[i].MClassName ~= replacementValue.oldClass) {
+                KF.MonsterCollection.default.MonsterClasses[i].MClassName= replacementValue.newClass;
             }
         }
     }
 
     //Replace the special squad arrays
-    replaceSpecialSquad(KF.ShortSpecialSquads);
-    replaceSpecialSquad(KF.NormalSpecialSquads);
-    replaceSpecialSquad(KF.LongSpecialSquads);
-    replaceSpecialSquad(KF.FinalSquads);
+    replaceSpecialSquad(KF.MonsterCollection.default.ShortSpecialSquads);
+    replaceSpecialSquad(KF.MonsterCollection.default.NormalSpecialSquads);
+    replaceSpecialSquad(KF.MonsterCollection.default.LongSpecialSquads);
+    replaceSpecialSquad(KF.MonsterCollection.default.FinalSquads);
 
     if (bReplaceBoss) {
-        KF.EndGameBossClass= "SuperZombieMut.ZombieSuperBoss";
+        KF.MonsterCollection.default.EndGameBossClass= "SuperZombieMut.ZombieSuperBoss";
     }
     if (bReplaceStalker) {
-        KF.FallbackMonsterClass= "SuperZombieMut.ZombieSuperStalker";
+        KF.MonsterCollection.default.FallbackMonsterClass= "SuperZombieMut.ZombieSuperStalker";
     }
 }
 
