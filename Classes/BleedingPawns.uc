@@ -2,6 +2,7 @@ class BleedingPawns extends Info;
 
 struct BleedingPawn {
     var KFHumanPawn P;
+    var SZReplicationInfo szRI;
     var float nextBleedTime;
     var Pawn instigator;
     var int bleedCount;
@@ -14,11 +15,10 @@ var array<BleedingPawn> pawns;
 function Tick(float DeltaTime) {
     local int i;
     local int end;
-    local SZReplicationInfo szRI;
 
     end= pawns.Length;
     while(i < end) {
-        if (pawns[i].P != none && pawns[i].bleedCount > 0) {
+        if (pawns[i].P != none && pawns[i].P.Health > 0 && pawns[i].bleedCount > 0) {
             if (pawns[i].nextBleedTime < Level.TimeSeconds) {
                 pawns[i].bleedCount--;
                 pawns[i].nextBleedTime+= bleedPeriod;
@@ -27,9 +27,8 @@ function Tick(float DeltaTime) {
             }
             i++;
         } else {
-            szRI= class'SZReplicationInfo'.static.findSZri(pawns[i].P.PlayerReplicationInfo);
-            if (szRI != none) {
-                szRI.isBleeding= false;
+            if (pawns[i].szRI != none) {
+                pawns[i].szRI.isBleeding= false;
             }
             pawns.remove(i, 1);
             end--;
@@ -39,7 +38,6 @@ function Tick(float DeltaTime) {
 
 function addPawn(KFHumanPawn P, Pawn instigator) {
     local int i;
-    local SZReplicationInfo szRI;
     
     for(i= 0; i < pawns.Length; i++) {
         if (pawns[i].P == P) {
@@ -54,10 +52,9 @@ function addPawn(KFHumanPawn P, Pawn instigator) {
     pawns[pawns.Length - 1].nextBleedTime= Level.TimeSeconds;
     pawns[pawns.Length - 1].instigator= instigator;
     pawns[pawns.Length - 1].bleedCount= maxBleedCount;
-
-    szRI= class'SZReplicationInfo'.static.findSZri(P.PlayerReplicationInfo);
-    if (szRI != none) {
-        szRI.isBleeding= true;
+    pawns[pawns.Length - 1].szRI= class'SZReplicationInfo'.static.findSZri(P.PlayerReplicationInfo);
+    if (pawns[pawns.Length - 1].szRI != none) {
+        pawns[pawns.Length - 1].szRI.isBleeding= true;
     }
 }
 
