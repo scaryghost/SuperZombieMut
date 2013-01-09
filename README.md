@@ -46,10 +46,10 @@ Riceman
 
 ## Change Log
 To view a detailed change log, please view the releaes notes for the 
-specific version:
+specific version:  
 https://github.com/scaryghost/SuperZombieMut/wiki/Super-Zombie-2.1.1
 
-A complete list of specimen changes maybe viewed on the mutator's wiki:
+A complete list of specimen changes maybe viewed on the mutator's wiki:  
 https://github.com/scaryghost/SuperZombieMut/wiki
 
  
