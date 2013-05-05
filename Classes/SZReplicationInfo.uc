@@ -2,6 +2,7 @@ class SZReplicationInfo extends ReplicationInfo;
 
 var PlayerReplicationInfo ownerPRI;
 var bool isBleeding, isPoisoned;
+var int numClotsAttached;
 
 replication {
     reliable if (bNetDirty && Role == ROLE_Authority)

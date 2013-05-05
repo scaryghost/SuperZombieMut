@@ -16,7 +16,7 @@ struct propertyDescPair {
 };
 
 /** Configuration variables that store whether or not to replace the specimen */
-var() config bool bReplaceCrawler, bReplaceStalker, bReplaceGorefast, bReplaceBloat, 
+var() config bool bReplaceCrawler, bReplaceStalker, bReplaceClot, bReplaceGorefast, bReplaceBloat, 
                 bReplaceSiren, bReplaceHusk, bReplaceScrake, bReplaceFleshpound, bReplaceBoss;
 
 /** Array that stores all the replacement pairs */
@@ -67,6 +67,7 @@ function PostBeginPlay() {
     replacementArray[5].bReplace= bReplaceHusk;
     replacementArray[6].bReplace= bReplaceCrawler;
     replacementArray[7].bReplace= bReplaceBloat;
+    replacementArray[8].bReplace= bReplaceClot;
 
     //Replace all instances of the old specimens with the new ones 
     for( i=0; i < KF.MonsterCollection.default.MonsterClasses.Length; i++) {
@@ -161,14 +162,16 @@ defaultproperties {
     replacementArray(5)=(oldClass="KFChar.ZombieHusk",newClass="SuperZombieMut.ZombieSuperHusk",bReplace=false)
     replacementArray(6)=(oldClass="KFChar.ZombieCrawler",newClass="SuperZombieMut.ZombieSuperCrawler",bReplace=false)
     replacementArray(7)=(oldClass="KFChar.ZombieBloat",newClass="SuperZombieMut.ZombieSuperBloat",bReplace=false)
+    replacementArray(8)=(oldClass="KFChar.ZombieClot",newClass="SuperZombieMut.ZombieSuperClot",bReplace=false)
 
-    propDescripArray(0)=(property="bReplaceCrawler",longDescription="Replace Crawlers with SuperCrawlers",shortDescription="Replace Crawlers")
-    propDescripArray(1)=(property="bReplaceStalker",longDescription="Replace Stalkers with SuperStalkers",shortDescription="Replace Stalkers")
-    propDescripArray(2)=(property="bReplaceGorefast",longDescription="Replace Gorefasts with SuperGorefasts",shortDescription="Replace Gorefasts")
-    propDescripArray(3)=(property="bReplaceBloat",longDescription="Replace Bloats with SuperBloats",shortDescription="Replace Bloats")
-    propDescripArray(4)=(property="bReplaceSiren",longDescription="Replace Sirens with SuperSirens",shortDescription="Replace Sirens")
-    propDescripArray(5)=(property="bReplaceHusk",longDescription="Replace Husks with SuperHusks",shortDescription="Replace Husks")
-    propDescripArray(6)=(property="bReplaceScrake",longDescription="Replace Scrakes with SuperScrakes",shortDescription="Replace Scrakes")
-    propDescripArray(7)=(property="bReplaceFleshpound",longDescription="Replace Fleshpounds with SuperFleshpounds",shortDescription="Replace Fleshpounds")
-    propDescripArray(8)=(property="bReplaceBoss",longDescription="Replace the Patriarch with the SuperPatriarch",shortDescription="Replace Patriarch")
+    propDescripArray(0)=(property="bReplaceCrawler",longDescription="Replace Crawlers with Super Crawlers",shortDescription="Replace Crawlers")
+    propDescripArray(1)=(property="bReplaceStalker",longDescription="Replace Stalkers with Super Stalkers",shortDescription="Replace Stalkers")
+    propDescripArray(2)=(property="bReplaceClot",longDescription="Replace Clots with Super Clots",shortDescription="Replace Clots")
+    propDescripArray(3)=(property="bReplaceGorefast",longDescription="Replace Gorefasts with Super Gorefasts",shortDescription="Replace Gorefasts")
+    propDescripArray(4)=(property="bReplaceBloat",longDescription="Replace Bloats with Super Bloats",shortDescription="Replace Bloats")
+    propDescripArray(5)=(property="bReplaceSiren",longDescription="Replace Sirens with Super Sirens",shortDescription="Replace Sirens")
+    propDescripArray(6)=(property="bReplaceHusk",longDescription="Replace Husks with Super Husks",shortDescription="Replace Husks")
+    propDescripArray(7)=(property="bReplaceScrake",longDescription="Replace Scrakes with Super Scrakes",shortDescription="Replace Scrakes")
+    propDescripArray(8)=(property="bReplaceFleshpound",longDescription="Replace Fleshpounds with Super Fleshpounds",shortDescription="Replace Fleshpounds")
+    propDescripArray(9)=(property="bReplaceBoss",longDescription="Replace the Patriarch with the Super Patriarch",shortDescription="Replace Patriarch")
 }
