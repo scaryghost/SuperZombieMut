@@ -1,17 +1,15 @@
 class ZombieSuperClot extends ZombieClot;
 
-/**
-TODO: fix bug where a clot ending a grab doesn't decrement the counter.  If two clots grab you, it still counts it as 2 even 
-if only 1 clot grabs you afterwards.  The only way to fix this is to kill the original 2 clots that grabbed you
-*/
-function detachFromTarget() {
-    local SZReplicationInfo szRepInfo;
+var SZReplicationInfo disabledPawnRepInfo;
+/** max num of clots that can be grappling a zerker before grab immunity is overridden */
+var int grappleLimit;
 
+function detachFromTarget() {
     if (DisabledPawn != none) {
-        szRepInfo= class'SZReplicationInfo'.static.findSZri(DisabledPawn.PlayerReplicationInfo);
-        szRepInfo.numClotsAttached--;
+        disabledPawnRepInfo.numClotsAttached--;
         DisabledPawn.bMovementDisabled= false;
         DisabledPawn= none;
+        disabledPawnRepInfo= none;
     }
 }
 
@@ -19,7 +17,6 @@ function ClawDamageTarget() {
     local vector PushDir;
     local KFPawn KFP;
     local float UsedMeleeDamage;
-    local SZReplicationInfo szRepInfo;
 
 
     if (MeleeDamage > 1) {
@@ -38,12 +35,11 @@ function ClawDamageTarget() {
         if (!bDecapitated && KFP != none) {
             detachFromTarget();
             DisabledPawn= KFP;
-            szRepInfo= class'SZReplicationInfo'.static.findSZri(KFP.PlayerReplicationInfo);
-            szRepInfo.numClotsAttached++;
-            PlayerController(KFP.Controller).ClientMessage("Number of clots"@szRepInfo.numClotsAttached);
+            disabledPawnRepInfo= class'SZReplicationInfo'.static.findSZri(KFP.PlayerReplicationInfo);
+            disabledPawnRepInfo.numClotsAttached++;
             if (KFPlayerReplicationInfo(KFP.PlayerReplicationInfo) == none ||
                 KFP.GetVeteran().static.CanBeGrabbed(KFPlayerReplicationInfo(KFP.PlayerReplicationInfo), self) || 
-                szRepInfo.numClotsAttached > 2) {
+                disabledPawnRepInfo.numClotsAttached > grappleLimit) {
                 DisabledPawn.DisableMovement(GrappleDuration);
             }
         }
@@ -84,7 +80,6 @@ simulated function Tick(float DeltaTime) {
     if (Role == ROLE_Authority && bGrappling) {
         if (Level.TimeSeconds > GrappleEndTime) {
             bGrappling = false;
-            detachFromTarget();
         }
     }
 
@@ -102,4 +97,5 @@ simulated function Tick(float DeltaTime) {
 
 defaultproperties {
     MenuName= "Super Clot"
+    grappleLimit= 1
 }
