@@ -53,7 +53,9 @@ function PostBeginPlay() {
         Destroy();
         return;
     }
-    KF.MonsterCollection=class'SZMonstersCollection';
+    if (KF.MonsterCollection != class'KFMonstersCollection') {
+        KF.MonsterCollection=class'SZMonstersCollection';
+    }
     AddToPackageMap("SuperZombieMut");
 
     PP= spawn(class'PoisonedPawns');
@@ -84,7 +86,7 @@ function PostBeginPlay() {
     replaceSpecialSquad(KF.MonsterCollection.default.ShortSpecialSquads);
     replaceSpecialSquad(KF.MonsterCollection.default.NormalSpecialSquads);
     replaceSpecialSquad(KF.MonsterCollection.default.LongSpecialSquads);
-    replaceSpecialSquad(KF.MonsterCollection.default.FinalSquads);
+    replaceSpecialSquad(KF.MonsterCollection.default.FinalSquads);   
 
     if (bReplaceBoss) {
         KF.MonsterCollection.default.EndGameBossClass= "SuperZombieMut.ZombieSuperBoss";
@@ -98,8 +100,7 @@ function bool CheckReplacement(Actor Other, out byte bSuperRelevant) {
     local PlayerReplicationInfo pri;
     local SZReplicationInfo szRI;
 
-    if (PlayerReplicationInfo(Other) != none && 
-            PlayerReplicationInfo(Other).Owner != none) {
+    if (PlayerReplicationInfo(Other) != none && PlayerReplicationInfo(Other).Owner != none) {
         pri= PlayerReplicationInfo(Other);
         szRI= spawn(class'SZReplicationInfo', pri.Owner);
         szRI.ownerPRI= pri;
@@ -154,15 +155,15 @@ defaultproperties {
     RemoteRole= ROLE_SimulatedProxy
     bAlwaysRelevant= true
 
-    replacementArray(0)=(oldClass="KFChar.ZombieFleshPound",newClass="SuperZombieMut.ZombieSuperFP",bReplace=false)
-    replacementArray(1)=(oldClass="KFChar.ZombieGorefast",newClass="SuperZombieMut.ZombieSuperGorefast",bReplace=false)
-    replacementArray(2)=(oldClass="KFChar.ZombieStalker",newClass="SuperZombieMut.ZombieSuperStalker",bReplace=false)
-    replacementArray(3)=(oldClass="KFChar.ZombieSiren",newClass="SuperZombieMut.ZombieSuperSiren",bReplace=false)
-    replacementArray(4)=(oldClass="KFChar.ZombieScrake",newClass="SuperZombieMut.ZombieSuperScrake",bReplace=false)
-    replacementArray(5)=(oldClass="KFChar.ZombieHusk",newClass="SuperZombieMut.ZombieSuperHusk",bReplace=false)
-    replacementArray(6)=(oldClass="KFChar.ZombieCrawler",newClass="SuperZombieMut.ZombieSuperCrawler",bReplace=false)
-    replacementArray(7)=(oldClass="KFChar.ZombieBloat",newClass="SuperZombieMut.ZombieSuperBloat",bReplace=false)
-    replacementArray(8)=(oldClass="KFChar.ZombieClot",newClass="SuperZombieMut.ZombieSuperClot",bReplace=false)
+    replacementArray(0)=(oldClass="KFChar.ZombieFleshPound",newClass="SuperZombieMut.ZombieSuperFP")
+    replacementArray(1)=(oldClass="KFChar.ZombieGorefast",newClass="SuperZombieMut.ZombieSuperGorefast")
+    replacementArray(2)=(oldClass="KFChar.ZombieStalker",newClass="SuperZombieMut.ZombieSuperStalker")
+    replacementArray(3)=(oldClass="KFChar.ZombieSiren",newClass="SuperZombieMut.ZombieSuperSiren")
+    replacementArray(4)=(oldClass="KFChar.ZombieScrake",newClass="SuperZombieMut.ZombieSuperScrake")
+    replacementArray(5)=(oldClass="KFChar.ZombieHusk",newClass="SuperZombieMut.ZombieSuperHusk")
+    replacementArray(6)=(oldClass="KFChar.ZombieCrawler",newClass="SuperZombieMut.ZombieSuperCrawler")
+    replacementArray(7)=(oldClass="KFChar.ZombieBloat",newClass="SuperZombieMut.ZombieSuperBloat")
+    replacementArray(8)=(oldClass="KFChar.ZombieClot",newClass="SuperZombieMut.ZombieSuperClot")
 
     propDescripArray(0)=(property="bReplaceCrawler",longDescription="Replace Crawlers with Super Crawlers",shortDescription="Replace Crawlers")
     propDescripArray(1)=(property="bReplaceStalker",longDescription="Replace Stalkers with Super Stalkers",shortDescription="Replace Stalkers")
@@ -174,4 +175,15 @@ defaultproperties {
     propDescripArray(7)=(property="bReplaceScrake",longDescription="Replace Scrakes with Super Scrakes",shortDescription="Replace Scrakes")
     propDescripArray(8)=(property="bReplaceFleshpound",longDescription="Replace Fleshpounds with Super Fleshpounds",shortDescription="Replace Fleshpounds")
     propDescripArray(9)=(property="bReplaceBoss",longDescription="Replace the Patriarch with the Super Patriarch",shortDescription="Replace Patriarch")
+
+    bReplaceCrawler=true
+    bReplaceStalker=true
+    bReplaceClot=true
+    bReplaceGorefast=true
+    bReplaceBloat=true
+    bReplaceSiren=true
+    bReplaceHusk=true
+    bReplaceScrake=true
+    bReplaceFleshpound=true
+    bReplaceBoss=true
 }
