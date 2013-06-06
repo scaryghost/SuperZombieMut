@@ -7,6 +7,11 @@ class ZombieSuperFP extends ZombieFleshPound;
  *  rageShieldLimit     the limit the shield accumulator must exceed so the fleshpound will not rage again
  */
 var float rageDamage, rageDamageLimit, rageShield, rageShieldLimit;
+/** List of damage types the super fp is immune to */
+var array<class<DamageType> > immuneDamageTypes;
+/** Damage type of the decapitating blow */
+var class<DamageType> decapDamageType;
+var SuperZombieMut mutRef;
 
 /**
  *  totalDamageRageThreshold    max damage that the fleshpound can take before raging
@@ -20,22 +25,51 @@ simulated function PostBeginPlay() {
     rageShieldLimit= Max(45.0*DifficultyDamageModifer(),1.0);
 }
 
+/**
+ * Overridden to update the list of immune damage types
+ */
+function Died(Controller Killer, class<DamageType> damageType, vector HitLocation) {
+    local class<DamageType> immuneType;
+
+    if (damageType == class'DamTypeBleedOut') {
+        immuneType= decapDamageType;
+    } else {
+        immuneType= damageType;
+    }
+    mutRef.addImmuneDamageType(immuneType);
+    super.Died(Killer, damageType, HitLocation);
+}
+
+/**
+ * Overridden to store the decapitating damage type
+ */
+function RemoveHead() {
+    super.RemoveHead();
+    if (Health > 0) {
+        decapDamageType= lastDamagedByType;
+    }
+}
+
 function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector Momentum, class<DamageType> damageType, optional int HitIndex) {
-    local int oldHealth;
+    local int oldHealth, i;
 
-    oldHealth= Health;
-    super.TakeDamage(Damage, InstigatedBy, Hitlocation, Momentum, damageType, HitIndex);
-    totalRageAccumulator+= (oldHealth - Health);
+    for(i= 0; i < immuneDamageTypes.Length && damageType != immuneDamageTypes[i]; i++) {
+    }
+    if (i >= immuneDamageTypes.Length) {
+        oldHealth= Health;
+        super.TakeDamage(Damage, InstigatedBy, Hitlocation, Momentum, damageType, HitIndex);
+        totalRageAccumulator+= (oldHealth - Health);
 
-    /**
-     *  If the fleshpound isn't raging and the accumulator 
-     *  has exceeded the threshold, rage and reset the accumulator
-     */
-	if (!isInState('BeginRaging') && !bDecapitated && 
-        totalRageAccumulator >= totalDamageRageThreshold && 
-        !bChargingPlayer && (!(bCrispified && bBurnified) || bFrustrated) ) {
-        totalRageAccumulator= 0;
-        StartCharging();
+        /**
+         *  If the fleshpound isn't raging and the accumulator 
+         *  has exceeded the threshold, rage and reset the accumulator
+         */
+    	if (!isInState('BeginRaging') && !bDecapitated && 
+            totalRageAccumulator >= totalDamageRageThreshold && 
+            !bChargingPlayer && (!(bCrispified && bBurnified) || bFrustrated) ) {
+            totalRageAccumulator= 0;
+            StartCharging();
+        }
     }
 }
 
@@ -162,6 +196,6 @@ Begin:
 defaultproperties {
     MenuName="Super FleshPound"
     ControllerClass=Class'SuperFPZombieController'
-    totalDamageRageThreshold= 720
+    totalDamageRageThreshold= 1440
 }
 

@@ -26,6 +26,7 @@ var array<propertyDescPair> propDescripArray;
 
 var BleedingPawns BP;
 var PoisonedPawns PP;
+var array<class<DamageType> > fpImmuneDamageTypes;
 
 /** Replaces the zombies in the given squadArray */
 function replaceSpecialSquad(out array<KFMonstersCollection.SpecialSquad> squadArray) {
@@ -40,6 +41,16 @@ function replaceSpecialSquad(out array<KFMonstersCollection.SpecialSquad> squadA
                 }
             }
         }
+    }
+}
+
+function addImmuneDamageType(class<DamageType> newType) {
+    local int i;
+
+    for(i= 0; i < fpImmuneDamageTypes.Length && fpImmuneDamageTypes[i] != newType; i++) {
+    }
+    if (i >= fpImmuneDamageTypes.Length) {
+        fpImmuneDamageTypes[fpImmuneDamageTypes.Length]= newType;
     }
 }
 
@@ -99,6 +110,7 @@ function PostBeginPlay() {
 function bool CheckReplacement(Actor Other, out byte bSuperRelevant) {
     local PlayerReplicationInfo pri;
     local SZReplicationInfo szRI;
+    local int i;
 
     if (PlayerReplicationInfo(Other) != none && PlayerReplicationInfo(Other).Owner != none) {
         pri= PlayerReplicationInfo(Other);
@@ -108,6 +120,11 @@ function bool CheckReplacement(Actor Other, out byte bSuperRelevant) {
         ZombieSuperCrawler(Other).mut= self;
     } else if (ZombieSuperStalker(Other) != none) {
         ZombieSuperStalker(Other).mut= self;
+    } else if (ZombieSuperFP(Other) != none) {
+        for(i= 0; i < fpImmuneDamageTypes.Length; i++) {
+            ZombieSuperFP(Other).immuneDamageTypes[i]= fpImmuneDamageTypes[i];
+        }
+        ZombieSuperFP(Other).mutRef= self;
     }
     return true;
 }
