@@ -26,7 +26,7 @@ var array<propertyDescPair> propDescripArray;
 
 var BleedingPawns BP;
 var PoisonedPawns PP;
-var array<class<DamageType> > fpImmuneDamageTypes;
+var array<class<DamageType> > fpExtraResistantTypes;
 
 /** Replaces the zombies in the given squadArray */
 function replaceSpecialSquad(out array<KFMonstersCollection.SpecialSquad> squadArray) {
@@ -47,10 +47,10 @@ function replaceSpecialSquad(out array<KFMonstersCollection.SpecialSquad> squadA
 function addImmuneDamageType(class<DamageType> newType) {
     local int i;
 
-    for(i= 0; i < fpImmuneDamageTypes.Length && fpImmuneDamageTypes[i] != newType; i++) {
+    for(i= 0; i < fpExtraResistantTypes.Length && fpExtraResistantTypes[i] != newType; i++) {
     }
-    if (i >= fpImmuneDamageTypes.Length) {
-        fpImmuneDamageTypes[fpImmuneDamageTypes.Length]= newType;
+    if (i >= fpExtraResistantTypes.Length) {
+        fpExtraResistantTypes[fpExtraResistantTypes.Length]= newType;
     }
 }
 
@@ -121,8 +121,8 @@ function bool CheckReplacement(Actor Other, out byte bSuperRelevant) {
     } else if (ZombieSuperStalker(Other) != none) {
         ZombieSuperStalker(Other).mut= self;
     } else if (ZombieSuperFP(Other) != none) {
-        for(i= 0; i < fpImmuneDamageTypes.Length; i++) {
-            ZombieSuperFP(Other).immuneDamageTypes[i]= fpImmuneDamageTypes[i];
+        for(i= 0; i < fpExtraResistantTypes.Length; i++) {
+            ZombieSuperFP(Other).extraResistantTypes[i]= fpExtraResistantTypes[i];
         }
         ZombieSuperFP(Other).mutRef= self;
     }
@@ -166,8 +166,8 @@ simulated function Tick(float DeltaTime) {
 
 defaultproperties {
     GroupName="KFSuperZombieMut"
-    FriendlyName="Super Zombies v2.1.1"
-    Description="Gives specimens new abilities and behaviors.  This mutator's version is 2.1.1"
+    FriendlyName="Super Zombies v2.2"
+    Description="Gives specimens new abilities and behaviors."
 
     RemoteRole= ROLE_SimulatedProxy
     bAlwaysRelevant= true

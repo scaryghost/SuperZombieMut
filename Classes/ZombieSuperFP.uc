@@ -8,7 +8,7 @@ class ZombieSuperFP extends ZombieFleshPound;
  */
 var float rageDamage, rageDamageLimit, rageShield, rageShieldLimit;
 /** List of damage types the super fp is immune to */
-var array<class<DamageType> > immuneDamageTypes;
+var array<class<DamageType> > extraResistantTypes;
 /** Damage type of the decapitating blow */
 var class<DamageType> decapDamageType;
 var SuperZombieMut mutRef;
@@ -53,23 +53,24 @@ function RemoveHead() {
 function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector Momentum, class<DamageType> damageType, optional int HitIndex) {
     local int oldHealth, i;
 
-    for(i= 0; i < immuneDamageTypes.Length && damageType != immuneDamageTypes[i]; i++) {
+    for(i= 0; i < extraResistantTypes.Length && damageType != extraResistantTypes[i]; i++) {
     }
-    if (i >= immuneDamageTypes.Length) {
-        oldHealth= Health;
-        super.TakeDamage(Damage, InstigatedBy, Hitlocation, Momentum, damageType, HitIndex);
-        totalRageAccumulator+= (oldHealth - Health);
+    if (i < extraResistantTypes.Length) {
+        Damage*= 0.25;
+    }
+    oldHealth= Health;
+    super.TakeDamage(Damage, InstigatedBy, Hitlocation, Momentum, damageType, HitIndex);
+    totalRageAccumulator+= (oldHealth - Health);
 
-        /**
-         *  If the fleshpound isn't raging and the accumulator 
-         *  has exceeded the threshold, rage and reset the accumulator
-         */
-    	if (!isInState('BeginRaging') && !bDecapitated && 
-            totalRageAccumulator >= totalDamageRageThreshold && 
-            !bChargingPlayer && (!(bCrispified && bBurnified) || bFrustrated) ) {
-            totalRageAccumulator= 0;
-            StartCharging();
-        }
+    /**
+     *  If the fleshpound isn't raging and the accumulator 
+     *  has exceeded the threshold, rage and reset the accumulator
+     */
+	if (!isInState('BeginRaging') && !bDecapitated && 
+        totalRageAccumulator >= totalDamageRageThreshold && 
+        !bChargingPlayer && (!(bCrispified && bBurnified) || bFrustrated) ) {
+        totalRageAccumulator= 0;
+        StartCharging();
     }
 }
 
