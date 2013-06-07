@@ -6,7 +6,8 @@ Gives Killing Floor specimens new abilities
 Scary Ghost
 
 ### Install
-Copy the contents in the system folder to your Killing Floor system folder.
+Copy the contents in the system folder to your Killing Floor system folder 
+and the contents in textures to your KF textures folder.
 
 ### Usage
 Add the "Super Zombie" mutator to the list of active mutators.  The game 
@@ -17,8 +18,8 @@ check the wedadmin configuration page to make sure your desired specimens
 are active if it you are running the mutator for the first time.
 
 To add the specimens in sandbox mode, you must add them to the monster 
-class list.  The package name is "SuperZombieMut" and the specimens available 
-are:
+class list.  The mutator must be active even in sandbox mode.  The package 
+name for the specimens is "SuperZombieMut" and the available specimens are:
 
     ZombieSuperFP
     ZombieSuperBoss
@@ -29,6 +30,7 @@ are:
     ZombieSuperHusk
     ZombieSuperBloat
     ZombieSuperCrawler
+    ZombieSuperClot
 
 The source code can be viewed at the below link:  
 https://github.com/scaryghost/SuperZombieMut
@@ -47,7 +49,7 @@ Riceman
 ## Change Log
 To view a detailed change log, please view the releaes notes for the 
 specific version:  
-https://github.com/scaryghost/SuperZombieMut/wiki/Super-Zombie-2.1.1
+https://github.com/scaryghost/SuperZombieMut/wiki/Super-Zombie-2.2
 
 A complete list of specimen changes maybe viewed on the mutator's wiki:  
 https://github.com/scaryghost/SuperZombieMut/wiki
