@@ -22,7 +22,7 @@ function Tick(float DeltaTime) {
             if (pawns[i].nextBleedTime < Level.TimeSeconds) {
                 pawns[i].bleedCount--;
                 pawns[i].nextBleedTime+= bleedPeriod;
-                pawns[i].P.TakeDamage(2 + rand(1), pawns[i].instigator, pawns[i].P.Location, vect(0, 0, 0), class'DamTypeSlashingAttack');
+                pawns[i].P.TakeDamage(2 + rand(1), pawns[i].instigator, pawns[i].P.Location, vect(0, 0, 0), class'DamTypeStalkerBleed');
                 pawns[i].P.healthToGive-= 5;
             }
             i++;

@@ -36,7 +36,9 @@ function Died(Controller Killer, class<DamageType> damageType, vector HitLocatio
     } else {
         immuneType= damageType;
     }
-    mutRef.addImmuneDamageType(immuneType);
+    if (mutRef != none) {
+        mutRef.addImmuneDamageType(immuneType);
+    }
     super.Died(Killer, damageType, HitLocation);
 }
 

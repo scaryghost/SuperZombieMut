@@ -18,6 +18,7 @@ struct propertyDescPair {
 /** Configuration variables that store whether or not to replace the specimen */
 var() config bool bReplaceCrawler, bReplaceStalker, bReplaceClot, bReplaceGorefast, bReplaceBloat, 
                 bReplaceSiren, bReplaceHusk, bReplaceScrake, bReplaceFleshpound, bReplaceBoss;
+var() config bool forceFpSecret;
 
 /** Array that stores all the replacement pairs */
 var array<oldNewZombiePair> replacementArray;
@@ -120,7 +121,7 @@ function bool CheckReplacement(Actor Other, out byte bSuperRelevant) {
         ZombieSuperCrawler(Other).mut= self;
     } else if (ZombieSuperStalker(Other) != none) {
         ZombieSuperStalker(Other).mut= self;
-    } else if (ZombieSuperFP(Other) != none) {
+    } else if (KFGameType(Level.Game).KFGameLength != KFGameType(Level.Game).GL_Custom && ZombieSuperFP(Other) != none) {
         for(i= 0; i < fpExtraResistantTypes.Length; i++) {
             ZombieSuperFP(Other).extraResistantTypes[i]= fpExtraResistantTypes[i];
         }
@@ -140,6 +141,7 @@ static function FillPlayInfo(PlayInfo PlayInfo) {
         PlayInfo.AddSetting(mutConfigGroup, default.propDescripArray[i].property, 
         default.propDescripArray[i].shortDescription, 0, 0, "Check");
     }
+    PlayInfo.AddSetting(mutConfigGroup, "forceFpSecret", "Enable fp secret ability for sandbox games", 0, 0, "Check",,,,true);
 }
 
 static event string GetDescriptionText(string property) {
@@ -150,7 +152,9 @@ static event string GetDescriptionText(string property) {
             return default.propDescripArray[i].longDescription;
         }
     }
-
+    if (property == "forceFpSecret") {
+        return "By default, fp secret ability is disabled for sandbox games since it is intended for normal KF games";
+    }
     return Super.GetDescriptionText(property);
 }
 
