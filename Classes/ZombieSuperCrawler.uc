@@ -13,7 +13,7 @@ simulated function PostBeginPlay() {
  * to be the new poison damage type
  */
 event Bump(actor Other) {
-    if (bPouncing && KFHumanPawn(Other) != none) {
+    if (mut != none && bPouncing && KFHumanPawn(Other) != none) {
         mut.PP.addPawn(KFHumanPawn(Other));
     }
     super.Bump(Other);

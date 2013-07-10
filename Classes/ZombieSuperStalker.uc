@@ -74,7 +74,7 @@ function bool MeleeDamageTarget(int hitdamage, vector pushdir) {
     local bool result;
 
     result= super.MeleeDamageTarget(hitdamage, pushdir);
-    if (result && KFHumanPawn(Controller.Target) != none) {
+    if (mut != none && result && KFHumanPawn(Controller.Target) != none) {
         mut.BP.addPawn(KFHumanPawn(Controller.Target), Self);
     }
     return result;
