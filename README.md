@@ -6,20 +6,18 @@ Gives Killing Floor specimens new abilities
 Scary Ghost
 
 ### Install
-Copy the contents in the system folder to your Killing Floor system folder 
-and the contents in textures to your KF textures folder.
+Copy the contents in the system folder to your Killing Floor system folder and the contents in textures to your KF 
+textures folder.
 
 ### Usage
-Add the "Super Zombie" mutator to the list of active mutators.  The game 
-will spawn the modified specimens in place of their default counterparts.
-A configuration menu is available which allows users to select what 
-specimens they wish to replace.  For dedicated servers, you should double 
-check the wedadmin configuration page to make sure your desired specimens 
-are active if it you are running the mutator for the first time.
+Add the "Super Zombie" mutator to the list of active mutators.  The game will spawn the modified specimens in place of 
+their default counterparts.  A configuration menu is available which allows users to select what specimens they wish to 
+replace.  For dedicated servers, you should double check the wedadmin configuration page to make sure your desired 
+specimens are active if it you are running the mutator for the first time.
 
-To add the specimens in sandbox mode, you must add them to the monster 
-class list.  The mutator must be active even in sandbox mode.  The package 
-name for the specimens is "SuperZombieMut" and the available specimens are:
+To add the specimens in sandbox mode, you must add them to the monster class list.  The mutator must be active even in 
+sandbox mode.  If not, the bleed and poison effects will not be active.  The package name for the specimens is 
+"SuperZombieMut" and the available specimens are:
 
     ZombieSuperFP
     ZombieSuperBoss
@@ -37,21 +35,14 @@ https://github.com/scaryghost/SuperZombieMut
 
 ### Special Thanks
     Benjamin            Writing up a "how to" for creating mutators
-    Brute coders        Brute mutator source code helped me figure out 
-                        how to insert my modded specimens into the game
-    Testers             See list below
-
-### Testers
-Nikari, Fractal, [DoP] Cap, Tech Burn, Gore Torn, Nurse. Jamie Jameson, 
-Reaping - The Runk, Xandirs, DM*, BulletMorgue, Sakumaru, Fang.HD, AnTrix, 
-Riceman
+    Brute coders        Brute mutator source code helped me figure out how to insert my modded specimens into the game
+    Testers             Nikari, Fractal, [DoP] Cap, Tech Burn, Gore Torn, Nurse. Jamie Jameson, 
+                        Reaping - The Runk, Xandirs, DM*, BulletMorgue, Sakumaru, Fang.HD, AnTrix, 
+                        Riceman
 
 ## Change Log
-To view a detailed change log, please view the releaes notes for the 
-specific version:  
-https://github.com/scaryghost/SuperZombieMut/wiki/Super-Zombie-2.2
+To view a detailed change log, please view the releaes notes for the specific version:  
+https://github.com/scaryghost/SuperZombieMut/wiki/Super-Zombie-2.2.1
 
 A complete list of specimen changes maybe viewed on the mutator's wiki:  
 https://github.com/scaryghost/SuperZombieMut/wiki
-
- 
