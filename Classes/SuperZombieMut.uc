@@ -65,7 +65,7 @@ function PostBeginPlay() {
         Destroy();
         return;
     }
-    if (KF.MonsterCollection != class'KFMonstersCollection') {
+    if (KF.MonsterCollection != class'KFGameType'.default.MonsterCollection) {
         KF.MonsterCollection=class'SZMonstersCollection';
     }
     AddToPackageMap("SuperZombieMut");
@@ -89,6 +89,7 @@ function PostBeginPlay() {
             replacementValue= replacementArray[k];
             //Use ~= for case insensitive compare
             if (replacementValue.bReplace && KF.MonsterCollection.default.MonsterClasses[i].MClassName ~= replacementValue.oldClass) {
+                log("SuperZombies - Replacing"@KF.MonsterCollection.default.MonsterClasses[i].MClassName);
                 KF.MonsterCollection.default.MonsterClasses[i].MClassName= replacementValue.newClass;
             }
         }
@@ -121,7 +122,8 @@ function bool CheckReplacement(Actor Other, out byte bSuperRelevant) {
         ZombieSuperCrawler(Other).mut= self;
     } else if (ZombieSuperStalker(Other) != none) {
         ZombieSuperStalker(Other).mut= self;
-    } else if (KFGameType(Level.Game).KFGameLength != KFGameType(Level.Game).GL_Custom && ZombieSuperFP(Other) != none) {
+    } else if (ZombieSuperFP(Other) != none && (forceFpSecret || 
+            (KFGameType(Level.Game).KFGameLength != KFGameType(Level.Game).GL_Custom && Level.Game.NumPlayers <= 6))) {
         for(i= 0; i < fpExtraResistantTypes.Length; i++) {
             ZombieSuperFP(Other).extraResistantTypes[i]= fpExtraResistantTypes[i];
         }
@@ -141,7 +143,7 @@ static function FillPlayInfo(PlayInfo PlayInfo) {
         PlayInfo.AddSetting(mutConfigGroup, default.propDescripArray[i].property, 
         default.propDescripArray[i].shortDescription, 0, 0, "Check");
     }
-    PlayInfo.AddSetting(mutConfigGroup, "forceFpSecret", "Enable fp secret ability for sandbox games", 0, 0, "Check",,,,true);
+    PlayInfo.AddSetting(mutConfigGroup, "forceFpSecret", "Enable fp secret ability for sandbox or 7+ player games", 0, 0, "Check",,,,true);
 }
 
 static event string GetDescriptionText(string property) {
@@ -153,7 +155,7 @@ static event string GetDescriptionText(string property) {
         }
     }
     if (property == "forceFpSecret") {
-        return "By default, fp secret ability is disabled for sandbox games since it is intended for normal KF games";
+        return "By default, fp secret ability is disabled for sandbox and 7+ player games since it is intended for normal KF games";
     }
     return Super.GetDescriptionText(property);
 }

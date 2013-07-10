@@ -26,18 +26,18 @@ simulated function PostBeginPlay() {
 }
 
 /**
- * Overridden to update the list of immune damage types
+ * Overridden to update the list of extra resistant damage types
  */
 function Died(Controller Killer, class<DamageType> damageType, vector HitLocation) {
-    local class<DamageType> immuneType;
+    local class<DamageType> extraResistantType;
 
     if (damageType == class'DamTypeBleedOut') {
-        immuneType= decapDamageType;
+        extraResistantType= decapDamageType;
     } else {
-        immuneType= damageType;
+        extraResistantType= damageType;
     }
     if (mutRef != none) {
-        mutRef.addImmuneDamageType(immuneType);
+        mutRef.addImmuneDamageType(extraResistantType);
     }
     super.Died(Killer, damageType, HitLocation);
 }
