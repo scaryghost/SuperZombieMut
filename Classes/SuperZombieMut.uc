@@ -65,8 +65,8 @@ function PostBeginPlay() {
         Destroy();
         return;
     }
-    if (KF.MonsterCollection != class'KFGameType'.default.MonsterCollection) {
-        KF.MonsterCollection=class'SZMonstersCollection';
+    if (KF.MonsterCollection == class'KFGameType'.default.MonsterCollection) {
+        KF.MonsterCollection= class'SZMonstersCollection';
     }
     AddToPackageMap("SuperZombieMut");
 
