@@ -172,7 +172,7 @@ simulated function Tick(float DeltaTime) {
 
 defaultproperties {
     GroupName="KFSuperZombieMut"
-    FriendlyName="Super Zombies v2.2"
+    FriendlyName="Super Zombies v2.2.1"
     Description="Gives specimens new abilities and behaviors."
 
     RemoteRole= ROLE_SimulatedProxy
