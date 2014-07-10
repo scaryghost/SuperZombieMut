@@ -1,4 +1,4 @@
-class ZombieSuperStalker extends ZombieStalker;
+class ZombieSuperStalker extends ZombieStalker_STANDARD;
 
 var SuperZombieMut mut;
 

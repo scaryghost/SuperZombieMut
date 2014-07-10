@@ -24,6 +24,7 @@ var() config bool forceFpSecret;
 var array<oldNewZombiePair> replacementArray;
 /** Array that stores all the properties and their descriptions */
 var array<propertyDescPair> propDescripArray;
+var array<String> replCaps;
 
 var BleedingPawns BP;
 var PoisonedPawns PP;
@@ -32,13 +33,12 @@ var array<class<DamageType> > fpExtraResistantTypes;
 /** Replaces the zombies in the given squadArray */
 function replaceSpecialSquad(out array<KFMonstersCollection.SpecialSquad> squadArray) {
     local int i,j,k;
-    local oldNewZombiePair replacementValue;
+
     for(j=0; j<squadArray.Length; j++) {
         for(i=0;i<squadArray[j].ZedClass.Length; i++) {
             for(k=0; k<replacementArray.Length; k++) {
-                replacementValue= replacementArray[k];
-                if(replacementValue.bReplace && squadArray[j].ZedClass[i] ~= replacementValue.oldClass) {
-                    squadArray[j].ZedClass[i]=  replacementValue.newClass;
+                if(replacementArray[k].bReplace && InStr(Caps(squadArray[j].ZedClass[i]), replCaps[k]) != -1) {
+                    squadArray[j].ZedClass[i]=  replacementArray[k].newClass;
                 }
             }
         }
@@ -58,7 +58,7 @@ function addImmuneDamageType(class<DamageType> newType) {
 function PostBeginPlay() {
     local int i,k;
     local KFGameType KF;
-    local oldNewZombiePair replacementValue;
+    local array<String> mcCaps;
 
     KF= KFGameType(Level.Game);
     if (KF == none) {
@@ -83,14 +83,18 @@ function PostBeginPlay() {
     replacementArray[7].bReplace= bReplaceBloat;
     replacementArray[8].bReplace= bReplaceClot;
 
+    for(i= 0; i < KF.MonsterCollection.default.MonsterClasses.Length; i++) {
+        mcCaps[mcCaps.Length]= Caps(KF.MonsterCollection.default.MonsterClasses[i].MClassName);
+    }
+    for(i= 0; i < replacementArray.Length; i++) {
+        replCaps[replCaps.Length]= Caps(replacementArray[i].oldClass);
+    }
     //Replace all instances of the old specimens with the new ones 
-    for( i=0; i < KF.MonsterCollection.default.MonsterClasses.Length; i++) {
-        for(k=0; k<replacementArray.Length; k++) {
-            replacementValue= replacementArray[k];
-            //Use ~= for case insensitive compare
-            if (replacementValue.bReplace && KF.MonsterCollection.default.MonsterClasses[i].MClassName ~= replacementValue.oldClass) {
+    for(i= 0; i < mcCaps.Length; i++) {
+        for(k= 0; k < replCaps.Length; k++) {
+            if (replacementArray[k].bReplace && InStr(mcCaps[i], replCaps[k]) != -1) {
                 log("SuperZombies - Replacing"@KF.MonsterCollection.default.MonsterClasses[i].MClassName);
-                KF.MonsterCollection.default.MonsterClasses[i].MClassName= replacementValue.newClass;
+                KF.MonsterCollection.default.MonsterClasses[i].MClassName= replacementArray[k].newClass;
             }
         }
     }

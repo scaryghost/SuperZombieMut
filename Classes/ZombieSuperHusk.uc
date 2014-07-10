@@ -1,4 +1,4 @@
-class ZombieSuperHusk extends ZombieHusk;
+class ZombieSuperHusk extends ZombieHusk_STANDARD;
 
 /**
  *  consecutiveShots            How many consecutive shots the Super Husk has taken

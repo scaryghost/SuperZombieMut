@@ -1,4 +1,4 @@
-class ZombieSuperSiren extends ZombieSiren;
+class ZombieSuperSiren extends ZombieSiren_STANDARD;
 
 /**
  *  Modified the function so the screams hit through doors as well as damaging them

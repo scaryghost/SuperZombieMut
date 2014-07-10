@@ -1,4 +1,4 @@
-class ZombieSuperClot extends ZombieClot;
+class ZombieSuperClot extends ZombieClot_STANDARD;
 
 var SZReplicationInfo disabledPawnRepInfo;
 /** max num of clots that can be grappling a zerker before grab immunity is overridden */

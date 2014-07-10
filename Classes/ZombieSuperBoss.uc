@@ -1,4 +1,4 @@
-class ZombieSuperBoss extends ZombieBoss;
+class ZombieSuperBoss extends ZombieBoss_STANDARD;
 
 /** Minimum damage the patriarch will take before charging any players within 700uu */
 var int ChargeDamageThreshold;

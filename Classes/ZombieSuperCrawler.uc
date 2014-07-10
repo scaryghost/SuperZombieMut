@@ -1,4 +1,4 @@
-class ZombieSuperCrawler extends ZombieCrawler;
+class ZombieSuperCrawler extends ZombieCrawler_STANDARD;
 
 var SuperZombieMut mut;
 
