@@ -26,6 +26,19 @@ simulated function Tick(float DeltaTime) {
     }
 }
 
+function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector Momentum, class<DamageType> damageType, optional int HitIndex) {
+    local float headShotCheckScale;
+
+    if (class<KFWeaponDamageType>(damageType) != none && class<KFWeaponDamageType>(damageType).default.bCheckForHeadShots) {
+        headShotCheckScale= 1.0;
+        if (class<DamTypeMelee>(damageType) != none) {
+            headShotCheckScale*= 1.25;
+        }
+        if (!IsHeadShot(Hitlocation, normal(Momentum), 1.0)) damage*= 0.5;
+    }
+    Super.takeDamage(Damage, instigatedBy, hitLocation, momentum, damageType, HitIndex);
+}
+
 function RangedAttack(Actor A) {
     local int LastFireTime;
 
