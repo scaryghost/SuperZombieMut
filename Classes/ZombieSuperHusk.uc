@@ -48,7 +48,7 @@ function SpawnTwoShots() {
         }
     }
 
-    Spawn(Class'HuskFireProjectile_SZ',,,FireStart,FireRotation);
+    Spawn(Class'HuskFireProjectile_SZ',Self,,FireStart,FireRotation);
 
     // Turn extra collision back on
     ToggleAuxCollision(true);

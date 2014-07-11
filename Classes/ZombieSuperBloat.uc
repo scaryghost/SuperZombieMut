@@ -26,6 +26,13 @@ simulated function Tick(float DeltaTime) {
     }
 }
 
+function Touch(Actor Other) {
+    super.Touch(Other);
+    if (Other.IsA('ShotgunBullet')) {
+        ShotgunBullet(Other).Damage= 0;
+    }
+}
+
 function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector Momentum, class<DamageType> damageType, optional int HitIndex) {
     local float headShotCheckScale;
 
