@@ -1,4 +1,5 @@
 class SuperZombieMut extends Mutator
+    dependson(Types)
     config(SuperZombieMut);
 
 /** Struct that stores what a specific zombie should be replaced with */
@@ -29,6 +30,7 @@ var array<String> replCaps;
 var BleedingPawns BP;
 var PoisonedPawns PP;
 var array<class<DamageType> > fpExtraResistantTypes;
+var array<Types.Resistance> fpResistances;
 
 /** Replaces the zombies in the given squadArray */
 function replaceSpecialSquad(out array<KFMonstersCollection.SpecialSquad> squadArray) {
@@ -52,6 +54,21 @@ function addImmuneDamageType(class<DamageType> newType) {
     }
     if (i >= fpExtraResistantTypes.Length) {
         fpExtraResistantTypes[fpExtraResistantTypes.Length]= newType;
+    }
+}
+
+function addResistances(array<Types.WeaponDamage> wpnDamages, float maxHp) {
+    local int i, k;
+
+    for(i= 0; i < wpnDamages.Length; i++) {
+        for(k= 0; k < fpResistances.Length && fpResistances[k].dmgType != wpnDamages[i].dmgType; k++) { }
+        if (k >= fpResistances.Length) {
+            fpResistances.Length= k + 1;
+            fpResistances[k].dmgType= wpnDamages[i].dmgType;
+            fpResistances[k].scale= 1.0 - (wpnDamages[i].amount / maxHp);
+        } else {
+            fpResistances[k].scale= 1.0 - fmin(fpResistances[k].scale + 1 + (wpnDamages[i].amount / maxHp), 1.0);
+        }
     }
 }
 
@@ -128,8 +145,10 @@ function bool CheckReplacement(Actor Other, out byte bSuperRelevant) {
         ZombieSuperStalker(Other).mut= self;
     } else if (ZombieSuperFP(Other) != none && (forceFpSecret || 
             (KFGameType(Level.Game).KFGameLength != KFGameType(Level.Game).GL_Custom && Level.Game.NumPlayers <= 6))) {
-        for(i= 0; i < fpExtraResistantTypes.Length; i++) {
-            ZombieSuperFP(Other).extraResistantTypes[i]= fpExtraResistantTypes[i];
+        ZombieSuperFP(Other).resistances.Length= fpResistances.Length;
+        for(i= 0; i < fpResistances.Length; i++) {
+            ZombieSuperFP(Other).resistances[i].dmgType= fpResistances[i].dmgType;
+            ZombieSuperFP(Other).resistances[i].scale= fpResistances[i].scale;
         }
         ZombieSuperFP(Other).mutRef= self;
     }

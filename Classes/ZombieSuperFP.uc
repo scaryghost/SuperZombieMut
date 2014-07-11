@@ -1,4 +1,5 @@
-class ZombieSuperFP extends ZombieFleshPound_STANDARD;
+class ZombieSuperFP extends ZombieFleshPound_STANDARD
+    dependson(Types);
 
 /**
  *  rageDamage          accumulator that stores how much damage the fleshpound did when enraged
@@ -11,7 +12,11 @@ var float rageDamage, rageDamageLimit, rageShield, rageShieldLimit;
 var array<class<DamageType> > extraResistantTypes;
 /** Damage type of the decapitating blow */
 var class<DamageType> decapDamageType;
+var array<Types.Resistance> resistances;
+var array<Types.WeaponDamage> wpnDamages;
 var SuperZombieMut mutRef;
+var float tempHealth;
+var bool decapCounted;
 
 /**
  *  totalDamageRageThreshold    max damage that the fleshpound can take before raging
@@ -26,44 +31,45 @@ simulated function PostBeginPlay() {
 }
 
 /**
- * Overridden to update the list of extra resistant damage types
- */
-function Died(Controller Killer, class<DamageType> damageType, vector HitLocation) {
-    local class<DamageType> extraResistantType;
-
-    if (damageType == class'DamTypeBleedOut') {
-        extraResistantType= decapDamageType;
-    } else {
-        extraResistantType= damageType;
-    }
-    if (mutRef != none) {
-        mutRef.addImmuneDamageType(extraResistantType);
-    }
-    super.Died(Killer, damageType, HitLocation);
-}
-
-/**
  * Overridden to store the decapitating damage type
  */
 function RemoveHead() {
+    tempHealth= Health;
     super.RemoveHead();
-    if (Health > 0) {
-        decapDamageType= lastDamagedByType;
-    }
+    tempHealth-= fmax(Health, 0);
 }
 
 function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector Momentum, class<DamageType> damageType, optional int HitIndex) {
-    local int oldHealth, i;
+    local float oldHealth, hpDiff;
+    local int i;
 
-    for(i= 0; i < extraResistantTypes.Length && damageType != extraResistantTypes[i]; i++) {
-    }
-    if (i < extraResistantTypes.Length) {
-        Damage*= 0.25;
+    for(i= 0; i < resistances.Length && resistances[i].dmgType != damageType; i++) { }
+    if (i < resistances.Length) {
+        Damage*= resistances[i].scale;
     }
     oldHealth= Health;
     super.TakeDamage(Damage, InstigatedBy, Hitlocation, Momentum, damageType, HitIndex);
-    totalRageAccumulator+= (oldHealth - Health);
+    hpDiff= oldHealth - fmax(Health, 0);
+    if (decapCounted) {
+        hpDiff-= tempHealth;
+        tempHealth= 0;
+    }
+    totalRageAccumulator+= hpDiff;
 
+    if (!decapCounted && bDecapitated) {
+        decapCounted= true;
+    }
+    
+    if (damage != 0) {
+        for(i= 0; i < wpnDamages.Length && wpnDamages[i].dmgType != damageType; i++) { }
+        if (i >= wpnDamages.Length) {
+            wpnDamages.Length= i + 1;
+            wpnDamages[i].dmgType= damageType;
+            wpnDamages[i].amount= hpDiff;
+        } else {
+            wpnDamages[i].amount+= hpDiff;
+        }
+    }
     /**
      *  If the fleshpound isn't raging and the accumulator 
      *  has exceeded the threshold, rage and reset the accumulator
@@ -73,6 +79,9 @@ function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector M
         !bChargingPlayer && (!(bCrispified && bBurnified) || bFrustrated) ) {
         totalRageAccumulator= 0;
         StartCharging();
+    }
+    if (mutRef != none && Health <= 0) {
+        mutRef.addResistances(wpnDamages, HealthMax);
     }
 }
 
