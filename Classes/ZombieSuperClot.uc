@@ -3,9 +3,10 @@ class ZombieSuperClot extends ZombieClot_STANDARD;
 var SZReplicationInfo disabledPawnRepInfo;
 /** max num of clots that can be grappling a zerker before grab immunity is overridden */
 var int grappleLimit;
+var bool ignoreBodyShotResistance;
 
 function detachFromTarget() {
-    if (DisabledPawn != none) {
+    if (DisabledPawn != none && disabledPawnRepInfo != none) {
         disabledPawnRepInfo.numClotsAttached--;
         DisabledPawn.bMovementDisabled= false;
         DisabledPawn= none;
@@ -18,7 +19,7 @@ function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector M
     local class<KFWeaponDamageType> kfDmgTypeClass;
 
     kfDmgTypeClass= class<KFWeaponDamageType>(damageType);
-    if (!bDecapitated && kfDmgTypeClass != none && (kfDmgTypeClass.default.bCheckForHeadShots && !ClassIsChildOf(kfDmgTypeClass, class'DamTypeBurned'))) {
+    if (!ignoreBodyShotResistance && !bDecapitated && kfDmgTypeClass != none && (kfDmgTypeClass.default.bCheckForHeadShots && !ClassIsChildOf(kfDmgTypeClass, class'DamTypeBurned'))) {
         headShotCheckScale= 1.0;
         if (class<DamTypeMelee>(damageType) != none) {
             headShotCheckScale*= 1.25;
@@ -51,10 +52,11 @@ function ClawDamageTarget() {
             detachFromTarget();
             DisabledPawn= KFP;
             disabledPawnRepInfo= class'SZReplicationInfo'.static.findSZri(KFP.PlayerReplicationInfo);
-            disabledPawnRepInfo.numClotsAttached++;
-            if (KFPlayerReplicationInfo(KFP.PlayerReplicationInfo) == none ||
-                KFP.GetVeteran().static.CanBeGrabbed(KFPlayerReplicationInfo(KFP.PlayerReplicationInfo), self) || 
-                disabledPawnRepInfo.numClotsAttached > grappleLimit) {
+            if (disabledPawnRepInfo != none) {
+                disabledPawnRepInfo.numClotsAttached++;
+            }
+            if (KFP.GetVeteran().static.CanBeGrabbed(KFPlayerReplicationInfo(KFP.PlayerReplicationInfo), self) || 
+                (disabledPawnRepInfo != none && disabledPawnRepInfo.numClotsAttached > grappleLimit)) {
                 DisabledPawn.DisableMovement(GrappleDuration);
             }
         }

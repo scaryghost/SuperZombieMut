@@ -8,9 +8,17 @@ class ZombieSuperFP extends ZombieFleshPound_STANDARD
  *  rageShieldLimit     the limit the shield accumulator must exceed so the fleshpound will not rage again
  */
 var float rageDamage, rageDamageLimit, rageShield, rageShieldLimit;
-/** List of damage types the super fp is immune to */
+/**
+ * List of damage types the super fp is immune to
+ * @deprecated
+ * @see resistances
+ * @see wpnDamages
+ */
 var array<class<DamageType> > extraResistantTypes;
-/** Damage type of the decapitating blow */
+/**
+ * Damage type of the decapitating blow
+ * @deprecated
+ */
 var class<DamageType> decapDamageType;
 var array<Types.Resistance> resistances;
 var array<Types.WeaponDamage> wpnDamages;

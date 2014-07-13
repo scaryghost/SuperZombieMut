@@ -33,21 +33,6 @@ function Touch(Actor Other) {
     }
 }
 
-function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector Momentum, class<DamageType> damageType, optional int HitIndex) {
-    local float headShotCheckScale;
-    local class<KFWeaponDamageType> kfDmgTypeClass;
-
-    kfDmgTypeClass= class<KFWeaponDamageType>(damageType);
-    if (!bDecapitated && kfDmgTypeClass != none && (kfDmgTypeClass.default.bCheckForHeadShots && !ClassIsChildOf(kfDmgTypeClass, class'DamTypeBurned'))) {
-        headShotCheckScale= 1.0;
-        if (class<DamTypeMelee>(damageType) != none) {
-            headShotCheckScale*= 1.25;
-        }
-        if (!IsHeadShot(Hitlocation, normal(Momentum), 1.0)) damage*= 0.5;
-    }
-    Super.takeDamage(Damage, instigatedBy, hitLocation, momentum, damageType, HitIndex);
-}
-
 function RangedAttack(Actor A) {
     local int LastFireTime;
 

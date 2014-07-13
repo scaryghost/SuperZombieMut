@@ -29,6 +29,11 @@ var array<String> replCaps;
 
 var BleedingPawns BP;
 var PoisonedPawns PP;
+/**
+ * Stores damage types fp has 75% resistance too. 
+ * @deprecated
+ * @see fpResistances
+ */
 var array<class<DamageType> > fpExtraResistantTypes;
 var array<Types.Resistance> fpResistances;
 
@@ -47,6 +52,11 @@ function replaceSpecialSquad(out array<KFMonstersCollection.SpecialSquad> squadA
     }
 }
 
+/**
+ * Addes damage types to the extra resistance collection
+ * @deprecated
+ * @see addResistances(array<Types.WeaponDamage>, float)
+ */
 function addImmuneDamageType(class<DamageType> newType) {
     local int i;
 
@@ -195,7 +205,7 @@ simulated function Tick(float DeltaTime) {
 
 defaultproperties {
     GroupName="KFSuperZombieMut"
-    FriendlyName="Super Zombies v2.2.1"
+    FriendlyName="Super Zombies v2.3"
     Description="Gives specimens new abilities and behaviors."
 
     RemoteRole= ROLE_SimulatedProxy
