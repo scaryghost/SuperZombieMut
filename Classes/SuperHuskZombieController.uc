@@ -1,18 +1,9 @@
 class SuperHuskZombieController extends HuskZombieController;
 
-/** The Z offset the husk needs to aim at to hit the target's feet */
 var float aimAtFeetZDelta;
 
-function PostBeginPlay() {
-    super.PostBeginPlay();
-}
-
-function bool DefendCloseRange(float Dist) {
-    return ( (Enemy.Weapon != None) && (Dist < 1000) );
-}
-
-static function setAimAtFeetZDelta(float z) {
-    default.aimAtFeetZDelta= z;
+function bool DefendMelee(float Dist) {
+    return (Dist < 1000);
 }
 
 function rotator AdjustAim(FireProperties FiredAmmunition, vector projStart, int aimerror) {
@@ -49,7 +40,7 @@ function rotator AdjustAim(FireProperties FiredAmmunition, vector projStart, int
     }
 
     bLeadTargetNow = FiredAmmunition.bLeadTarget && bLeadTarget;
-    bDefendCloseRange = ( (Target == Enemy) && DefendCloseRange(TargetDist) );
+    bDefendCloseRange = ( (Target == Enemy) && DefendMelee(TargetDist) );
     aimerror = AdjustAimError(aimerror,TargetDist,bDefendCloseRange,FiredAmmunition.bInstantHit, bLeadTargetNow);
 
     // lead target with non instant hit projectiles
@@ -71,8 +62,8 @@ function rotator AdjustAim(FireProperties FiredAmmunition, vector projStart, int
          *  FireSpot vector with aimAtFeetZDelta.  Otherwise, the husk will 
          *  aim at behind the target, not at his feet.
          */
-        if (default.aimAtFeetZDelta != 0.0 && Target.Physics == PHYS_Falling && bDefendCloseRange) {
-            FireSpot.Z= Pawn.Location.Z + default.aimAtFeetZDelta;
+        if (aimAtFeetZDelta != 0.0 && Target.Physics == PHYS_Falling && bDefendCloseRange) {
+            FireSpot.Z= Pawn.Location.Z + aimAtFeetZDelta;
         }
 
         if ( (Target.Physics != PHYS_Falling) && (FRand() < 0.55) && (VSize(FireSpot - ProjStart) > 1000) ) {
@@ -134,7 +125,7 @@ function rotator AdjustAim(FireProperties FiredAmmunition, vector projStart, int
          *  default property so all Super Husks can access it
          */
         if (bClean && TargetDist > 625.0) {
-            setAimAtFeetZDelta(FireSpot.Z - Pawn.Location.Z);
+            aimAtFeetZDelta= FireSpot.Z - Pawn.Location.Z;
         }
     }
 
@@ -214,8 +205,4 @@ function rotator AdjustAim(FireProperties FiredAmmunition, vector projStart, int
     //Make it so the Husk always shoots the ground it the target is close
     SetRotation(FireRotation);
     return FireRotation;
-}
-
-defaultproperties {
-    aimAtFeetZDelta= 0.0;
 }
