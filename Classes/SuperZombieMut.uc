@@ -17,9 +17,9 @@ struct propertyDescPair {
 };
 
 /** Configuration variables that store whether or not to replace the specimen */
-var() config bool bReplaceCrawler, bReplaceStalker, bReplaceClot, bReplaceGorefast, bReplaceBloat, 
+var() globalconfig bool bReplaceCrawler, bReplaceStalker, bReplaceClot, bReplaceGorefast, bReplaceBloat, 
                 bReplaceSiren, bReplaceHusk, bReplaceScrake, bReplaceFleshpound, bReplaceBoss;
-var() config bool forceFpSecret;
+var() globalconfig bool forceFpSecret;
 
 /** Array that stores all the replacement pairs */
 var array<oldNewZombiePair> replacementArray;
@@ -176,7 +176,7 @@ static function FillPlayInfo(PlayInfo PlayInfo) {
         PlayInfo.AddSetting(mutConfigGroup, default.propDescripArray[i].property, 
         default.propDescripArray[i].shortDescription, 0, 0, "Check");
     }
-    PlayInfo.AddSetting(mutConfigGroup, "forceFpSecret", "Enable fp secret ability for sandbox or 7+ player games", 0, 0, "Check",,,,true);
+    PlayInfo.AddSetting(mutConfigGroup, "forceFpSecret", "Enable fp evolution for sandbox or 7+ player games", 0, 0, "Check",,,,true);
 }
 
 static event string GetDescriptionText(string property) {
@@ -188,7 +188,7 @@ static event string GetDescriptionText(string property) {
         }
     }
     if (property == "forceFpSecret") {
-        return "By default, fp secret ability is disabled for sandbox and 7+ player games since it is intended for normal KF games";
+        return "By default, fp evolution is disabled for sandbox and 7+ player games since it is intended for normal KF games";
     }
     return Super.GetDescriptionText(property);
 }
