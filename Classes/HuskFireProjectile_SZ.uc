@@ -26,7 +26,7 @@ simulated singular function Touch(Actor Other) {
 
 // Don't hit Zed extra collision cylinders
 simulated function ProcessTouch(Actor Other, Vector HitLocation) {
-    if (ExtendedZCollision(Other) != none) {
+    if (ExtendedZCollision(Other) != none || Other.IsA('KFMonster')) {
         return;
     }
 

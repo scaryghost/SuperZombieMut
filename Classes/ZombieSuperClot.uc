@@ -12,10 +12,13 @@ function detachFromTarget() {
         disabledPawnRepInfo= none;
     }
 }
+
 function TakeDamage( int Damage, Pawn InstigatedBy, Vector Hitlocation, Vector Momentum, class<DamageType> damageType, optional int HitIndex) {
     local float headShotCheckScale;
+    local class<KFWeaponDamageType> kfDmgTypeClass;
 
-    if (class<KFWeaponDamageType>(damageType) != none && class<KFWeaponDamageType>(damageType).default.bCheckForHeadShots) {
+    kfDmgTypeClass= class<KFWeaponDamageType>(damageType);
+    if (!bDecapitated && kfDmgTypeClass != none && (kfDmgTypeClass.default.bCheckForHeadShots && !ClassIsChildOf(kfDmgTypeClass, class'DamTypeBurned'))) {
         headShotCheckScale= 1.0;
         if (class<DamTypeMelee>(damageType) != none) {
             headShotCheckScale*= 1.25;
