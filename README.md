@@ -42,7 +42,7 @@ https://github.com/scaryghost/SuperZombieMut
 
 ## Change Log
 To view a detailed change log, please view the releaes notes for the specific version:  
-https://github.com/scaryghost/SuperZombieMut/wiki/Super-Zombie-2.3
+https://github.com/scaryghost/SuperZombieMut/wiki/Super-Zombie-2.3.1
 
 A complete list of specimen changes maybe viewed on the mutator's wiki:  
 https://github.com/scaryghost/SuperZombieMut/wiki

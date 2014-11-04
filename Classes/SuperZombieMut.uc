@@ -92,9 +92,11 @@ function PostBeginPlay() {
         Destroy();
         return;
     }
+
     if (KF.MonsterCollection == class'KFGameType'.default.MonsterCollection) {
         KF.MonsterCollection= class'SZMonstersCollection';
     }
+
     AddToPackageMap("SuperZombieMut");
 
     PP= spawn(class'PoisonedPawns');
@@ -120,8 +122,10 @@ function PostBeginPlay() {
     for(i= 0; i < mcCaps.Length; i++) {
         for(k= 0; k < replCaps.Length; k++) {
             if (replacementArray[k].bReplace && InStr(mcCaps[i], replCaps[k]) != -1) {
-                log("SuperZombies - Replacing"@KF.MonsterCollection.default.MonsterClasses[i].MClassName);
-                KF.MonsterCollection.default.MonsterClasses[i].MClassName= replacementArray[k].newClass;
+                log("SuperZombies - Replacing" @ KF.MonsterCollection.default.MonsterClasses[i].MClassName @
+                        "with" @ replacementArray[k].newClass);
+                KF.MonsterCollection.default.MonsterClasses[i].MClassName=
+                        replacementArray[k].newClass;
             }
         }
     }
@@ -137,6 +141,10 @@ function PostBeginPlay() {
     }
     if (bReplaceStalker) {
         KF.MonsterCollection.default.FallbackMonsterClass= "SuperZombieMut.ZombieSuperStalker";
+    }
+
+    for(i= 0; i < KF.SpecialEventMonsterCollections.Length; i++) {
+        KF.SpecialEventMonsterCollections[i]= KF.MonsterCollection;
     }
 }
 
@@ -205,7 +213,7 @@ simulated function Tick(float DeltaTime) {
 
 defaultproperties {
     GroupName="KFSuperZombieMut"
-    FriendlyName="Super Zombies v2.3"
+    FriendlyName="Super Zombies v2.3.1"
     Description="Gives specimens new abilities and behaviors."
 
     RemoteRole= ROLE_SimulatedProxy
