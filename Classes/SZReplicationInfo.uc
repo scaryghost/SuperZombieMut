@@ -10,7 +10,7 @@ var PlayerReplicationInfo ownerPRI;
 var bool isBleeding, isPoisoned;
 var int numClotsAttached, maxBleedCount;
 var BleedingState bleedState;
-var float bleedPeriod;
+var float bleedPeriod, poisonStartTime;
 
 replication {
     reliable if (bNetDirty && Role == ROLE_Authority)
@@ -18,8 +18,10 @@ replication {
 }
 
 function tick(float DeltaTime) {
+    local float EncumbrancePercentage, speedBonusScale, WeightMod, HealthMod;
     local PlayerController ownerCtrllr;
-    local KFPawn ownerPawn;
+    local KFPlayerReplicationInfo kfpri;
+    local KFHumanPawn ownerPawn;
 
     ownerCtrllr= PlayerController(Owner);
     if (Owner.Pawn != none && Owner.Pawn.Health > 0 && bleedCount > 0) {
@@ -36,8 +38,30 @@ function tick(float DeltaTime) {
         isBleeding= false;
     }
 
-    ownerPawn= KFPawn(PlayerController(Owner).Pawn);
-    
+    if (isPoisoned) {
+        speedBonusScale= fmin((Level.TimeSeconds - poisonStartTime)/maxSpeedPenaltyTime, 1.0);
+        if (ownerCtrllr.Pawn == None || Owner.Pawn.Health <= 0 || speedBonusScale >= 1) {
+            isPoisoned= false;
+        } else {
+            ownerPawn= KFHumanPawn(ownerCtrllr.Pawn);
+
+            EncumbrancePercentage= (FMin(ownerPawn.CurrentWeight, ownerPawn.MaxCarryWeight)/ownerPawn.MaxCarryWeight);
+            WeightMod= (1.0 - (EncumbrancePercentage * ownerPawn.WeightSpeedModifier));
+            HealthMod= ((ownerPawn.Health/ownerPawn.HealthMax) * ownerPawn.HealthSpeedModifier) + (1.0 - ownerPawn.HealthSpeedModifier);
+
+            // Apply all the modifiers
+            ownerPawn.GroundSpeed = class'KFHumanPawn'.default.GroundSpeed * HealthMod;
+            ownerPawn.GroundSpeed *= WeightMod;
+            ownerPawn.GroundSpeed += ownerPawn.InventorySpeedModifier * speedBonusScale;
+
+            kfpri= KFPlayerReplicationInfo(ownerPRI);
+            if (kfpri != none && kfpri.ClientVeteranSkill != none ) {
+                // GetMovementSpeedModifier returns a multiplier >= 1.0
+                ownerPawn.GroundSpeed*= (kfpri.ClientVeteranSkill.static.GetMovementSpeedModifier(kfpri, 
+                        KFGameReplicationInfo(Level.GRI)) - 1 ) * speedBonusScale + 1;
+            }
+        }
+    }
 }
 
 function setBleeding(Pawn instigator) {
@@ -52,6 +76,8 @@ function setBleeding(Pawn instigator) {
 }
 
 function setPoison() {
+    poisonStartTime= Level.TimeSeconds;
+    isPoisoned= true;
 }
 
 static function SZReplicationInfo findSZri(PlayerReplicationInfo pri) {
