@@ -3,14 +3,14 @@ class SZReplicationInfo extends ReplicationInfo;
 struct BleedingState {
     var float nextBleedTime;
     var Pawn instigator;
-    var int bleedCount;
+    var int count;
 };
 
 var PlayerReplicationInfo ownerPRI;
 var bool isBleeding, isPoisoned;
 var int numClotsAttached, maxBleedCount;
 var BleedingState bleedState;
-var float bleedPeriod, poisonStartTime;
+var float bleedPeriod, poisonStartTime, maxSpeedPenaltyTime;
 
 replication {
     reliable if (bNetDirty && Role == ROLE_Authority)
@@ -24,14 +24,14 @@ function tick(float DeltaTime) {
     local KFHumanPawn ownerPawn;
 
     ownerCtrllr= PlayerController(Owner);
-    if (Owner.Pawn != none && Owner.Pawn.Health > 0 && bleedCount > 0) {
+    if (ownerCtrllr.Pawn != none && ownerCtrllr.Pawn.Health > 0 && bleedState.count > 0) {
         if (bleedState.nextBleedTime < Level.TimeSeconds) {
-            bleedState.bleedCount--;
+            bleedState.count--;
             bleedState.nextBleedTime+= bleedPeriod;
-            Owner.Pawn.TakeDamage(2 + rand(1), pawns[i].instigator, pawns[i].P.Location, 
+            ownerCtrllr.Pawn.TakeDamage(2 + rand(1), bleedState.instigator, ownerCtrllr.Pawn.Location, 
                     vect(0, 0, 0), class'DamTypeStalkerBleed');
-            if (Owner.Pawn.isA('KFPawn')) {
-                KFPawn(Owner.Pawn).HealthToGive-= 5;
+            if (ownerCtrllr.Pawn.isA('KFPawn')) {
+                KFPawn(ownerCtrllr.Pawn).HealthToGive-= 5;
             }
         }
     } else {
@@ -39,8 +39,8 @@ function tick(float DeltaTime) {
     }
 
     if (isPoisoned) {
-        speedBonusScale= fmin((Level.TimeSeconds - poisonStartTime)/maxSpeedPenaltyTime, 1.0);
-        if (ownerCtrllr.Pawn == None || Owner.Pawn.Health <= 0 || speedBonusScale >= 1) {
+        speedBonusScale= fmin((Level.TimeSeconds - poisonStartTime) / maxSpeedPenaltyTime, 1.0);
+        if (ownerCtrllr.Pawn == None || ownerCtrllr.Pawn.Health <= 0 || speedBonusScale >= 1) {
             isPoisoned= false;
         } else {
             ownerPawn= KFHumanPawn(ownerCtrllr.Pawn);
@@ -66,7 +66,7 @@ function tick(float DeltaTime) {
 
 function setBleeding(Pawn instigator) {
     bleedState.instigator= instigator;
-    bleedState.bleedCount= maxBleedCount;
+    bleedState.count= maxBleedCount;
 
     if (!isBleeding) {
         bleedState.nextBleedTime= Level.TimeSeconds;
@@ -96,4 +96,5 @@ static function SZReplicationInfo findSZri(PlayerReplicationInfo pri) {
 defaultproperties {
     maxBleedCount= 7;
     bleedPeriod= 1.5;
+    maxSpeedPenaltyTime= 10
 }
