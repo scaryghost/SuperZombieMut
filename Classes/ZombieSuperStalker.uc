@@ -1,5 +1,6 @@
 class ZombieSuperStalker extends ZombieStalker_STANDARD;
 
+/** @deprecated in v2.4 */
 var SuperZombieMut mut;
 
 /**
@@ -74,8 +75,10 @@ function bool MeleeDamageTarget(int hitdamage, vector pushdir) {
     local bool result;
 
     result= super.MeleeDamageTarget(hitdamage, pushdir);
-    if (mut != none && result && KFHumanPawn(Controller.Target) != none) {
-        mut.BP.addPawn(KFHumanPawn(Controller.Target), Self);
+    if (result && KFPawn(Controller.Target) != none) {
+        class'SZReplicationInfo'.static
+                .findSZri(KFPawn(Controller.Target).PlayerReplicationInfo)
+                .setBleeding(Self);
     }
     return result;
 }
