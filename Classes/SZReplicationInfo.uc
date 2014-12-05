@@ -22,9 +22,13 @@ function tick(float DeltaTime) {
     local PlayerController ownerCtrllr;
     local KFPlayerReplicationInfo kfpri;
     local KFHumanPawn ownerPawn;
+    local bool amAlive;
+    local Inventory I;
+    local KF_StoryInventoryItem storyInv;
 
     ownerCtrllr= PlayerController(Owner);
-    if (ownerCtrllr.Pawn != none && ownerCtrllr.Pawn.Health > 0 && bleedState.count > 0) {
+    amAlive= ownerCtrllr != None && ownerCtrllr.Pawn != none && ownerCtrllr.Pawn.Health > 0;
+    if (amAlive && bleedState.count > 0) {
         if (bleedState.nextBleedTime < Level.TimeSeconds) {
             bleedState.count--;
             bleedState.nextBleedTime+= bleedPeriod;
@@ -40,7 +44,7 @@ function tick(float DeltaTime) {
 
     if (isPoisoned) {
         speedBonusScale= fmin((Level.TimeSeconds - poisonStartTime) / maxSpeedPenaltyTime, 1.0);
-        if (ownerCtrllr.Pawn == None || ownerCtrllr.Pawn.Health <= 0 || speedBonusScale >= 1) {
+        if (!amAlive || speedBonusScale >= 1) {
             isPoisoned= false;
         } else {
             ownerPawn= KFHumanPawn(ownerCtrllr.Pawn);
@@ -50,15 +54,29 @@ function tick(float DeltaTime) {
             HealthMod= ((ownerPawn.Health/ownerPawn.HealthMax) * ownerPawn.HealthSpeedModifier) + (1.0 - ownerPawn.HealthSpeedModifier);
 
             // Apply all the modifiers
-            ownerPawn.GroundSpeed = class'KFHumanPawn'.default.GroundSpeed * HealthMod;
-            ownerPawn.GroundSpeed *= WeightMod;
-            ownerPawn.GroundSpeed += ownerPawn.InventorySpeedModifier * speedBonusScale;
+            ownerPawn.GroundSpeed= class'KFHumanPawn'.default.GroundSpeed * HealthMod;
+            ownerPawn.GroundSpeed*= WeightMod;
+            ownerPawn.GroundSpeed+= ownerPawn.InventorySpeedModifier * speedBonusScale;
 
             kfpri= KFPlayerReplicationInfo(ownerPRI);
             if (kfpri != none && kfpri.ClientVeteranSkill != none ) {
                 // GetMovementSpeedModifier returns a multiplier >= 1.0
-                ownerPawn.GroundSpeed*= (kfpri.ClientVeteranSkill.static.GetMovementSpeedModifier(kfpri, 
-                        KFGameReplicationInfo(Level.GRI)) - 1 ) * speedBonusScale + 1;
+                ownerPawn.GroundSpeed*= (kfpri.ClientVeteranSkill.static
+                        .GetMovementSpeedModifier(kfpri, KFGameReplicationInfo(Level.GRI)) - 1)
+                         * speedBonusScale + 1;
+            }
+
+            /* Give the pawn's inventory items a chance to modify his movement speed */
+            for(I= ownerPawn.Inventory; I != None; I= I.Inventory) {
+                if (Level.GRI.IsA('KFStoryGameInfo')) {
+                    StoryInv= KF_StoryInventoryItem(I);
+
+                    if(StoryInv != none && StoryInv.bUseForcedGroundSpeed) {
+                        ownerPawn.GroundSpeed= StoryInv.ForcedGroundSpeed ;
+                    }
+                } else {
+                    ownerPawn.GroundSpeed*= I.GetMovementModifierFor(ownerPawn);
+                }
             }
         }
     }

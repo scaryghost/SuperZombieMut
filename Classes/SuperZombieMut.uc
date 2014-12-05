@@ -27,8 +27,11 @@ var array<oldNewZombiePair> replacementArray;
 var array<propertyDescPair> propDescripArray;
 var array<String> replCaps;
 
+/** @deprecated in v2.4 */
 var BleedingPawns BP;
+/** @deprecated in v2.4 */
 var PoisonedPawns PP;
+
 /**
  * Stores damage types fp has 75% resistance too. 
  * @deprecated
@@ -99,9 +102,6 @@ function PostBeginPlay() {
 
     AddToPackageMap("SuperZombieMut");
 
-    PP= spawn(class'PoisonedPawns');
-    BP= spawn(class'BleedingPawns');
-
     replacementArray[0].bReplace= bReplaceFleshpound;
     replacementArray[1].bReplace= bReplaceGorefast;
     replacementArray[2].bReplace= bReplaceStalker;
@@ -157,10 +157,6 @@ function bool CheckReplacement(Actor Other, out byte bSuperRelevant) {
         pri= PlayerReplicationInfo(Other);
         szRI= spawn(class'SZReplicationInfo', pri.Owner);
         szRI.ownerPRI= pri;
-    } if (ZombieSuperCrawler(Other) != none) {
-        ZombieSuperCrawler(Other).mut= self;
-    } else if (ZombieSuperStalker(Other) != none) {
-        ZombieSuperStalker(Other).mut= self;
     } else if (ZombieSuperFP(Other) != none && (forceFpSecret || 
             (KFGameType(Level.Game).KFGameLength != KFGameType(Level.Game).GL_Custom && Level.Game.NumPlayers <= 6))) {
         ZombieSuperFP(Other).resistances.Length= fpResistances.Length;
