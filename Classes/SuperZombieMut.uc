@@ -19,7 +19,7 @@ struct propertyDescPair {
 /** Configuration variables that store whether or not to replace the specimen */
 var() globalconfig bool bReplaceCrawler, bReplaceStalker, bReplaceClot, bReplaceGorefast, bReplaceBloat, 
                 bReplaceSiren, bReplaceHusk, bReplaceScrake, bReplaceFleshpound, bReplaceBoss;
-var() globalconfig bool forceFpSecret;
+var() globalconfig bool forceFpSecret, bareMutatorMode;
 
 /** Array that stores all the replacement pairs */
 var array<oldNewZombiePair> replacementArray;
@@ -96,11 +96,18 @@ function PostBeginPlay() {
         return;
     }
 
+    AddToPackageMap();
+
+    // If we are in bare mutator mode, don't do anything except add to package map
+    // do setup work in CheckReplacement, and setup custom HUD
+    if (bareMutatorMode) {
+        return;
+    }
+
     if (KF.MonsterCollection == class'KFGameType'.default.MonsterCollection) {
         KF.MonsterCollection= class'SZMonstersCollection';
     }
 
-    AddToPackageMap("SuperZombieMut");
 
     replacementArray[0].bReplace= bReplaceFleshpound;
     replacementArray[1].bReplace= bReplaceGorefast;
@@ -181,6 +188,7 @@ static function FillPlayInfo(PlayInfo PlayInfo) {
         default.propDescripArray[i].shortDescription, 0, 0, "Check");
     }
     PlayInfo.AddSetting(mutConfigGroup, "forceFpSecret", "Enable fp evolution for sandbox or 7+ player games", 0, 0, "Check",,,,true);
+    PlayInfo.AddSetting(mutConfigGroup, "bareMutatorMode", "Enable bare mutator mode", 0, 0, "Check",,,,true);
 }
 
 static event string GetDescriptionText(string property) {
@@ -191,8 +199,11 @@ static event string GetDescriptionText(string property) {
             return default.propDescripArray[i].longDescription;
         }
     }
-    if (property == "forceFpSecret") {
+    switch (property) {
+    case "forceFpSecret":
         return "By default, fp evolution is disabled for sandbox and 7+ player games since it is intended for normal KF games";
+    case "bareMutatorMode":
+        return "Mutator only adds self to package map, manages bleed, poison, and evolution abilities, and sets up HUD effects";
     }
     return Super.GetDescriptionText(property);
 }
@@ -209,7 +220,7 @@ simulated function Tick(float DeltaTime) {
 
 defaultproperties {
     GroupName="KFSuperZombieMut"
-    FriendlyName="Super Zombies v2.3.1"
+    FriendlyName="Super Zombies v2.3.2"
     Description="Gives specimens new abilities and behaviors."
 
     RemoteRole= ROLE_SimulatedProxy
