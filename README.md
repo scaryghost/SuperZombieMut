@@ -42,10 +42,6 @@ The package name for the specimens is "SuperZombieMut" and the available specime
     ZombieSuperCrawler
     ZombieSuperClot
 
-## Source Code
-The source code is available on the project's GitHub page
-https://github.com/scaryghost/SuperZombieMut
-
 ## Special Thanks
     Benjamin            Writing up a "how to" for creating mutators
     Brute coders        Brute mutator source code helped me figure out how to insert my modded specimens 
@@ -53,6 +49,10 @@ https://github.com/scaryghost/SuperZombieMut
     Testers             Nikari, Fractal, [DoP] Cap, Tech Burn, Gore Torn, Nurse. Jamie Jameson, 
                         Reaping - The Runk, Xandirs, DM*, BulletMorgue, Sakumaru, Fang.HD, AnTrix, 
                         Riceman
+
+## Source Code
+The source code is available on the project's GitHub page  
+https://github.com/scaryghost/SuperZombieMut
 
 ## Change Log
 To view a detailed change log, please view the releaes notes for the specific version:  
