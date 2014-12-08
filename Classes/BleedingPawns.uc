@@ -1,3 +1,6 @@
+/**
+ * @deprecated As of v2.3.2, bleeding code moved to SZReplicationInfo
+ */
 class BleedingPawns extends Info;
 
 struct BleedingPawn {

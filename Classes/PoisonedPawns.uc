@@ -1,3 +1,6 @@
+/**
+ * @deprecated As of v2.3.2, poison code moved to SZReplicationInfo
+ */
 class PoisonedPawns extends Info;
 
 struct PoisonedPawn {

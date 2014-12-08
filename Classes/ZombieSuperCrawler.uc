@@ -1,6 +1,6 @@
 class ZombieSuperCrawler extends ZombieCrawler_STANDARD;
 
-/** @deprecated as of v2.4 */
+/** @deprecated as of v2.3.2 */
 var SuperZombieMut mut;
 
 simulated function PostBeginPlay() {

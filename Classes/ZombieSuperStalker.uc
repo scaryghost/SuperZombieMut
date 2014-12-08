@@ -1,6 +1,6 @@
 class ZombieSuperStalker extends ZombieStalker_STANDARD;
 
-/** @deprecated in v2.4 */
+/** @deprecated in v2.3.2 */
 var SuperZombieMut mut;
 
 /**

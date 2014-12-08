@@ -27,9 +27,9 @@ var array<oldNewZombiePair> replacementArray;
 var array<propertyDescPair> propDescripArray;
 var array<String> replCaps;
 
-/** @deprecated in v2.4 */
+/** @deprecated in v2.3.2 */
 var BleedingPawns BP;
-/** @deprecated in v2.4 */
+/** @deprecated in v2.3.2 */
 var PoisonedPawns PP;
 
 /**
