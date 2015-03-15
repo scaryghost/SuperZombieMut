@@ -11,6 +11,7 @@ var bool isBleeding, isPoisoned;
 var int numClotsAttached, maxBleedCount;
 var BleedingState bleedState;
 var float bleedPeriod, poisonStartTime, maxSpeedPenaltyTime;
+var Inventory poisonItem;
 
 replication {
     reliable if (bNetDirty && Role == ROLE_Authority)
@@ -18,13 +19,8 @@ replication {
 }
 
 function tick(float DeltaTime) {
-    local float EncumbrancePercentage, speedBonusScale, WeightMod, HealthMod;
     local PlayerController ownerCtrllr;
-    local KFPlayerReplicationInfo kfpri;
-    local KFHumanPawn ownerPawn;
     local bool amAlive;
-    local Inventory I;
-    local KF_StoryInventoryItem storyInv;
 
     ownerCtrllr= PlayerController(Owner);
     amAlive= ownerCtrllr != None && ownerCtrllr.Pawn != none && ownerCtrllr.Pawn.Health > 0;
@@ -43,41 +39,9 @@ function tick(float DeltaTime) {
     }
 
     if (isPoisoned) {
-        speedBonusScale= fmin((Level.TimeSeconds - poisonStartTime) / maxSpeedPenaltyTime, 1.0);
-        if (!amAlive || speedBonusScale >= 1) {
+        if (!amAlive || Level.TimeSeconds - poisonStartTime > maxSpeedPenaltyTime) {
             isPoisoned= false;
-        } else {
-            ownerPawn= KFHumanPawn(ownerCtrllr.Pawn);
-
-            EncumbrancePercentage= (FMin(ownerPawn.CurrentWeight, ownerPawn.MaxCarryWeight)/ownerPawn.MaxCarryWeight);
-            WeightMod= (1.0 - (EncumbrancePercentage * ownerPawn.WeightSpeedModifier));
-            HealthMod= ((ownerPawn.Health/ownerPawn.HealthMax) * ownerPawn.HealthSpeedModifier) + (1.0 - ownerPawn.HealthSpeedModifier);
-
-            // Apply all the modifiers
-            ownerPawn.GroundSpeed= class'KFHumanPawn'.default.GroundSpeed * HealthMod;
-            ownerPawn.GroundSpeed*= WeightMod;
-            ownerPawn.GroundSpeed+= ownerPawn.InventorySpeedModifier * speedBonusScale;
-
-            kfpri= KFPlayerReplicationInfo(ownerPRI);
-            if (kfpri != none && kfpri.ClientVeteranSkill != none ) {
-                // GetMovementSpeedModifier returns a multiplier >= 1.0
-                ownerPawn.GroundSpeed*= (kfpri.ClientVeteranSkill.static
-                        .GetMovementSpeedModifier(kfpri, KFGameReplicationInfo(Level.GRI)) - 1)
-                         * speedBonusScale + 1;
-            }
-
-            /* Give the pawn's inventory items a chance to modify his movement speed */
-            for(I= ownerPawn.Inventory; I != None; I= I.Inventory) {
-                if (Level.GRI.IsA('KFStoryGameInfo')) {
-                    StoryInv= KF_StoryInventoryItem(I);
-
-                    if(StoryInv != none && StoryInv.bUseForcedGroundSpeed) {
-                        ownerPawn.GroundSpeed= StoryInv.ForcedGroundSpeed ;
-                    }
-                } else {
-                    ownerPawn.GroundSpeed*= I.GetMovementModifierFor(ownerPawn);
-                }
-            }
+            ownerCtrllr.Pawn.DeleteInventory(poisonItem);
         }
     }
 }
@@ -94,6 +58,13 @@ function setBleeding(Pawn instigator) {
 }
 
 function setPoison() {
+    if (!isPoisoned) {
+        if (poisonItem == None) {
+            poisonItem= Spawn(class'IronBall', Owner);
+        }
+        
+        poisonItem.GiveTo(PlayerController(Owner).Pawn);
+    }
     poisonStartTime= Level.TimeSeconds;
     isPoisoned= true;
 }
