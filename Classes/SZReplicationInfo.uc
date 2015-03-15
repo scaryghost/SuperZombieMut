@@ -18,6 +18,16 @@ replication {
         isBleeding, isPoisoned, ownerPRI;
 }
 
+function PostBeginPlay() {
+    if (Level.Game.GameDifficulty >= 5.0) {
+        maxBleedCount= 7;
+    } else if (Level.Game.GameDifficulty >= 2.0) {
+        maxBleedCount= 5;
+    } else {
+        maxBleedCount= 3;
+    }
+}
+
 function tick(float DeltaTime) {
     local PlayerController ownerCtrllr;
     local bool amAlive;
@@ -28,13 +38,14 @@ function tick(float DeltaTime) {
         if (bleedState.nextBleedTime < Level.TimeSeconds) {
             bleedState.count--;
             bleedState.nextBleedTime+= bleedPeriod;
-            ownerCtrllr.Pawn.TakeDamage(2 + rand(1), bleedState.instigator, ownerCtrllr.Pawn.Location, 
+            ownerCtrllr.Pawn.TakeDamage(2, bleedState.instigator, ownerCtrllr.Pawn.Location, 
                     vect(0, 0, 0), class'DamTypeStalkerBleed');
             if (ownerCtrllr.Pawn.isA('KFPawn')) {
                 KFPawn(ownerCtrllr.Pawn).HealthToGive-= 5;
             }
         }
     } else {
+        bleedState.count= 0;
         isBleeding= false;
     }
 
@@ -92,7 +103,6 @@ static function SZReplicationInfo findSZri(PlayerReplicationInfo pri) {
 }
 
 defaultproperties {
-    maxBleedCount= 7;
     bleedPeriod= 1.5;
     maxSpeedPenaltyTime= 10
 }
