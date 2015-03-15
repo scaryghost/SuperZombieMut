@@ -164,6 +164,8 @@ function bool CheckReplacement(Actor Other, out byte bSuperRelevant) {
         pri= PlayerReplicationInfo(Other);
         szRI= spawn(class'SZReplicationInfo', pri.Owner);
         szRI.ownerPRI= pri;
+        szRI.NextReplicationInfo= pri.CustomReplicationInfo;
+        pri.CustomReplicationInfo= szRI;
     } else if (ZombieSuperFP(Other) != none && (forceFpSecret || 
             (KFGameType(Level.Game).KFGameLength != KFGameType(Level.Game).GL_Custom && Level.Game.NumPlayers <= 6))) {
         ZombieSuperFP(Other).resistances.Length= fpResistances.Length;

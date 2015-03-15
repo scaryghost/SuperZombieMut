@@ -1,4 +1,4 @@
-class SZReplicationInfo extends ReplicationInfo;
+class SZReplicationInfo extends LinkedReplicationInfo;
 
 struct BleedingState {
     var float nextBleedTime;
@@ -70,16 +70,25 @@ function setPoison() {
 }
 
 static function SZReplicationInfo findSZri(PlayerReplicationInfo pri) {
+    local LinkedReplicationInfo lriIt;
     local SZReplicationInfo repInfo;
 
     if (pri == none)
         return none;
+    
+    lriIt= pri.CustomReplicationInfo;
+    while(lriIt != None && lriIt.class != class'SZReplicationInfo') {
+        lriIt= lriIt.NextReplicationInfo;
+    }
 
-    foreach pri.DynamicActors(Class'SZReplicationInfo', repInfo)
-        if (repInfo.ownerPRI == pri)
-            return repInfo;
+    if (lriIt == None) {
+        foreach pri.DynamicActors(Class'SZReplicationInfo', repInfo)
+            if (repInfo.ownerPRI == pri)
+                return repInfo;
+        return None;
+    }
  
-    return none;
+    return SZReplicationInfo(lriIt);
 }
 
 defaultproperties {
