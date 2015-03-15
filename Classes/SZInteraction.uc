@@ -13,7 +13,7 @@ function PostRender(Canvas canvas) {
     local int x, y, offset, i;
     local Vector CamPos, ViewDir;
     local Rotator CamRot;
-    local float OffsetX, BarLength, BarHeight, XL, YL;
+    local float OffsetX, BarLength, BarHeight, XL, YL, posY;
 
     szRI= class'SZReplicationInfo'.static.findSZri(ViewportOwner.Actor.PlayerReplicationInfo);
     if (szRI != none) {
@@ -36,20 +36,33 @@ function PostRender(Canvas canvas) {
     canvas.GetCAmeraLocation(CamPos, CamRot);
     ViewDir= vector(CamRot);
     kfHud= HUDKillingFloor(ViewportOwner.Actor.myHUD);
-    OffsetX = (36.f * kfHud.VeterancyMatScaleFactor * 0.6) - (kfHud.default.HealthIconSize + 2.0);
-    BarLength = FMin(kfHud.default.BarLength * (float(canvas.SizeX) / 1024.f),kfHud.default.BarLength);
-    BarHeight = FMin(kfHud.default.BarHeight * (float(canvas.SizeX) / 1024.f),kfHud.default.BarHeight);
+    OffsetX = (36.f * kfHud.default.VeterancyMatScaleFactor * 0.6) - (kfHud.default.HealthIconSize + 2.0);
+    BarLength = FMin(kfHud.default.BarLength * (float(canvas.SizeX) / 1024.f), kfHud.default.BarLength);
+    BarHeight = FMin(kfHud.default.BarHeight * (float(canvas.SizeX) / 1024.f), kfHud.default.BarHeight);
     for (i = 0; i < kfHUD.PlayerInfoPawns.Length; i++) {
-        if (kfHUD.PlayerInfoPawns[i].Pawn != none && kfHUD.PlayerInfoPawns[i].Pawn.Health > 0 && (kfHUD.PlayerInfoPawns[i].Pawn.Location - kfHUD.PawnOwner.Location) dot ViewDir > 0.8 &&
-                 kfHUD.PlayerInfoPawns[i].RendTime > ViewportOwner.Actor.Level.TimeSeconds) {
+        szRI= class'SZReplicationInfo'.static.findSZri(kfHUD.PlayerInfoPawns[i].Pawn.PlayerReplicationInfo);
+        if (szRI != None && kfHUD.PlayerInfoPawns[i].Pawn != none && kfHUD.PlayerInfoPawns[i].Pawn.Health > 0 && 
+                (kfHUD.PlayerInfoPawns[i].Pawn.Location - kfHUD.PawnOwner.Location) dot ViewDir > 0.8 &&
+                kfHUD.PlayerInfoPawns[i].RendTime > ViewportOwner.Actor.Level.TimeSeconds) {
             canvas.StrLen(Left(kfHUD.PlayerInfoPawns[i].Pawn.PlayerReplicationInfo.PlayerName, 16), XL, YL);
-            canvas.SetPos(kfHUD.PlayerInfoPawns[i].PlayerInfoScreenPosX - OffsetX - 0.5 * BarLength - kfHUD.default.ArmorIconSize - 2.0, 
-                    (kfHUD.PlayerInfoPawns[i].PlayerInfoScreenPosY - YL) - 1.5 * BarHeight - kfHUD.default.ArmorIconSize * 0.5);
-            canvas.DrawTileScaled(bleedIcon, 0.09375, 0.09375);
-            canvas.SetPos(kfHUD.PlayerInfoPawns[i].PlayerInfoScreenPosX - OffsetX - 0.25 * BarLength - kfHUD.default.ArmorIconSize - 2.0, 
-                    (kfHUD.PlayerInfoPawns[i].PlayerInfoScreenPosY - YL) - 1.5 * BarHeight - kfHUD.default.ArmorIconSize * 0.5);
-            canvas.DrawTileScaled(poisonIcon, 0.09375, 0.09375);
-                //DrawPlayerInfo(C, PlayerInfoPawns[i].Pawn, PlayerInfoPawns[i].PlayerInfoScreenPosX, PlayerInfoPawns[i].PlayerInfoScreenPosY);
+            if (kfHUD.PlayerInfoPawns[i].Pawn.ShieldStrength <= 0) {
+                posY= (kfHUD.PlayerInfoPawns[i].PlayerInfoScreenPosY - YL) - 2.75 * BarHeight -
+                        kfHUD.default.ArmorIconSize * 0.5;
+            } else {
+                posY= (kfHUD.PlayerInfoPawns[i].PlayerInfoScreenPosY - YL) - 3.8 * BarHeight -
+                        kfHUD.default.ArmorIconSize * 0.5;
+            }
+            offset= 0;
+            if (szRI.isBleeding) {
+                canvas.SetPos(kfHUD.PlayerInfoPawns[i].PlayerInfoScreenPosX - OffsetX - 0.15 * BarLength - 
+                        kfHUD.default.ArmorIconSize - 2.0, posY);
+                canvas.DrawTileScaled(bleedIcon, 0.1875, 0.1875);
+            }
+            if (szRI.isPoisoned) {
+                canvas.SetPos(kfHUD.PlayerInfoPawns[i].PlayerInfoScreenPosX - OffsetX + 0.15 * BarLength -
+                        kfHUD.default.ArmorIconSize - 2.0, posY);
+                canvas.DrawTileScaled(poisonIcon, 0.1875, 0.1875);
+            }
         }
     }
 }
